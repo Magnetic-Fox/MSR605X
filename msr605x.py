@@ -9,14 +9,16 @@
 
 import hid
 
-
+# Main device class
 class MSR605X:
+	# Default values (VID + PID for MSR605X and additionals)
 	DEFAULT_VID = 0x0801
 	DEFAULT_PID = 0x0003
 	DEFAULT_RID = b"\xff"
 	DEFAULT_TIMEOUT = 100
 	DEFAULT_FIRST_TIMEOUT = 10000
 	
+	# Command and typical constants
 	ESC = b"\x1b"
 	
 	NO_DATA = ESC + b"+"
@@ -60,6 +62,7 @@ class MSR605X:
 	CMD_INVALID = b"4"
 	SWIPE_ERROR = b"9"
 	
+	# Class init and device connection initialization constructor method
 	def __init__(self, vendorID = DEFAULT_VID, productID = DEFAULT_PID, reportID = DEFAULT_RID, timeout = DEFAULT_TIMEOUT, firstTimeout = DEFAULT_FIRST_TIMEOUT):
 		self.vendorID = vendorID
 		self.productID = productID
@@ -73,22 +76,27 @@ class MSR605X:
 		self.hidDevice.open(self.vendorID, self.productID)
 		return
 		
+	# Device freeing method
 	def close(self):
 		self.hidDevice.close()
 		return
 		
+	# Helper method to split data to chunks
 	def dataSplit(self, data, size):
 		return [data[i:i + size] for i in range(0, len(data), size)]
 		
+	# Helper method to fill data with zeroes
 	def dataFill(self, data, size):
 		return data + b"\x00" * (size - len(data))
 		
+	# Write automation method (slicing + sending)
 	def writeData(self, data):
 		dataChunks = self.dataSplit(data, 64)
 		for dataChunk in dataChunks:
 			self.hidDevice.write(self.reportID + self.dataFill(dataChunk, 64))
 		return
 		
+	# Read automation method (read + concat with timeout)
 	def readData(self, firstTimeout = None):
 		self.rawData = b""
 		
@@ -104,6 +112,7 @@ class MSR605X:
 			
 		return
 
+	# Read data export method (ISO 7811 - tracks 1, 2, 3)
 	def exportISOData(self):
 		status = b"\x00"
 		iso1 = None
@@ -146,10 +155,12 @@ class MSR605X:
 		
 		return status, iso1, iso2, iso3
 		
+	# Reset command send method
 	def reset(self):
 		self.writeData(self.CMD_RESET)
 		return
 		
+	# Read command method (fully automated)
 	def read(self, sendCommand = True):
 		if sendCommand:
 			self.writeData(self.CMD_READ)
@@ -158,22 +169,27 @@ class MSR605X:
 		
 		return self.exportISOData()
 		
+	# All LEDs off command send method
 	def allLedOff(self):
 		self.writeData(self.CMD_ALL_LED_OFF)
 		return
 		
+	# All LEDs on command send method
 	def allLedOn(self):
 		self.writeData(self.CMD_ALL_LED_ON)
 		return
 		
+	# Turn green LED on command send method (in fact, turns on green LED only)
 	def greenLedOn(self):
 		self.writeData(self.CMD_GREEN_LED_ON)
 		return
 		
+	# Turn yellow LED on command send method (in fact, turns on green and yellow LED simultaneously)
 	def yellowLedOn(self):
 		self.writeData(self.CMD_YELLOW_LED_ON)
 		return
 
+	# Turn red LED on command send method (in fact, turns on red LED only)
 	def redLedOn(self):
 		self.writeData(self.CMD_RED_LED_ON)
 		return
