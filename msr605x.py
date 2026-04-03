@@ -16,7 +16,7 @@ class MSR605X:
 	DEFAULT_PID = 0x0003
 	DEFAULT_RID = b"\xff"
 	DEFAULT_TIMEOUT = 100
-	DEFAULT_FIRST_TIMEOUT = 10000
+	DEFAULT_FIRST_TIMEOUT = 1000
 	
 	# Command and typical constants
 	ESC = b"\x1b"
@@ -61,6 +61,10 @@ class MSR605X:
 	CMD_ERROR = b"2"
 	CMD_INVALID = b"4"
 	SWIPE_ERROR = b"9"
+	COMM_OK = b"\x1by"
+	SETTING_ACK = b"\x1b0"
+	HICO_SET = b"\x1bh"
+	LOCO_SET = b"\x1bl"
 	
 	# Class init and device connection initialization constructor method
 	def __init__(self, vendorID = DEFAULT_VID, productID = DEFAULT_PID, reportID = DEFAULT_RID, timeout = DEFAULT_TIMEOUT, firstTimeout = DEFAULT_FIRST_TIMEOUT):
@@ -105,10 +109,22 @@ class MSR605X:
 		else:
 			timeout = self.timeout
 		
-		while(temp := self.hidDevice.read(256, timeout)[1:]):
-			self.rawData += bytes(temp)
-			if timeout != self.timeout:
-				timeout = self.timeout
+		while True:
+			if(temp := self.hidDevice.read(64, timeout)[1:]):
+				self.rawData += bytes(temp)
+				if timeout != self.timeout:
+					timeout = self.timeout
+			else:
+				if firstTimeout == None:
+					break
+				else:
+					if len(self.rawData) > 0:
+						break
+						
+#		while(temp := self.hidDevice.read(64, timeout)[1:]):
+#			self.rawData += bytes(temp)
+#			if timeout != self.timeout:
+#				timeout = self.timeout
 			
 		return
 
@@ -169,6 +185,17 @@ class MSR605X:
 		
 		return self.exportISOData()
 		
+	
+	
+	# Communication test method
+	def communicationTest(self):
+		self.writeData(self.CMD_COMM_TEST)
+		self.readData()
+		if len(self.rawData) >= 2:
+			return self.rawData[0:2] == self.COMM_OK
+		else:
+			return False
+	
 	# All LEDs off command send method
 	def allLedOff(self):
 		self.writeData(self.CMD_ALL_LED_OFF)
@@ -193,3 +220,37 @@ class MSR605X:
 	def redLedOn(self):
 		self.writeData(self.CMD_RED_LED_ON)
 		return
+		
+		
+		
+	# Hi-Co set method
+	def setHiCo(self):
+		self.writeData(self.CMD_SET_HICO)
+		self.readData()
+		if len(self.rawData) >= 2:
+			return self.rawData[0:2] == self.SETTING_ACK
+		else:
+			return False
+
+	# Lo-Co set method
+	def setLoCo(self):
+		self.writeData(self.CMD_SET_LOCO)
+		self.readData()
+		if len(self.rawData) >= 2:
+			return self.rawData[0:2] == self.SETTING_ACK
+		else:
+			return False
+
+	# Get coercivity setting (H - HiCo, L - LoCo, ? - unknown)
+	def getCoercivitySetting(self):
+		self.writeData(self.CMD_GET_COERCIVITY)
+		self.readData()
+		if len(self.rawData) >= 2:
+			if self.rawData[0:2] == self.HICO_SET:
+				return "H"
+			elif self.rawData[0:2] == self.LOCO_SET:
+				return "L"
+			else:
+				return "?"
+		else:
+			return "?"
