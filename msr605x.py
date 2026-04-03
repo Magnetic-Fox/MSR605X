@@ -56,11 +56,13 @@ class MSR605X:
 	TRACK2 = 2
 	TRACK3 = 4
 	
-	RW_OK = b"0"
-	RW_ERROR = b"1"
-	CMD_ERROR = b"2"
-	CMD_INVALID = b"4"
-	SWIPE_ERROR = b"9"
+	CMD_OK = b"\x1b0"
+	CMD_FAIL = b"\x1bA"
+	
+	RW_ERROR = b"\x1b1"
+	CMD_ERROR = b"\x1b2"
+	CMD_INVALID = b"\x1b4"
+	SWIPE_ERROR = b"\x1b9"
 	COMM_OK = b"\x1by"
 	SETTING_ACK = b"\x1b0"
 	HICO_SET = b"\x1bh"
@@ -120,11 +122,6 @@ class MSR605X:
 				else:
 					if len(self.rawData) > 0:
 						break
-						
-#		while(temp := self.hidDevice.read(64, timeout)[1:]):
-#			self.rawData += bytes(temp)
-#			if timeout != self.timeout:
-#				timeout = self.timeout
 			
 		return
 
@@ -222,6 +219,44 @@ class MSR605X:
 		return
 		
 		
+	
+	# Device model get method
+	def getDeviceModel(self):
+		self.writeData(self.CMD_GET_MODEL)
+		self.readData()
+		if len(self.rawData) >= 3:
+			if (self.rawData[0].to_bytes() == b"\x1b") and (self.rawData[2].to_bytes() == b"S"):
+				return self.rawData[1].to_bytes().decode()
+			else:
+				return "?"
+		else:
+			return "?"
+				
+	# Firmware version get method
+	def getFirmwareVersion(self):
+		self.writeData(self.CMD_GET_FW_VERSION)
+		self.readData()
+		if len(self.rawData) >= 9:
+			if self.rawData[0].to_bytes() == b"\x1b":
+				return self.rawData[1:9].decode()
+			else:
+				return "?"
+		else:
+			return "?"
+			
+	# Bits per character set method
+	def setBPC(self, track1, track2, track3):
+		self.writeData(self.CMD_BPC_SET + track1.to_bytes() + track2.to_bytes() + track3.to_bytes())
+		self.readData()
+		if len(self.rawData) >= 5:
+			if self.rawData[0:2] == self.CMD_OK:
+				return True, self.rawData[2], self.rawData[3], self.rawData[4]
+			elif self.rawData[0:2] == self.CMD_FAIL:
+				return False, track1, track2, track3
+			else:
+				return False, track1, track2, track3
+		else:
+			return False, track1, track2, track3
 		
 	# Hi-Co set method
 	def setHiCo(self):
