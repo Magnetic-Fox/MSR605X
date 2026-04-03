@@ -2,7 +2,7 @@
 
 # Simple MSR605X driver
 #
-# by Magnetic-Fox, 02.04.2026
+# by Magnetic-Fox, 02-03.04.2026
 #
 # (C)2026 Bartłomiej "Magnetic-Fox" Węgrzyn
 
@@ -37,8 +37,11 @@ class MSR605X:
 	CMD_GREEN_LED_ON = ESC + b"\x83"
 	CMD_YELLOW_LED_ON = ESC + b"\x84"
 	CMD_RED_LED_ON = ESC + b"\x85"
-	CMD_SENSOR_TEST = ESC + b"\x86"
-	CMD_RAM_TEST = ESC + b"\x87"
+	
+# probably not supported in MSR605X
+#	CMD_SENSOR_TEST = ESC + b"\x86"
+#	CMD_RAM_TEST = ESC + b"\x87"
+
 	CMD_LEAD_ZERO_SET = ESC + b"z"
 	CMD_LEAD_ZERO_CHECK = ESC + b"l"
 	CMD_ERASE_CARD = ESC + b"c"
@@ -219,6 +222,18 @@ class MSR605X:
 		return
 		
 		
+		
+	# Leading zero check method
+	def checkLeadingZero(self):
+		self.writeData(self.CMD_LEAD_ZERO_CHECK)
+		self.readData()
+		if len(self.rawData) >= 3:
+			if self.rawData[0].to_bytes() == b"\x1b":
+				return self.rawData[1], self.rawData[2]
+			else:
+				return 0, 0
+		else:
+			return 0, 0
 	
 	# Device model get method
 	def getDeviceModel(self):
