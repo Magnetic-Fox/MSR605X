@@ -11,6 +11,7 @@ import hid
 
 # Main device class
 class MSR605X:
+	# CONSTANTS
 	# Default values (VID + PID for MSR605X and additionals)
 	DEFAULT_VID = 0x0801
 	DEFAULT_PID = 0x0003
@@ -89,6 +90,7 @@ class MSR605X:
 	START_SENTINEL_2_3 = ";"
 	END_SENTINEL = "?"
 	
+	# METHODS
 	# Class init and device connection initialization constructor method
 	def __init__(self, vendorID = DEFAULT_VID, productID = DEFAULT_PID, reportID = DEFAULT_RID, timeout = DEFAULT_TIMEOUT, continuousTimeout = DEFAULT_CONTINUOUS_TIMEOUT, breakProcedure = None):
 		self.vendorID = vendorID
@@ -269,7 +271,8 @@ class MSR605X:
 			pass
 			
 		return status, iso1raw, iso2raw, iso3raw
-		
+	
+	# MAIN METHODS
 	# Hard reset command send method
 	def hardReset(self):
 		self.hardWriteData(self.FORCE_CMD_MODE + self.CMD_RESET)
@@ -404,6 +407,9 @@ class MSR605X:
 		self.writeData(self.CMD_READ_RAW)
 		self.readData(self.continuousTimeout)
 		return self.exportRAWData()
+		
+	# Raw data write method
+	# def writeRawData(self, ):
 	
 	# Device model get method
 	def getDeviceModel(self):
