@@ -99,14 +99,44 @@ class MSR605X:
 		self.timeout = timeout
 		self.continuousTimeout = continuousTimeout
 		self.breakProcedure = breakProcedure
-		
-		self.rawData = b""
-		
 		self.hidDevice = hid.device()
-		self.hidDevice.open(self.vendorID, self.productID)
+		self.rawData = b""
+		self.open()
 		return
 		
-	# Device freeing method
+	# Class destructor (auto closing device, if forgotten)
+	def __del__(self):
+		self.close()
+		return
+		
+	# Device address set method
+	def setDevice(self, vendorID, productID):
+		self.vendorID = vendorID
+		self.productID = productID
+		return
+		
+	# Timeout method set method
+	def setTimout(self, timeout):
+		self.timeout = timeout
+		return
+		
+	# Continuous timeout set method
+	def setContinuousTimeout(self, continuousTimeout):
+		self.continuousTimeout = continuousTimeout
+		return
+		
+	# Break procedure set method
+	def setBreakProcedure(self, breakProcedure):
+		self.breakProcedure = breakProcedure
+		return
+		
+	# Device opening method
+	def open(self):
+		self.hidDevice.open(self.vendorID, self.productID)
+		self.hidDevice.set_nonblocking(False)
+		return
+		
+	# Device closing method
 	def close(self):
 		self.hidDevice.close()
 		return
@@ -290,7 +320,7 @@ class MSR605X:
 		return self.exportISOData()
 		
 	# Write command method (fully automated):
-	# def write(self, )
+	# def write(self, iso1, iso2, iso3):
 	
 	# Communication test method
 	def communicationTest(self):
