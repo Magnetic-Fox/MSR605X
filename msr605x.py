@@ -142,6 +142,19 @@ class MSR605X:
 		self.hidDevice.close()
 		return
 		
+	# Helper method to reverse bits in byte
+	def toLSB(self, msbByte):
+		return int(bin(msbByte + 256)[-8:][::-1], 2).to_bytes()
+		
+	# Helper method to reverse all bytes
+	def bytesToLSB(self, msbBytes):
+		tempBytes = b""
+		
+		for msbByte in msbBytes:
+			tempBytes += self.toLSB(msbByte)
+			
+		return tempBytes
+		
 	# Helper method to split data to chunks
 	def dataSplit(self, data, size):
 		return [data[i:i + size] for i in range(0, len(data), size)]
@@ -321,6 +334,42 @@ class MSR605X:
 			
 		self.rawData += self.END_SEQUENCE_W
 		return
+		
+	# Raw string to be written from raw tracks data preparation method
+	def prepareRAWData(self, track1, track2, track3):
+		# Start with start sequence
+		self.rawData = self.START_SEQUENCE
+		
+		# Convert everything to LSB
+		if track1 != None:
+			track1LSB = self.bytesToLSB(track1)
+		else:
+			track1LSB = b""
+			
+		if track2 != None:
+			track2LSB = self.bytesToLSB(track2)
+		else:
+			track2LSB = b""
+			
+		if track3 != None:
+			track3LSB = self.bytesToLSB(track3)
+		else:
+			track3LSB = b""
+		
+		# Get all track lengths
+		track1Len = len(track1LSB)
+		track2Len = len(track2LSB)
+		track3Len = len(track3LSB)
+		
+		# Add all converted data
+		self.rawData += self.ISO1_DATA_START + track1Len.to_bytes() + track1LSB
+		self.rawData += self.ISO2_DATA_START + track2Len.to_bytes() + track2LSB
+		self.rawData += self.ISO3_DATA_START + track3Len.to_bytes() + track3LSB
+		
+		# Finish with end sequence
+		self.rawData += self.END_SEQUENCE_W
+		
+		return
 	
 	# MAIN METHODS
 	# Hard reset command send method
@@ -469,7 +518,14 @@ class MSR605X:
 		return self.exportRAWData()
 		
 	# Raw data write method
-	# def writeRawData(self, ):
+	def writeRawData(self, track1, track2, track3):
+		self.prepareRAWData(track1, track2, track3)
+		self.writeData(self.CMD_WRITE_RAW + self.rawData)
+		self.readData(self.continuousTimeout)
+		if len(self.rawData) >= 2:
+			return self.rawData[0:2] == self.CMD_OK
+		else:
+			return False
 	
 	# Device model get method
 	def getDeviceModel(self):
