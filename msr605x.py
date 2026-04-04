@@ -16,7 +16,7 @@ class MSR605X:
 	DEFAULT_PID = 0x0003
 	DEFAULT_RID = b"\xff"
 	DEFAULT_TIMEOUT = 100
-	DEFAULT_FIRST_TIMEOUT = 1000
+	DEFAULT_CONTINUOUS_TIMEOUT = 1000
 	
 	# Command and typical constants
 	ESC = b"\x1b"
@@ -90,12 +90,13 @@ class MSR605X:
 	END_SENTINEL = "?"
 	
 	# Class init and device connection initialization constructor method
-	def __init__(self, vendorID = DEFAULT_VID, productID = DEFAULT_PID, reportID = DEFAULT_RID, timeout = DEFAULT_TIMEOUT, firstTimeout = DEFAULT_FIRST_TIMEOUT):
+	def __init__(self, vendorID = DEFAULT_VID, productID = DEFAULT_PID, reportID = DEFAULT_RID, timeout = DEFAULT_TIMEOUT, continuousTimeout = DEFAULT_CONTINUOUS_TIMEOUT, breakProcedure = None):
 		self.vendorID = vendorID
 		self.productID = productID
 		self.reportID = reportID
 		self.timeout = timeout
-		self.firstTimeout = firstTimeout
+		self.continuousTimeout = continuousTimeout
+		self.breakProcedure = breakProcedure
 		
 		self.rawData = b""
 		
@@ -129,26 +130,37 @@ class MSR605X:
 		return
 		
 	# Read automation method (read + concat with timeout)
-	def readData(self, firstTimeout = None):
+	def readData(self, continuousTimeout = None):
 		self.rawData = b""
 		
-		if firstTimeout != None:
-			timeout = firstTimeout
+		if continuousTimeout != None:
+			timeout = continuousTimeout
 		else:
 			timeout = self.timeout
 		
+		# Try..Except block for Ctrl+C support
 		try:
+			# Proper support for timeout in the endless loop
 			while True:
 				if(temp := self.hidDevice.read(64, timeout)[1:]):
 					self.rawData += bytes(temp)
 					if timeout != self.timeout:
 						timeout = self.timeout
 				else:
-					if firstTimeout == None:
+					if self.breakProcedure != None:
+						# If break procedure is set and returns True
+						if self.breakProcedure():
+							# Then hard reset and exit loop
+							self.hardReset()
+							break
+					
+					if continuousTimeout == None:
 						break
 					else:
 						if len(self.rawData) > 0:
 							break
+		
+		# On interruption or simply error, hard reset the device
 		except:
 			self.hardReset()
 			
@@ -156,6 +168,7 @@ class MSR605X:
 
 	# Read data export method (ISO 7811 - tracks 1, 2, 3)
 	def exportISOData(self):
+		# Default values (also returned on error)
 		status = b"\x00"
 		iso1 = None
 		iso2 = None
@@ -163,51 +176,68 @@ class MSR605X:
 		
 		try:
 			if self.rawData[0:2] == self.START_SEQUENCE:
+				# Get start positions of all data
 				iso1pos = self.rawData.find(self.ISO1_DATA_START) + 2
 				iso2pos = self.rawData.find(self.ISO2_DATA_START) + 2
 				iso3pos = self.rawData.find(self.ISO3_DATA_START) + 2
 				endStatusPos = self.rawData.find(self.END_SEQUENCE) + 3
 				
+				# Get raw ISO data
 				iso1 = self.rawData[iso1pos:iso2pos - 2]
 				iso2 = self.rawData[iso2pos:iso3pos - 2]
 				iso3 = self.rawData[iso3pos:endStatusPos - 3]
 				
+				# Get status byte
 				status = self.rawData[endStatusPos:endStatusPos + 1]
-				
+
+				# ISO 7811 - Track 1
+				# Strip start and end sentinels (if they are there)
 				if (iso1[0] == ord(self.START_SENTINEL_1)) and (iso1[-1] == ord(self.END_SENTINEL)):
 					iso1 = iso1[1:][:-1]
-					
+
+				# Return empty byte-string on no data
 				elif iso1 == self.NO_DATA:
 					iso1 = b""
 					
+				# Return nothing on bad data
 				elif iso1 == self.BAD_DATA:
 					iso1 = None
-					
+				
+				# ISO 7811 - Track 2
+				# Strip start and end sentinels (if they are there)	
 				if (iso2[0] == ord(self.START_SENTINEL_2_3)) and (iso2[-1] == ord(self.END_SENTINEL)):
 					iso2 = iso2[1:][:-1]
-					
+				
+				# Return empty byte-string on no data	
 				elif iso2 == self.NO_DATA:
 					iso2 = b""
-					
+				
+				# Return nothing on bad data
 				elif iso2 == self.BAD_DATA:
 					iso2 = None
-					
+
+				# ISO 7811 - Track 3
+				# Strip start and end sentinels (if they are there)
 				if (iso3[0] == ord(self.START_SENTINEL_2_3)) and (iso3[-1] == ord(self.END_SENTINEL)):
 					iso3 = iso3[1:][:-1]
 					
+				# Return empty byte-string on no data
 				elif iso3 == self.NO_DATA:
 					iso3 = b""
 				
+				# Return nothing on bad data
 				elif iso3 == self.BAD_DATA:
 					iso3 = None
 			
 		except:
+			# Just do nothing and return default values
 			pass
 		
 		return status, iso1, iso2, iso3
 		
 	# Raw data export method (ISO 7811 - tracks 1, 2, 3)
 	def exportRAWData(self):
+		# Default values (also returned on error)
 		status = b"\x00"
 		iso1raw = None
 		iso2raw = None
@@ -215,21 +245,27 @@ class MSR605X:
 		
 		try:
 			if self.rawData[0:2] == self.START_SEQUENCE:
+				# Get start positions of all data
 				iso1pos = self.rawData.find(self.ISO1_DATA_START) + 3
 				iso2pos = self.rawData.find(self.ISO2_DATA_START) + 3
 				iso3pos = self.rawData.find(self.ISO3_DATA_START) + 3
 				endStatusPos = self.rawData.find(self.END_SEQUENCE) + 3
 				
+				# Get size of all tracks
 				iso1size = self.rawData[self.rawData.find(self.ISO1_DATA_START) + 2] - 1
 				iso2size = self.rawData[self.rawData.find(self.ISO2_DATA_START) + 2] - 1
 				iso3size = self.rawData[self.rawData.find(self.ISO3_DATA_START) + 2] - 1
 				
+				# Get raw data of all tracks
 				iso1raw = self.rawData[iso1pos:iso1pos + iso1size]
 				iso2raw = self.rawData[iso2pos:iso2pos + iso2size]
 				iso3raw = self.rawData[iso3pos:iso3pos + iso3size]
 				
+				# Get status byte
 				status = self.rawData[endStatusPos:endStatusPos + 1]
+				
 		except:
+			# Just do nothing and return default values
 			pass
 			
 		return status, iso1raw, iso2raw, iso3raw
@@ -247,7 +283,7 @@ class MSR605X:
 	# Read command method (fully automated)
 	def read(self):
 		self.writeData(self.CMD_READ)
-		self.readData(self.firstTimeout)
+		self.readData(self.continuousTimeout)
 		return self.exportISOData()
 		
 	# Write command method (fully automated):
@@ -290,7 +326,7 @@ class MSR605X:
 	# PROBABLY UNSUPPORTED IN MSR605X: sensor test method
 	def sensorTest(self):
 		self.writeData(self.CMD_SENSOR_TEST)
-		self.readData(self.firstTimeout)
+		self.readData(self.continuousTimeout)
 		if len(self.rawData) >= 2:
 			return self.rawData[0:2] == self.CMD_OK
 		else:
@@ -299,7 +335,7 @@ class MSR605X:
 	# PROBABLY UNSUPPORTED IN MSR605X: ram test method
 	def ramTest(self):
 		self.writeData(self.CMD_RAM_TEST)
-		self.readData(self.firstTimeout)
+		self.readData(self.continuousTimeout)
 		if len(self.rawData) >= 2:
 			return self.rawData[0:2] == self.CMD_OK
 		else:
@@ -347,7 +383,7 @@ class MSR605X:
 			selectByte |= self.ISO_TRACK3
 			
 		self.writeData(self.CMD_ERASE_CARD + selectByte.to_bytes())
-		self.readData(self.firstTimeout)
+		self.readData(self.continuousTimeout)
 		
 		if len(self.rawData) >= 2:
 			return self.rawData[0:2] == self.CMD_OK
@@ -364,12 +400,9 @@ class MSR605X:
 			return False
 			
 	# Raw data read method
-	def readRawData(self, sendCommand = True):
-		if sendCommand:
-			self.writeData(self.CMD_READ_RAW)
-			
-		self.readData(self.firstTimeout)
-		
+	def readRawData(self):
+		self.writeData(self.CMD_READ_RAW)
+		self.readData(self.continuousTimeout)
 		return self.exportRAWData()
 	
 	# Device model get method
