@@ -178,6 +178,34 @@ class MSR605X:
 		
 		return status, iso1, iso2, iso3
 		
+	# Raw data export method (ISO 7811 - tracks 1, 2, 3)
+	def exportRAWData(self):
+		status = b"\x00"
+		iso1raw = None
+		iso2raw = None
+		iso3raw = None
+		
+		try:
+			if self.rawData[0:2] == self.START_SEQUENCE:
+				iso1pos = self.rawData.find(self.ISO1_DATA_START) + 3
+				iso2pos = self.rawData.find(self.ISO2_DATA_START) + 3
+				iso3pos = self.rawData.find(self.ISO3_DATA_START) + 3
+				endStatusPos = self.rawData.find(self.END_SEQUENCE) + 3
+				
+				iso1size = self.rawData[self.rawData.find(self.ISO1_DATA_START) + 2] - 1
+				iso2size = self.rawData[self.rawData.find(self.ISO2_DATA_START) + 2] - 1
+				iso3size = self.rawData[self.rawData.find(self.ISO3_DATA_START) + 2] - 1
+				
+				iso1raw = self.rawData[iso1pos:iso1pos + iso1size]
+				iso2raw = self.rawData[iso2pos:iso2pos + iso2size]
+				iso3raw = self.rawData[iso3pos:iso3pos + iso3size]
+				
+				status = self.rawData[endStatusPos:endStatusPos + 1]
+		except:
+			pass
+			
+		return status, iso1raw, iso2raw, iso3raw
+		
 	# Reset command send method
 	def reset(self):
 		self.writeData(self.CMD_RESET)
@@ -285,6 +313,15 @@ class MSR605X:
 			return self.rawData[0:2] == self.CMD_OK
 		else:
 			return False
+			
+	# Raw data read method
+	def readRawData(self, sendCommand = True):
+		if sendCommand:
+			self.writeData(self.CMD_READ_RAW)
+			
+		self.readData(self.firstTimeout)
+		
+		return self.exportRAWData()
 	
 	# Device model get method
 	def getDeviceModel(self):
