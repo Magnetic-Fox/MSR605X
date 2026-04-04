@@ -42,6 +42,7 @@ class MSR605X:
 	# probably not supported in MSR605X
 	CMD_SENSOR_TEST = ESC + b"\x86"
 	CMD_RAM_TEST = ESC + b"\x87"
+	# end of probably not supported in MSR605X
 
 	CMD_LEAD_ZERO_SET = ESC + b"z"
 	CMD_LEAD_ZERO_CHECK = ESC + b"l"
@@ -257,6 +258,24 @@ class MSR605X:
 	def redLedOn(self):
 		self.writeData(self.CMD_RED_LED_ON)
 		return
+		
+	# PROBABLY UNSUPPORTED IN MSR605X: sensor test method
+	def sensorTest(self):
+		self.writeData(self.CMD_SENSOR_TEST)
+		self.readData(self.firstTimeout)
+		if len(self.rawData) >= 2:
+			return self.rawData[0:2] == self.CMD_OK
+		else:
+			return False
+			
+	# PROBABLY UNSUPPORTED IN MSR605X: ram test method
+	def ramTest(self):
+		self.writeData(self.CMD_RAM_TEST)
+		self.readData(self.firstTimeout)
+		if len(self.rawData) >= 2:
+			return self.rawData[0:2] == self.CMD_OK
+		else:
+			return False
 		
 	# Leading zero set method
 	def setLeadingZero(self, leadZeroTrack1and3, leadZeroTrack2):
