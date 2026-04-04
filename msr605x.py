@@ -27,7 +27,8 @@ class MSR605X:
 	BAD_DATA = ESC + b"*"
 	
 	START_SEQUENCE = ESC + b"s"
-	END_SEQUENCE = b"?" + FS + ESC
+	END_SEQUENCE_W = b"?" + FS
+	END_SEQUENCE = END_SEQUENCE_W + ESC
 	ISO1_DATA_START = ESC + b"\x01"
 	ISO2_DATA_START = ESC + b"\x02"
 	ISO3_DATA_START = ESC + b"\x03"
@@ -301,6 +302,25 @@ class MSR605X:
 			pass
 			
 		return status, iso1raw, iso2raw, iso3raw
+		
+	# Raw string to be written from tracks preparation method
+	def prepareISOData(self, track1, track2, track3):
+		self.rawData = self.START_SEQUENCE
+		
+		self.rawData += self.ISO1_DATA_START
+		if track1 != None:
+			self.rawData += track1.encode()
+			
+		self.rawData += self.ISO2_DATA_START
+		if track2 != None:
+			self.rawData += track2.encode()
+			
+		self.rawData += self.ISO3_DATA_START
+		if track3 != None:
+			self.rawData += track3.encode()
+			
+		self.rawData += self.END_SEQUENCE_W
+		return
 	
 	# MAIN METHODS
 	# Hard reset command send method
@@ -320,7 +340,17 @@ class MSR605X:
 		return self.exportISOData()
 		
 	# Write command method (fully automated):
-	# def write(self, iso1, iso2, iso3):
+	def write(self, iso1, iso2, iso3):
+		self.prepareISOData(iso1, iso2, iso3)
+		self.writeData(self.CMD_WRITE + self.rawData)
+		self.readData(self.continuousTimeout)
+		if len(self.rawData) >= 2:
+			if self.rawData[0:1] == self.ESC:
+				return self.rawData[1:2] == self.SB_RW_OK
+			else:
+				return False
+		else:
+			return False
 	
 	# Communication test method
 	def communicationTest(self):
