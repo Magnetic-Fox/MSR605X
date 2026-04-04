@@ -59,6 +59,13 @@ class MSR605X:
 	TRACK2 = 2
 	TRACK3 = 4
 	
+	TRACK1_210BPI = b"\xa1"
+	TRACK1_75BPI = b"\xa0"
+	TRACK2_210BPI = b"\xd2"
+	TRACK2_75BPI = b"\x4b"
+	TRACK3_210BPI = b"\xc1"
+	TRACK3_75BPI = b"\xc0"
+	
 	CMD_OK = b"\x1b0"
 	CMD_FAIL = b"\x1bA"
 	
@@ -246,21 +253,34 @@ class MSR605X:
 	def eraseCard(self, track1, track2, track3):
 		selectByte = 0
 		
+		# Condition needed as track 1 always get erased (if selectByte is 0 or 1)
 		if (track1 or track2 or track3) == False:
 			return True
 		
+		# Condition needed only if track 2 or 3 is also selected
 		if track1:
 			selectByte |= self.TRACK1
 			
+		# If track 2 has to be erased
 		if track2:
 			selectByte |= self.TRACK2
 			
+		# If track 3 has to be erased
 		if track3:
 			selectByte |= self.TRACK3
 			
 		self.writeData(self.CMD_ERASE_CARD + selectByte.to_bytes())
 		self.readData(self.firstTimeout)
 		
+		if len(self.rawData) >= 2:
+			return self.rawData[0:2] == self.CMD_OK
+		else:
+			return False
+			
+	# BPI select method
+	def selectBPI(self, settingByte):
+		self.writeData(self.CMD_BPI_SELECT + settingByte)
+		self.readData()
 		if len(self.rawData) >= 2:
 			return self.rawData[0:2] == self.CMD_OK
 		else:
