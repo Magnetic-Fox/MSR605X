@@ -2,7 +2,7 @@
 
 # Simple MSR605X driver
 #
-# by Magnetic-Fox, 02-03.04.2026
+# by Magnetic-Fox, 02-04.04.2026
 #
 # (C)2026 Bartłomiej "Magnetic-Fox" Węgrzyn
 
@@ -23,6 +23,8 @@ class MSR605X:
 	FS = b"\x1c"
 	
 	NO_DATA = ESC + b"+"
+	BAD_DATA = ESC + b"*"
+	
 	START_SEQUENCE = ESC + b"s"
 	END_SEQUENCE = b"?" + FS + ESC
 	ISO1_DATA_START = ESC + b"\x01"
@@ -57,16 +59,18 @@ class MSR605X:
 	CMD_SET_LOCO = ESC + b"y"
 	CMD_GET_COERCIVITY = ESC + b"d"
 	
-	TRACK1 = 1
-	TRACK2 = 2
-	TRACK3 = 4
+	FORCE_CMD_MODE = b"\x00\xc2"
 	
-	TRACK1_210BPI = b"\xa1"
-	TRACK1_75BPI = b"\xa0"
-	TRACK2_210BPI = b"\xd2"
-	TRACK2_75BPI = b"\x4b"
-	TRACK3_210BPI = b"\xc1"
-	TRACK3_75BPI = b"\xc0"
+	ISO_TRACK1 = 1
+	ISO_TRACK2 = 2
+	ISO_TRACK3 = 4
+	
+	ISO_TRACK1_210BPI = b"\xa1"
+	ISO_TRACK1_75BPI = b"\xa0"
+	ISO_TRACK2_210BPI = b"\xd2"
+	ISO_TRACK2_75BPI = b"\x4b"
+	ISO_TRACK3_210BPI = b"\xc1"
+	ISO_TRACK3_75BPI = b"\xc0"
 	
 	CMD_OK = ESC + b"0"
 	CMD_FAIL = ESC + b"A"
@@ -80,6 +84,10 @@ class MSR605X:
 	COMM_OK = ESC + b"y"
 	HICO_SET = ESC + b"h"
 	LOCO_SET = ESC + b"l"
+	
+	START_SENTINEL_1 = "%"
+	START_SENTINEL_2_3 = ";"
+	END_SENTINEL = "?"
 	
 	# Class init and device connection initialization constructor method
 	def __init__(self, vendorID = DEFAULT_VID, productID = DEFAULT_PID, reportID = DEFAULT_RID, timeout = DEFAULT_TIMEOUT, firstTimeout = DEFAULT_FIRST_TIMEOUT):
@@ -115,6 +123,11 @@ class MSR605X:
 			self.hidDevice.write(self.reportID + self.dataFill(dataChunk, 64))
 		return
 		
+	# Hard write automation method (filling + sending)
+	def hardWriteData(self, data):
+		self.hidDevice.send_feature_report(self.dataFill(data, 65))
+		return
+		
 	# Read automation method (read + concat with timeout)
 	def readData(self, firstTimeout = None):
 		self.rawData = b""
@@ -124,17 +137,20 @@ class MSR605X:
 		else:
 			timeout = self.timeout
 		
-		while True:
-			if(temp := self.hidDevice.read(64, timeout)[1:]):
-				self.rawData += bytes(temp)
-				if timeout != self.timeout:
-					timeout = self.timeout
-			else:
-				if firstTimeout == None:
-					break
+		try:
+			while True:
+				if(temp := self.hidDevice.read(64, timeout)[1:]):
+					self.rawData += bytes(temp)
+					if timeout != self.timeout:
+						timeout = self.timeout
 				else:
-					if len(self.rawData) > 0:
+					if firstTimeout == None:
 						break
+					else:
+						if len(self.rawData) > 0:
+							break
+		except:
+			self.hardReset()
 			
 		return
 
@@ -158,23 +174,32 @@ class MSR605X:
 				
 				status = self.rawData[endStatusPos:endStatusPos + 1]
 				
-				if (iso1[0] == ord("%")) and (iso1[-1] == ord("?")):
+				if (iso1[0] == ord(self.START_SENTINEL_1)) and (iso1[-1] == ord(self.END_SENTINEL)):
 					iso1 = iso1[1:][:-1]
 					
 				elif iso1 == self.NO_DATA:
 					iso1 = b""
 					
-				if (iso2[0] == ord(";")) and (iso2[-1] == ord("?")):
+				elif iso1 == self.BAD_DATA:
+					iso1 = None
+					
+				if (iso2[0] == ord(self.START_SENTINEL_2_3)) and (iso2[-1] == ord(self.END_SENTINEL)):
 					iso2 = iso2[1:][:-1]
 					
 				elif iso2 == self.NO_DATA:
 					iso2 = b""
 					
-				if (iso3[0] == ord(";")) and (iso3[-1] == ord("?")):
+				elif iso2 == self.BAD_DATA:
+					iso2 = None
+					
+				if (iso3[0] == ord(self.START_SENTINEL_2_3)) and (iso3[-1] == ord(self.END_SENTINEL)):
 					iso3 = iso3[1:][:-1]
 					
 				elif iso3 == self.NO_DATA:
 					iso3 = b""
+				
+				elif iso3 == self.BAD_DATA:
+					iso3 = None
 			
 		except:
 			pass
@@ -209,21 +234,24 @@ class MSR605X:
 			
 		return status, iso1raw, iso2raw, iso3raw
 		
+	# Hard reset command send method
+	def hardReset(self):
+		self.hardWriteData(self.FORCE_CMD_MODE + self.CMD_RESET)
+		return
+		
 	# Reset command send method
 	def reset(self):
 		self.writeData(self.CMD_RESET)
 		return
 		
 	# Read command method (fully automated)
-	def read(self, sendCommand = True):
-		if sendCommand:
-			self.writeData(self.CMD_READ)
-			
+	def read(self):
+		self.writeData(self.CMD_READ)
 		self.readData(self.firstTimeout)
-		
 		return self.exportISOData()
 		
-	
+	# Write command method (fully automated):
+	# def write(self, )
 	
 	# Communication test method
 	def communicationTest(self):
@@ -291,7 +319,7 @@ class MSR605X:
 		self.writeData(self.CMD_LEAD_ZERO_CHECK)
 		self.readData()
 		if len(self.rawData) >= 3:
-			if self.rawData[0].to_bytes() == b"\x1b":
+			if self.rawData[0].to_bytes() == self.ESC:
 				return self.rawData[1], self.rawData[2]
 			else:
 				return 0, 0
@@ -308,15 +336,15 @@ class MSR605X:
 		
 		# Condition needed only if track 2 or 3 is also selected
 		if track1:
-			selectByte |= self.TRACK1
+			selectByte |= self.ISO_TRACK1
 			
 		# If track 2 has to be erased
 		if track2:
-			selectByte |= self.TRACK2
+			selectByte |= self.ISO_TRACK2
 			
 		# If track 3 has to be erased
 		if track3:
-			selectByte |= self.TRACK3
+			selectByte |= self.ISO_TRACK3
 			
 		self.writeData(self.CMD_ERASE_CARD + selectByte.to_bytes())
 		self.readData(self.firstTimeout)
@@ -349,7 +377,7 @@ class MSR605X:
 		self.writeData(self.CMD_GET_MODEL)
 		self.readData()
 		if len(self.rawData) >= 3:
-			if (self.rawData[0].to_bytes() == b"\x1b") and (self.rawData[2].to_bytes() == b"S"):
+			if (self.rawData[0].to_bytes() == self.ESC) and (self.rawData[2].to_bytes() == b"S"):
 				return self.rawData[1].to_bytes().decode()
 			else:
 				return "?"
@@ -361,7 +389,7 @@ class MSR605X:
 		self.writeData(self.CMD_GET_FW_VERSION)
 		self.readData()
 		if len(self.rawData) >= 9:
-			if self.rawData[0].to_bytes() == b"\x1b":
+			if self.rawData[0].to_bytes() == self.ESC:
 				return self.rawData[1:9].decode()
 			else:
 				return "?"
