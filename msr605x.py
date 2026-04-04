@@ -241,6 +241,30 @@ class MSR605X:
 				return 0, 0
 		else:
 			return 0, 0
+			
+	# Card erase method
+	def eraseCard(self, track1, track2, track3):
+		selectByte = 0
+		
+		if (track1 or track2 or track3) == False:
+			return True
+		
+		if track1:
+			selectByte |= self.TRACK1
+			
+		if track2:
+			selectByte |= self.TRACK2
+			
+		if track3:
+			selectByte |= self.TRACK3
+			
+		self.writeData(self.CMD_ERASE_CARD + selectByte.to_bytes())
+		self.readData(self.firstTimeout)
+		
+		if len(self.rawData) >= 2:
+			return self.rawData[0:2] == self.CMD_OK
+		else:
+			return False
 	
 	# Device model get method
 	def getDeviceModel(self):
