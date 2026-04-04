@@ -221,7 +221,14 @@ class MSR605X:
 		self.writeData(self.CMD_RED_LED_ON)
 		return
 		
-		
+	# Leading zero set method
+	def setLeadingZero(self, leadZeroTrack1and3, leadZeroTrack2):
+		self.writeData(self.CMD_LEAD_ZERO_SET + leadZeroTrack1and3.to_bytes() + leadZeroTrack2.to_bytes())
+		self.readData()
+		if len(self.rawData) >= 2:
+			return self.rawData[0:2] == self.CMD_OK
+		else:
+			return False
 		
 	# Leading zero check method
 	def checkLeadingZero(self):
