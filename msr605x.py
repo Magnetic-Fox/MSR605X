@@ -20,10 +20,11 @@ class MSR605X:
 	
 	# Command and typical constants
 	ESC = b"\x1b"
+	FS = b"\x1c"
 	
 	NO_DATA = ESC + b"+"
 	START_SEQUENCE = ESC + b"s"
-	END_SEQUENCE = b"?\x1c" + ESC
+	END_SEQUENCE = b"?" + FS + ESC
 	ISO1_DATA_START = ESC + b"\x01"
 	ISO2_DATA_START = ESC + b"\x02"
 	ISO3_DATA_START = ESC + b"\x03"
@@ -38,9 +39,9 @@ class MSR605X:
 	CMD_YELLOW_LED_ON = ESC + b"\x84"
 	CMD_RED_LED_ON = ESC + b"\x85"
 	
-# probably not supported in MSR605X
-#	CMD_SENSOR_TEST = ESC + b"\x86"
-#	CMD_RAM_TEST = ESC + b"\x87"
+	# probably not supported in MSR605X
+	CMD_SENSOR_TEST = ESC + b"\x86"
+	CMD_RAM_TEST = ESC + b"\x87"
 
 	CMD_LEAD_ZERO_SET = ESC + b"z"
 	CMD_LEAD_ZERO_CHECK = ESC + b"l"
@@ -66,17 +67,18 @@ class MSR605X:
 	TRACK3_210BPI = b"\xc1"
 	TRACK3_75BPI = b"\xc0"
 	
-	CMD_OK = b"\x1b0"
-	CMD_FAIL = b"\x1bA"
+	CMD_OK = ESC + b"0"
+	CMD_FAIL = ESC + b"A"
 	
-	RW_ERROR = b"\x1b1"
-	CMD_ERROR = b"\x1b2"
-	CMD_INVALID = b"\x1b4"
-	SWIPE_ERROR = b"\x1b9"
-	COMM_OK = b"\x1by"
-	SETTING_ACK = b"\x1b0"
-	HICO_SET = b"\x1bh"
-	LOCO_SET = b"\x1bl"
+	SB_RW_OK = b"0"
+	SB_RW_ERROR = b"1"
+	SB_CMD_ERROR = b"2"
+	SB_CMD_INVALID = b"4"
+	SB_SWIPE_ERROR = b"9"
+	
+	COMM_OK = ESC + b"y"
+	HICO_SET = ESC + b"h"
+	LOCO_SET = ESC + b"l"
 	
 	# Class init and device connection initialization constructor method
 	def __init__(self, vendorID = DEFAULT_VID, productID = DEFAULT_PID, reportID = DEFAULT_RID, timeout = DEFAULT_TIMEOUT, firstTimeout = DEFAULT_FIRST_TIMEOUT):
@@ -366,7 +368,7 @@ class MSR605X:
 		self.writeData(self.CMD_SET_HICO)
 		self.readData()
 		if len(self.rawData) >= 2:
-			return self.rawData[0:2] == self.SETTING_ACK
+			return self.rawData[0:2] == self.CMD_OK
 		else:
 			return False
 
@@ -375,7 +377,7 @@ class MSR605X:
 		self.writeData(self.CMD_SET_LOCO)
 		self.readData()
 		if len(self.rawData) >= 2:
-			return self.rawData[0:2] == self.SETTING_ACK
+			return self.rawData[0:2] == self.CMD_OK
 		else:
 			return False
 
