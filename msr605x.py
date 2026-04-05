@@ -607,12 +607,32 @@ class Interactive:
 	
 	# Constructor
 	def __init__(self, vid = 0x0801, pid = 0x0003, rid = 0xFF):
-		self.MSR = MSR605X(vid, pid, rid.to_bytes())
-		self.MSR.open()
+		self.vid = vid
+		self.pid = pid
+		self.rid = rid
+		self.MSR = MSR605X(self.vid, self.pid, self.rid.to_bytes())
 
 	# Destructor
 	def __del__(self):
+		self.close()
+		
+	# Open wrapper
+	def open(self):
+		print("Opening device at " + "{:04x}".format(self.vid).upper() + ":" + "{:04x}".format(self.pid).upper() + " with report ID = " + "{:02x}".format(self.rid).upper() + "...", end = "")
+		sys.stdout.flush()
+		
+		try:
+			self.MSR.open()
+			print(" OK!")
+			return True
+		except:
+			print(" ERROR!")
+			return False
+		
+	# Close wrapper
+	def close(self):
 		self.MSR.close()
+		return
 	
 	# Check if string is valid
 	def isValid(self, alphabet, string):
@@ -1157,10 +1177,18 @@ class Interactive:
 		print("Device reset (hard)...")
 		self.MSR.hardReset()
 		return
+		
+	# Interpreter method
+	def interpreter(self):
+		if len(sys.argv) == 1:
+			cli.headerDisplay()
+			cli.displayHelp()
+		else:
+			pass
+		return
 
 
 # Autorun section
 if __name__ == "__main__":
 	cli = Interactive()
-	cli.headerDisplay()
-	cli.readISO()
+	cli.interpreter()
