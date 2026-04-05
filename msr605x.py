@@ -720,7 +720,12 @@ class Interactive:
 	
 	# Bits per inch set method
 	def setBPI(self, track1, track2, track3):
-		print("Bits per inch setting...")
+		print("Bits per inch setting...", end = "")
+		if (track1 == None) and (track2 == None) and (track3 == None):
+			print(" NOTHING CHANGED!")
+		else:
+			print("")
+		
 		if track1 != None:
 			print(" *  Track 1: ", end = "")
 			sys.stdout.flush()
