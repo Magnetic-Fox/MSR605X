@@ -2,11 +2,12 @@
 
 # Simple MSR605X driver
 #
-# by Magnetic-Fox, 02-04.04.2026
+# by Magnetic-Fox, 02-05.04.2026
 #
 # (C)2026 Bartłomiej "Magnetic-Fox" Węgrzyn
 
 
+import sys
 import hid
 
 # Main device class
@@ -102,7 +103,6 @@ class MSR605X:
 		self.breakProcedure = breakProcedure
 		self.hidDevice = hid.device()
 		self.rawData = b""
-		self.open()
 		return
 		
 	# Class destructor (auto closing device, if forgotten)
@@ -596,3 +596,349 @@ class MSR605X:
 				return "?"
 		else:
 			return "?"
+
+
+# Command Line Utility class
+class Interactive:
+	# Constructor
+	def __init__(self, vid = 0x0801, pid = 0x0003, rid = 0xFF):
+		self.MSR = MSR605X(vid, pid, rid.to_bytes())
+		self.MSR.open()
+
+	# Destructor
+	def __del__(self):
+		self.MSR.close()
+		
+	# Byte to hex conversion method
+	def toHex(self, byte):
+		hexVal = hex(byte)[2:].upper()
+		
+		if byte > 16:
+			return hexVal
+		else:
+			return "0" + hexVal
+			
+	# Byte string to hex conversion method
+	def bytesToHex(self, byteString):
+		output = ""
+		
+		for byte in byteString:
+			output += self.toHex(byte)
+			
+		return output
+	
+	# Header display method
+	def headerDisplay(self):
+		print("MSR605X Command Line Utility")
+		print("by Magnetic-Fox, April 2026")
+		print("")
+		return
+	
+	# Help display method
+	def displayHelp(self):
+		print("ISO 7811 mode:                             RAW mode:")
+		print("  -r                - read card              -rb                - read card")
+		print('  -w "T1" "T2" "T3" - write card             -wb "T1" "T2" "T3" - write card')
+		print("  -c                - copy card              -cb                - RAW card copy")
+		print("")
+		print("Bit settings:                              Coercivity:")
+		print("  -bc 7 5 5         - bits per character     -h                 - use Hi-Co")
+		print("  -bi 210 75 210    - bits per inch          -l                 - use Lo-Co")
+		print("")
+		print("Leading zeroes:                            Other card operations:")
+		print("  -z 61 22          - set leading zeroes     -e 1 2 3           - erase tracks")
+		print("")
+		print("Device information:                        Device status:")
+		print("  -m                - device model           -tc               - comm. test")
+		print("  -f                - firmware version       -zs               - lead zeroes")
+		print("                                             -gc               - coercivity")
+		print("Miscellaneous:                               -ts               - sensor test")
+		print("  -i0               - all LED off            -tr               - RAM test")
+		print("  -i<1,2,3>         - LED on (1, 2 or 3)     -sr               - soft reset")
+		print("  -ia               - all LED on             -hr               - hard reset")
+		return
+	
+	# ISO 7811 mode read method
+	def readISO(self):
+		print("Please swipe a card...", end = "")
+		sys.stdout.flush()
+		data = self.MSR.read()
+		
+		if data[0] == MSR605X.SB_RW_OK:
+			print(" OK!")
+			print(" *  Track 1: " + data[1].decode())
+			print(" *  Track 2: " + data[2].decode())
+			print(" *  Track 3: " + data[3].decode())
+		else:
+			print(" ERROR!", file = sys.stderr)
+		
+		return
+		
+	# ISO 7811 mode write method
+	# TODO...
+	
+	# ISO 7811 mode card copy method
+	# TODO...
+			
+	# RAW mode read method
+	def readRAW(self):
+		print("Please swipe a card...", end = "")
+		sys.stdout.flush()
+		data = self.MSR.readRawData()		
+		
+		if data[0] == MSR605X.SB_RW_OK:
+			print(" OK!")
+			print(" *  Track 1: " + self.bytesToHex(data[1]))
+			print(" *  Track 2: " + self.bytesToHex(data[2]))
+			print(" *  Track 3: " + self.bytesToHex(data[3]))
+		else:
+			print(" ERROR!", file = sys.stderr)
+		
+		return
+		
+	# RAW mode write method
+	# TODO...
+	
+	# RAW mode card copy method
+	# TODO...
+			
+	# Bits per character set method
+	def setBPC(self, track1, track2, track3):
+		print("Bits per character setting...", end = "")
+		sys.stdout.flush()
+		
+		if ((track1 >= 1) and (track1 <= 8) and (track2 >= 1) and (track2 <= 8) and (track3 >= 1) and (track3 <= 8)):
+			response = self.MSR.setBPC(track1, track2, track3)
+			if response[0]:
+				print(" OK! (" + str(response[1]) + ", " + str(response[2]) + ", " + str(response[3]) + ")")
+			else:
+				print(" ERROR!")
+		else:
+			print(" ERROR!")
+		
+		return
+	
+	# Bits per inch set method
+	def setBPI(self, track1, track2, track3):
+		print("Bits per inch setting...")
+		if track1 != None:
+			print(" *  Track 1: ", end = "")
+			sys.stdout.flush()
+			if (track1 == 210) or (track1 == 75):
+				if (track1 == 210):
+					if self.MSR.selectBPI(MSR605X.ISO_TRACK1_210BPI):
+						print(" 210 bpi")
+					else:
+						print(" ERROR!")
+				else:
+					if self.MSR.selectBPI(MSR605X.ISO_TRACK1_75BPI):
+						print(" 75 bpi")
+					else:
+						print(" ERROR!")
+			else:
+				print(" ERROR!")
+				
+		if track2 != None:
+			print(" *  Track 2: ", end = "")
+			sys.stdout.flush()
+			if (track2 == 210) or (track2 == 75):
+				if (track2 == 210):
+					if self.MSR.selectBPI(MSR605X.ISO_TRACK2_210BPI):
+						print(" 210 bpi")
+					else:
+						print(" ERROR!")
+				else:
+					if self.MSR.selectBPI(MSR605X.ISO_TRACK2_75BPI):
+						print(" 75 bpi")
+					else:
+						print(" ERROR!")
+			else:
+				print(" ERROR!")
+			
+		if track3 != None:
+			print(" *  Track 3: ", end = "")
+			sys.stdout.flush()
+			if (track3 == 210) or (track3 == 75):
+				if (track3 == 210):
+					if self.MSR.selectBPI(MSR605X.ISO_TRACK3_210BPI):
+						print(" 210 bpi")
+					else:
+						print(" ERROR!")
+				else:
+					if self.MSR.selectBPI(MSR605X.ISO_TRACK3_75BPI):
+						print(" 75 bpi")
+					else:
+						print(" ERROR!")
+			else:
+				print(" ERROR!")
+			
+		return
+	
+	# Hi-Co set method
+	def setHiCo(self):
+		print("Hi-Co setting...", end = "")
+		sys.stdout.flush()
+		
+		if self.MSR.setHiCo():
+			print(" OK!")
+		else:
+			print(" ERROR!")
+			
+		return
+		
+	# Lo-Co set method
+	def setLoCo(self):
+		print("Lo-Co setting...", end = "")
+		sys.stdout.flush()
+		
+		if self.MSR.setLoCo():
+			print(" OK!")
+		else:
+			print(" ERROR!")
+		
+		return
+		
+	# Leading zeroes set method
+	def setLeadingZeroes(self, leadZeroTrack1and3, leadZeroTrack2):
+		print("Leading zeroes setting...", end = "")
+		sys.stdout.flush()
+		
+		if ((leadZeroTrack1and3 >= 0) and (leadZeroTrack1and3 <= 255)) and ((leadZeroTrack2 >= 0) and (leadZeroTrack2 <= 255)):
+			if self.MSR.setLeadingZero(leadZeroTrack1and3, leadZeroTrack2):
+				print(" OK!")
+			else:
+				print(" ERROR!")
+		else:
+			print(" ERROR!")
+		
+		return
+	
+	# Track erasing method
+	# TODO...
+	
+	# Device model get method
+	def deviceModel(self):
+		print("Device model: ", end = "")
+		sys.stdout.flush()
+		print(self.MSR.getDeviceModel())
+		return
+		
+	# Firmware version get method
+	def firmwareVersion(self):
+		print("Firmware version: ", end = "")
+		sys.stdout.flush()
+		print(self.MSR.getFirmwareVersion())
+		return
+	
+	# All LEDs off method
+	def allLEDOff(self):
+		print("Turning all LEDs off...", end = "")
+		sys.stdout.flush()
+		self.MSR.allLedOff()
+		print(" OK!")
+		return
+		
+	# Green LED on method
+	def greenLED(self):
+		print("Turning green LED on...", end = "")
+		sys.stdout.flush()
+		self.MSR.greenLedOn()
+		print(" OK!")
+		return
+		
+	# Green and yellow LED on method
+	def greenAndYellowLED(self):
+		print("Turning green and yellow LED on...", end = "")
+		sys.stdout.flush()
+		self.MSR.yellowLedOn()
+		print(" OK!")
+		return
+		
+	# Red LED on method
+	def redLED(self):
+		print("Turning red LED on...", end = "")
+		sys.stdout.flush()
+		self.MSR.redLedOn()
+		print(" OK!")
+		return
+		
+	# All LEDs on method
+	def allLEDOn(self):
+		print("Turning all LEDs on...", end = "")
+		sys.stdout.flush()
+		self.MSR.allLedOn()
+		print(" OK!")
+		return
+		
+	# Communication test method
+	def communicationTest(self):
+		print("Communication test pending...", end = "")
+		sys.stdout.flush()
+		if self.MSR.communicationTest():
+			print(" OK!")
+		else:
+			print(" ERROR!")
+		return
+		
+	# Leading zeroes setting gathering method
+	def getLeadingZeroes(self):
+		print("Leading zeroes information gathering...", end = "")
+		sys.stdout.flush()
+		leadZeroTrack1and3, leadZeroTrack2 = self.MSR.checkLeadingZero()
+		print(" OK!")
+		print(" *  Track 1 & Track 3: " + str(leadZeroTrack1and3))
+		print(" *  Track 2:           " + str(leadZeroTrack2))
+		return
+		
+	# Set coercivity gathering method
+	def getCoercivity(self):
+		print("Coercivity setting gathering...", end = "")
+		sys.stdout.flush()
+		coercivity = self.MSR.getCoercivitySetting()
+		print(" ", end = "")
+		if coercivity == "H":
+			print("Hi-Co")
+		elif coercivity == "L":
+			print("Lo-Co")
+		else:
+			print("Unknown")
+		return
+		
+	# Sensor test method (PROBABLY UNSUPPORTED OPERATION!)
+	def sensorTest(self):
+		print("Sensor test pending...", end = "")
+		sys.stdout.flush()
+		if self.MSR.sensorTest():
+			print(" OK!")
+		else:
+			print(" ERROR!")
+		return
+		
+	# RAM test method (PROBABLY UNSUPPORTED OPERATION!)
+	def RAMTest(self):
+		print("RAM test pending...", end = "")
+		sys.stdout.flush()
+		if self.MSR.ramTest():
+			print(" OK!")
+		else:
+			print(" ERROR!")
+		return
+		
+	# Soft reset method
+	def softReset(self):
+		print("Device reset (soft)...")
+		self.MSR.reset()
+		return
+		
+	# Hard reset method
+	def hardReset(self):
+		print("Device reset (hard)...")
+		self.MSR.hardReset()
+		return
+
+
+# Autorun section
+if __name__ == "__main__":
+	cli = Interactive()
+	cli.headerDisplay()
+	cli.readISO()
