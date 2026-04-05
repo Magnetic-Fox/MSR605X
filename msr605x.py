@@ -239,11 +239,11 @@ class MSR605X:
 				# ISO 7811 - Track 1
 				# Strip start and end sentinels (if they are there)
 				if (iso1[0] == ord(self.START_SENTINEL_1)) and (iso1[-1] == ord(self.END_SENTINEL)):
-					iso1 = iso1[1:][:-1]
+					iso1 = (iso1[1:][:-1]).decode()
 
 				# Return empty byte-string on no data
 				elif iso1 == self.NO_DATA:
-					iso1 = b""
+					iso1 = ""
 					
 				# Return nothing on bad data
 				elif iso1 == self.BAD_DATA:
@@ -252,11 +252,11 @@ class MSR605X:
 				# ISO 7811 - Track 2
 				# Strip start and end sentinels (if they are there)	
 				if (iso2[0] == ord(self.START_SENTINEL_2_3)) and (iso2[-1] == ord(self.END_SENTINEL)):
-					iso2 = iso2[1:][:-1]
+					iso2 = (iso2[1:][:-1]).decode()
 				
 				# Return empty byte-string on no data	
 				elif iso2 == self.NO_DATA:
-					iso2 = b""
+					iso2 = ""
 				
 				# Return nothing on bad data
 				elif iso2 == self.BAD_DATA:
@@ -265,11 +265,11 @@ class MSR605X:
 				# ISO 7811 - Track 3
 				# Strip start and end sentinels (if they are there)
 				if (iso3[0] == ord(self.START_SENTINEL_2_3)) and (iso3[-1] == ord(self.END_SENTINEL)):
-					iso3 = iso3[1:][:-1]
+					iso3 = (iso3[1:][:-1]).decode()
 					
 				# Return empty byte-string on no data
 				elif iso3 == self.NO_DATA:
-					iso3 = b""
+					iso3 = ""
 				
 				# Return nothing on bad data
 				elif iso3 == self.BAD_DATA:
@@ -666,11 +666,11 @@ class Interactive:
 		
 		if data[0] == MSR605X.SB_RW_OK:
 			print(" OK!")
-			print(" *  Track 1: " + data[1].decode())
-			print(" *  Track 2: " + data[2].decode())
-			print(" *  Track 3: " + data[3].decode())
+			print(" *  Track 1: " + data[1])
+			print(" *  Track 2: " + data[2])
+			print(" *  Track 3: " + data[3])
 		else:
-			print(" ERROR!", file = sys.stderr)
+			print(" ERROR!")
 		
 		return
 		
@@ -678,7 +678,25 @@ class Interactive:
 	# TODO...
 	
 	# ISO 7811 mode card copy method
-	# TODO...
+	def copyISO(self):
+		print("Please swipe a source card...", end = "")
+		sys.stdout.flush()
+		data = self.MSR.read()
+		
+		if data[0] == MSR605X.SB_RW_OK:
+			print(" OK!")
+			print("Please swipe a target card...", end = "")
+			sys.stdout.flush()
+			if self.MSR.write(data[1], data[2], data[3]):
+				print(" OK!")
+				print(" *  ISO card copy finished successfully!")
+			else:
+				print(" ERROR!")
+			
+		else:
+			print(" ERROR!")
+			
+		return
 			
 	# RAW mode read method
 	def readRAW(self):
@@ -692,7 +710,7 @@ class Interactive:
 			print(" *  Track 2: " + self.bytesToHex(data[2]))
 			print(" *  Track 3: " + self.bytesToHex(data[3]))
 		else:
-			print(" ERROR!", file = sys.stderr)
+			print(" ERROR!")
 		
 		return
 		
@@ -700,7 +718,25 @@ class Interactive:
 	# TODO...
 	
 	# RAW mode card copy method
-	# TODO...
+	def copyRAW(self):
+		print("Please swipe a source card...", end = "")
+		sys.stdout.flush()
+		data = self.MSR.readRawData()
+		
+		if data[0] == MSR605X.SB_RW_OK:
+			print(" OK!")
+			print("Please swipe a target card...", end = "")
+			sys.stdout.flush()
+			if self.MSR.writeRawData(data[1], data[2], data[3]):
+				print(" OK!")
+				print(" *  RAW card copy finished successfully!")
+			else:
+				print(" ERROR!")
+			
+		else:
+			print(" ERROR!")
+			
+		return
 			
 	# Bits per character set method
 	def setBPC(self, track1, track2, track3):
