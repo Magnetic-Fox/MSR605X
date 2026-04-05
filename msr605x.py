@@ -600,6 +600,11 @@ class MSR605X:
 
 # Command Line Utility class
 class Interactive:
+	# Constants
+	ISO1_ALPHABET = " #$%()-./0123456789?ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^"
+	ISO2_ALPHABET = "0123456789;=?"
+	ISO3_ALPHABET = "0123456789;=?"
+	
 	# Constructor
 	def __init__(self, vid = 0x0801, pid = 0x0003, rid = 0xFF):
 		self.MSR = MSR605X(vid, pid, rid.to_bytes())
@@ -608,6 +613,13 @@ class Interactive:
 	# Destructor
 	def __del__(self):
 		self.MSR.close()
+	
+	# Check if string is valid
+	def isValid(self, alphabet, string):
+		for char in string:
+			if not char in alphabet:
+				return False
+		return True
 		
 	# Byte to hex conversion method
 	def toHex(self, byte):
@@ -676,19 +688,19 @@ class Interactive:
 		status, data1, data2, data3 = self.MSR.read()
 		
 		if (data1 == ""):
-			data1 = "(no data)"
+			data1 = "<no data>"
 		elif (data1 == None):
-			data1 = "(read error)"
+			data1 = "<read error>"
 			
 		if (data2 == ""):
-			data2 = "(no data)"
+			data2 = "<no data>"
 		elif (data2 == None):
-			data2 = "(read error)"
+			data2 = "<read error>"
 			
 		if (data3 == ""):
-			data3 = "(no data)"
+			data3 = "<no data>"
 		elif (data3 == None):
-			data3 = "(read error)"
+			data3 = "<read error>"
 		
 		if status == MSR605X.SB_RW_OK:
 			print(" OK!")
@@ -701,7 +713,53 @@ class Interactive:
 		return
 		
 	# ISO 7811 mode write method
-	# TODO...
+	def writeISO(self, track1, track2, track3):
+		print("ISO write preparation...")
+		
+		print(" *  Track 1 data check...", end = "")
+		try:
+			if (track1Error := not self.isValid(self.ISO1_ALPHABET, track1)):
+				print(" ERROR!")
+			else:
+				print(" OK!")
+		except:
+			print(" ERROR!")
+			track1Error = True
+			
+		print(" *  Track 2 data check...", end = "")
+		try:
+			if (track2Error := not self.isValid(self.ISO2_ALPHABET, track2)):
+				print(" ERROR!")
+			else:
+				print(" OK!")
+		except:
+			print(" ERROR!")
+			track2Error = True
+			
+		print(" *  Track 3 data check...", end = "")
+		try:
+			if (track3Error := not self.isValid(self.ISO3_ALPHABET, track3)):
+				print(" ERROR!")
+			else:
+				print(" OK!")
+		except:
+			print(" ERROR!")
+			track3Error = True
+		
+		if (track1Error or track2Error or track3Error) == False:
+			print("ISO write, please swipe a card...", end = "")
+			sys.stdout.flush()
+			if (len(track1) > 0) or (len(track2) > 0) or (len(track3) > 0):
+				if self.MSR.write(track1, track2, track3):
+					print(" OK!")
+				else:
+					print(" ERROR!")
+			else:
+				print(" NOTHING TO WRITE!")
+		else:
+			print("ISO write stopped, wrong input data!")
+		
+		return
 	
 	# ISO 7811 mode card copy method
 	def copyISO(self):
@@ -731,23 +789,23 @@ class Interactive:
 		status, data1, data2, data3 = self.MSR.readRawData()
 		
 		if (data1 == b""):
-			data1 = "(no data)"
+			data1 = "<no data>"
 		elif (data1 == None):
-			data1 = "(read error)"
+			data1 = "<read error>"
 		else:
 			data1 = self.bytesToHex(data1)
 			
 		if (data2 == b""):
-			data2 = "(no data)"
+			data2 = "<no data>"
 		elif (data2 == None):
-			data2 = "(read error)"
+			data2 = "<read error>"
 		else:
 			data2 = self.bytesToHex(data2)
 			
 		if (data3 == b""):
-			data3 = "(no data)"
+			data3 = "<no data>"
 		elif (data3 == None):
-			data3 = "(read error)"
+			data3 = "<read error>"
 		else:
 			data3 = self.bytesToHex(data3)
 		
