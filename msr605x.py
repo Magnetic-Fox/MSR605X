@@ -660,15 +660,30 @@ class Interactive:
 	
 	# ISO 7811 mode read method
 	def readISO(self):
-		print("Please swipe a card...", end = "")
+		print("ISO read, please swipe a card...", end = "")
 		sys.stdout.flush()
-		data = self.MSR.read()
+		status, data1, data2, data3 = self.MSR.read()
 		
-		if data[0] == MSR605X.SB_RW_OK:
+		if (data1 == ""):
+			data1 = "(no data)"
+		elif (data1 == None):
+			data1 = "(read error)"
+			
+		if (data2 == ""):
+			data2 = "(no data)"
+		elif (data2 == None):
+			data2 = "(read error)"
+			
+		if (data3 == ""):
+			data3 = "(no data)"
+		elif (data3 == None):
+			data3 = "(read error)"
+		
+		if status == MSR605X.SB_RW_OK:
 			print(" OK!")
-			print(" *  Track 1: " + data[1])
-			print(" *  Track 2: " + data[2])
-			print(" *  Track 3: " + data[3])
+			print(" *  Track 1: " + data1)
+			print(" *  Track 2: " + data2)
+			print(" *  Track 3: " + data3)
 		else:
 			print(" ERROR!")
 		
@@ -679,13 +694,13 @@ class Interactive:
 	
 	# ISO 7811 mode card copy method
 	def copyISO(self):
-		print("Please swipe a source card...", end = "")
+		print("ISO copy, please swipe a source card...", end = "")
 		sys.stdout.flush()
 		data = self.MSR.read()
 		
 		if data[0] == MSR605X.SB_RW_OK:
 			print(" OK!")
-			print("Please swipe a target card...", end = "")
+			print("ISO copy, please swipe a target card...", end = "")
 			sys.stdout.flush()
 			if self.MSR.write(data[1], data[2], data[3]):
 				print(" OK!")
@@ -700,15 +715,36 @@ class Interactive:
 			
 	# RAW mode read method
 	def readRAW(self):
-		print("Please swipe a card...", end = "")
+		print("RAW read, please swipe a card...", end = "")
 		sys.stdout.flush()
-		data = self.MSR.readRawData()		
+		status, data1, data2, data3 = self.MSR.readRawData()
 		
-		if data[0] == MSR605X.SB_RW_OK:
+		if (data1 == b""):
+			data1 = "(no data)"
+		elif (data1 == None):
+			data1 = "(read error)"
+		else:
+			data1 = self.bytesToHex(data1)
+			
+		if (data2 == b""):
+			data2 = "(no data)"
+		elif (data2 == None):
+			data2 = "(read error)"
+		else:
+			data2 = self.bytesToHex(data2)
+			
+		if (data3 == b""):
+			data3 = "(no data)"
+		elif (data3 == None):
+			data3 = "(read error)"
+		else:
+			data3 = self.bytesToHex(data3)
+		
+		if status == MSR605X.SB_RW_OK:
 			print(" OK!")
-			print(" *  Track 1: " + self.bytesToHex(data[1]))
-			print(" *  Track 2: " + self.bytesToHex(data[2]))
-			print(" *  Track 3: " + self.bytesToHex(data[3]))
+			print(" *  Track 1: " + data1)
+			print(" *  Track 2: " + data2)
+			print(" *  Track 3: " + data3)
 		else:
 			print(" ERROR!")
 		
@@ -719,13 +755,13 @@ class Interactive:
 	
 	# RAW mode card copy method
 	def copyRAW(self):
-		print("Please swipe a source card...", end = "")
+		print("RAW copy, please swipe a source card...", end = "")
 		sys.stdout.flush()
 		data = self.MSR.readRawData()
 		
 		if data[0] == MSR605X.SB_RW_OK:
 			print(" OK!")
-			print("Please swipe a target card...", end = "")
+			print("RAW copy, please swipe a target card...", end = "")
 			sys.stdout.flush()
 			if self.MSR.writeRawData(data[1], data[2], data[3]):
 				print(" OK!")
@@ -855,7 +891,37 @@ class Interactive:
 		return
 	
 	# Track erasing method
-	# TODO...
+	def eraseCard(self, track1, track2, track3):
+		print("Card erase, please swipe a card...", end = "")
+		sys.stdout.flush()
+		
+		if (track1 == False) and (track2 == False) and (track3 == False):
+			print(" NOTHING ERASED!")
+			
+		else:
+			if self.MSR.eraseCard(track1, track2, track3):
+				print(" OK! (", end = "")
+				
+				if track1:
+					print("track 1", end = "")
+					
+				if (track1 and track2) or (track1 and track3):
+					print(", ", end = "")
+					
+				if track2:
+					print("track 2", end = "")
+					
+				if (track2 and track3):
+					print(", ", end = "")
+					
+				if track3:
+					print("track 3", end = "")
+					
+				print(")")
+			else:
+				print(" ERROR!")
+		
+		return
 	
 	# Device model get method
 	def deviceModel(self):
