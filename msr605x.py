@@ -762,7 +762,53 @@ class Interactive:
 		return
 		
 	# RAW mode write method
-	# TODO...
+	def writeRAW(self, track1, track2, track3):
+		print("RAW write preparation...")
+		
+		print(" *  Track 1 data conversion...", end = "")
+		try:
+			track1Data = self.hexStringToBytes(track1)
+			track1Error = False
+			print(" OK!")
+		except:
+			track1Data = b""
+			track1Error = True
+			print(" ERROR!")
+			
+		print(" *  Track 2 data conversion...", end = "")
+		try:
+			track2Data = self.hexStringToBytes(track2)
+			track2Error = False
+			print(" OK!")
+		except:
+			track2Data = b""
+			track2Error = True
+			print(" ERROR!")
+		
+		print(" *  Track 3 data conversion...", end = "")
+		try:
+			track3Data = self.hexStringToBytes(track3)
+			track3Error = False
+			print(" OK!")
+		except:
+			track3Data = b""
+			track3Error = True
+			print(" ERROR!")
+		
+		if (track1Error or track2Error or track3Error) == False:
+			print("RAW write, please swipe a card...", end = "")
+			sys.stdout.flush()
+			if (len(track1Data) > 0) or (len(track2Data) > 0) or (len(track3Data) > 0):
+				if self.MSR.writeRawData(track1Data, track2Data, track3Data):
+					print(" OK!")
+				else:
+					print(" ERROR!")
+			else:
+				print(" NOTHING TO WRITE!")
+		else:
+			print("RAW write stopped, wrong input data!")
+		
+		return
 	
 	# RAW mode card copy method
 	def copyRAW(self):
