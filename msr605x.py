@@ -623,7 +623,18 @@ class Interactive:
 		output = ""
 		
 		for byte in byteString:
-			output += self.toHex(byte)
+			output += self.toHex(byte) + " "
+			
+		return output[:-1]
+	
+	# String of hex values to bytes variable converter method
+	def hexStringToBytes(self, inputString):
+		hexByteStrings = inputString.upper().split(" ")
+		output = b""
+		
+		for hexByteString in hexByteStrings:
+			if hexByteString != "":
+				output += int(hexByteString, 16).to_bytes()
 			
 		return output
 	
