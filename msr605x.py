@@ -1240,194 +1240,267 @@ class Interactive:
 					
 					# Only command
 					if len(task) == 1:
+						# Card read - ISO mode
 						if taskCode == "r":
 							continue
+						# Card read - RAW mode
 						elif taskCode == "rb":
 							continue
+						# Card copy - ISO mode
 						elif taskCode == "c":
 							continue
+						# Card copy - RAW mode
 						elif taskCode == "cb":
 							continue
+						# Set HiCo
 						elif taskCode == "h":
 							continue
+						# Set LoCo
 						elif taskCode == "l":
 							continue
+						# Get device model
 						elif taskCode == "m":
 							continue
+						# Get device firmware
 						elif taskCode == "f":
 							continue
+						# Turn off all LEDs
 						elif taskCode == "i0":
 							continue
+						# Turn on green LED
 						elif taskCode == "i1":
 							continue
+						# Turn on green and yellow LED
 						elif taskCode == "i2":
 							continue
+						# Turn on red LED
 						elif taskCode == "i3":
 							continue
+						# Turn on all LEDs
 						elif taskCode == "i4":
 							continue
+						# Data only output
 						elif taskCode == "p":
 							continue
+						# Communication test
 						elif taskCode == "tc":
 							continue
+						# Get leading zeroes setting
 						elif taskCode == "zs":
 							continue
+						# Get coercivity setting
 						elif taskCode == "gc":
 							continue
+						# Sensor test (probably unsupported)
 						elif taskCode == "ts":
 							continue
+						# RAM test (probably unsupported)
 						elif taskCode == "tr":
 							continue
+						# Soft reset
 						elif taskCode == "sr":
 							continue
+						# Hard reset
 						elif taskCode == "hr":
 							continue
 						else:
+							# Unknown command
 							return False
 							
 					# Command + 1 parameter
 					elif len(task) == 2:
+						# Card write - ISO mode (track 1 only)
 						if taskCode == "w":
 							if (len(task[1]) > 0) and (self.isValid(self.ISO1_ALPHABET, task[1])):
 								continue
 							else:
+								# Wrong input
 								return False
+						# Card write - RAW mode (track 1 only)
 						elif taskCode == "wb":
 							if (len(task[1]) > 0) and (self.hexStringToBytes(task[1]) != None):
 								continue
 							else:
+								# Wrong input
 								return False
+						# Set BPI (track 1 only)
 						elif taskCode == "bi":
 							if (task[1] == "210") or (task[1] == "75"):
 								continue
 							else:
+								# Wrong input
 								return False
+						# Card erase (one chosen track only)
 						elif taskCode == "e":
 							if (task[1] == "1") or (task[1] == "2") or (task[1] == "3"):
 								continue
 							else:
+								# Wrong input
 								return False
+						# Set vendor ID of the device address
 						elif taskCode == "vid":
 							if (self.getIntFromString(task[1]) >= 0) and (self.getIntFromString(task[1]) <= 65535):
 								continue
 							else:
+								# Wrong input
 								return False
+						# Set product ID of the device address
 						elif taskCode == "pid":
 							if (self.getIntFromString(task[1]) >= 0) and (self.getIntFromString(task[1]) <= 65535):
 								continue
 							else:
+								# Wrong input
 								return False
+						# Set report ID used to communicate with the device
 						elif taskCode == "rid":
 							if (self.getIntFromString(task[1]) >= 0) and (self.getIntFromString(task[1]) <= 255):
 								continue
 							else:
+								# Wrong input
 								return False
 						else:
+							# Unknown command
 							return False
 					
 					# Command + 2 parameters
 					elif len(task) == 3:
+						# Card write - ISO mode (track 1 and 2 only)
 						if taskCode == "w":
 							if self.isValid(self.ISO1_ALPHABET, task[1]):
 								if (len(task[2]) > 0) and (self.isValid(self.ISO2_ALPHABET, task[2])):
 									continue
 								else:
+									# Wrong input
 									return False
 							else:
+								# Wrong input
 								return False
+						# Card write - RAW mode (track 1 and 2 only)
 						elif taskCode == "wb":
 							if self.hexStringToBytes(task[1]) != None:
 								if (len(task[2]) > 0) and (self.hexStringToBytes(task[2]) != None):
 									continue
 								else:
+									# Wrong input
 									return False
 							else:
+								# Wrong input
 								return False
+						# Set BPI (track 1 and 2 only)
 						elif taskCode == "bi":
 							if (task[1] == "-") or (task[1] == "210") or (task[1] == "75"):
 								if (task[2] == "210") or (task[2] == "75"):
 									continue
 								else:
+									# Wrong input
 									return False
 							else:
+								# Wrong input
 								return False
+						# Set leading zeroes
 						elif taskCode == "z":
 							if (int(task[1]) >= 0) and (int(task[1]) <= 255):
 								if (int(task[2]) >= 0) and (int(task[2]) <= 255):
 									continue
 								else:
+									# Wrong input
 									return False
 							else:
+								# Wrong input
 								return False
+						# Card erase (two chosen tracks only)
 						elif taskCode == "e":
 							if (task[1] == "1") or (task[1] == "2") or (task[1] == "3"):
 								if (task[2] == "1") or (task[2] == "2") or (task[2] == "3"):
 									if (task[1] == task[2]):
+										# Wrong input (tracks doubled)
 										return False
 									else:
 										continue
 								else:
+									# Wrong input
 									return False
 							else:
+								# Wrong input
 								return False
 						else:
+							# Unknown command
 							return False
 					
 					# Command + 3 parameters
 					elif len(task) == 4:
+						# Card write - ISO mode (all tracks)
 						if taskCode == "w":
 							if self.isValid(self.ISO1_ALPHABET, task[1]):
 								if self.isValid(self.ISO2_ALPHABET, task[2]):
 									if (len(task[3]) > 0) and (self.isValid(self.ISO3_ALPHABET, task[3])):
 										continue
 									else:
+										# Wrong input
 										return False
 								else:
+									# Wrong input
 									return False
 							else:
+								# Wrong input
 								return False
+						# Card write - RAW mode (all tracks)
 						elif taskCode == "wb":
 							if self.hexStringToBytes(task[1]) != None:
 								if self.hexStringToBytes(task[2]) != None:
 									if (len(task[3]) > 0) and (self.hexStringToBytes(task[3]) != None):
 										continue
 									else:
+										# Wrong input
 										return False
 								else:
+									# Wrong input
 									return False
 							else:
+								# Wrong input
 								return False
+						# Set BPC
 						elif taskCode == "bc":
 							if (int(task[1]) >= 5) and (int(task[1]) <= 8) and (int(task[2]) >= 5) and (int(task[2]) <= 8) and (int(task[3]) >= 5) and (int(task[3]) <= 8):
 								continue
 							else:
 								return False
+						# Set BPI (all tracks)
 						elif taskCode == "bi":
 							if (task[1] == "-") or (task[1] == "210") or (task[1] == "75"):
 								if (task[2] == "-") or (task[2] == "210") or (task[2] == "75"):
 									if (task[3] == "210") or (task[3] == "75"):
 										continue
 									else:
+										# Wrong input
 										return False
 								else:
+									# Wrong input
 									return False
 							else:
+								# Wrong input
 								return False
+						# Card erase (all tracks)
 						elif taskCode == "e":
 							if (task[1] == "1") or (task[1] == "2") or (task[1] == "3"):
 								if (task[2] == "1") or (task[2] == "2") or (task[2] == "3"):
 									if (task[3] == "1") or (task[3] == "2") or (task[3] == "3"):
 										if (task[1] == task[2]) or (task[1] == task[3]) or (task[2] == task[3]):
+											# Wrong input (tracks doubled)
 											return False
 										else:
 											continue
 									else:
+										# Wrong input
 										return False
 								else:
+									# Wrong input
 									return False
 							else:
+								# Wrong input
 								return False
 						else:
+							# Unknown command
 							return False
 					
 					# Command + too much parameters
