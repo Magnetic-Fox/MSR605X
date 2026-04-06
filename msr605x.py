@@ -701,11 +701,13 @@ class Interactive:
 		hexByteStrings = inputString.upper().split(" ")
 		output = b""
 		
-		for hexByteString in hexByteStrings:
-			if hexByteString != "":
-				output += int(hexByteString, 16).to_bytes()
-			
-		return output
+		try:
+			for hexByteString in hexByteStrings:
+				if hexByteString != "":
+					output += int(hexByteString, 16).to_bytes()
+			return output
+		except:
+			return None
 	
 	# Header display method
 	def headerDisplay(self):
@@ -716,26 +718,26 @@ class Interactive:
 	
 	# Help display method
 	def displayHelp(self):
-		print("ISO 7811 mode:                             RAW mode:")
-		print("  -r                - read card              -rb                - read card")
-		print('  -w "T1" "T2" "T3" - write card             -wb "T1" "T2" "T3" - write card')
-		print("  -c                - copy card              -cb                - RAW card copy")
+		print("ISO 7811 mode:                              RAW mode:")
+		print("  -r                 - read card              -rb                - read card")
+		print("  -w T1 [T2 [T3]]    - write card             -wb T1 [T2 [T3]]   - write card")
+		print("  -c                 - copy card              -cb                - copy card")
 		print("")
-		print("Bit settings:                              Coercivity:")
-		print("  -bc 7 5 5         - bits per character     -h                 - use Hi-Co")
-		print("  -bi 210 75 210    - bits per inch          -l                 - use Lo-Co")
+		print("Bit settings:                               Coercivity:")
+		print("  -bc 7 5 5          - bits per char (5-8)    -h                 - use Hi-Co")
+		print("  -bi 210 [75 [210]] - bits per inch          -l                 - use Lo-Co")
 		print("")
-		print("Leading zeroes:                            Other card operations:")
-		print("  -z 61 22          - set leading zeroes     -e 1 2 3           - erase tracks")
+		print("Leading zeroes:                             Other card operations:")
+		print("  -z 61 22           - set T1&3 T2 (0-255)    -e 1 [2 [3]]       - erase tracks")
 		print("")
-		print("Miscellaneous:                             Device status:")
-		print("  -m                - device model           -tc               - comm. test")
-		print("  -f                - firmware version       -zs               - lead zeroes")
-		print("  -i<0,1,2,3>       - LED control            -gc               - coercivity")
-		print("  -ia               - all LED on             -ts               - sensor test")
-		print("  -vid 0x0801       - set vendor ID          -tr               - RAM test")
-		print("  -pid 0x0003       - set product ID         -sr               - soft reset")
-		print("  -rid 0xFF         - set report ID          -hr               - hard reset")
+		print("Miscellaneous:                              Device status:")
+		print("  -m                 - device model           -tc                - comm. test")
+		print("  -f                 - firmware version       -zs                - lead zeroes")
+		print("  -i<0-4>            - LED control (4: all)   -gc                - coercivity")
+		print("  -p                 - data only output       -ts                - sensor test")
+		print("  -vid 0x0801        - set vendor ID          -tr                - RAM test")
+		print("  -pid 0x0003        - set product ID         -sr                - soft reset")
+		print("  -rid 0xFF          - set report ID          -hr                - hard reset")
 		return
 	
 	# ISO 7811 mode read method
@@ -1215,7 +1217,21 @@ class Interactive:
 		self.MSR.hardReset()
 		return
 		
-	# Task list checker method
+	# Integer value extractor method
+	def getIntFromString(self, string):
+		try:
+			if "0x" in string:
+				return int(string, 16)
+			elif "0b" in string:
+				return int(string, 2)
+			elif "0o" in string:
+				return int(string, 8)
+			else:
+				return int(string)
+		except:
+			return -1
+		
+	# Task list checker method (I know it should be programmed better way...)
 	def checkTaskList(self, taskList):
 		try:
 			for task in taskList:
@@ -1248,7 +1264,9 @@ class Interactive:
 							continue
 						elif taskCode == "i3":
 							continue
-						elif taskCode == "ia":
+						elif taskCode == "i4":
+							continue
+						elif taskCode == "p":
 							continue
 						elif taskCode == "tc":
 							continue
@@ -1270,49 +1288,145 @@ class Interactive:
 					# Command + 1 parameter
 					elif len(task) == 2:
 						if taskCode == "w":
-							continue
+							if (len(task[1]) > 0) and (self.isValid(self.ISO1_ALPHABET, task[1])):
+								continue
+							else:
+								return False
 						elif taskCode == "wb":
-							continue
+							if (len(task[1]) > 0) and (self.hexStringToBytes(task[1]) != None):
+								continue
+							else:
+								return False
 						elif taskCode == "bi":
-							continue
+							if (task[1] == "210") or (task[1] == "75"):
+								continue
+							else:
+								return False
 						elif taskCode == "e":
-							continue
+							if (task[1] == "1") or (task[1] == "2") or (task[1] == "3"):
+								continue
+							else:
+								return False
 						elif taskCode == "vid":
-							continue
+							if (self.getIntFromString(task[1]) >= 0) and (self.getIntFromString(task[1]) <= 65535):
+								continue
+							else:
+								return False
 						elif taskCode == "pid":
-							continue
+							if (self.getIntFromString(task[1]) >= 0) and (self.getIntFromString(task[1]) <= 65535):
+								continue
+							else:
+								return False
 						elif taskCode == "rid":
-							continue
+							if (self.getIntFromString(task[1]) >= 0) and (self.getIntFromString(task[1]) <= 255):
+								continue
+							else:
+								return False
 						else:
 							return False
 					
 					# Command + 2 parameters
 					elif len(task) == 3:
 						if taskCode == "w":
-							continue
+							if self.isValid(self.ISO1_ALPHABET, task[1]):
+								if (len(task[2]) > 0) and (self.isValid(self.ISO2_ALPHABET, task[2])):
+									continue
+								else:
+									return False
+							else:
+								return False
 						elif taskCode == "wb":
-							continue
+							if self.hexStringToBytes(task[1]) != None:
+								if (len(task[2]) > 0) and (self.hexStringToBytes(task[2]) != None):
+									continue
+								else:
+									return False
+							else:
+								return False
 						elif taskCode == "bi":
-							continue
+							if (task[1] == "-") or (task[1] == "210") or (task[1] == "75"):
+								if (task[2] == "210") or (task[2] == "75"):
+									continue
+								else:
+									return False
+							else:
+								return False
 						elif taskCode == "z":
-							continue
+							if (int(task[1]) >= 0) and (int(task[1]) <= 255):
+								if (int(task[2]) >= 0) and (int(task[2]) <= 255):
+									continue
+								else:
+									return False
+							else:
+								return False
 						elif taskCode == "e":
-							continue
+							if (task[1] == "1") or (task[1] == "2") or (task[1] == "3"):
+								if (task[2] == "1") or (task[2] == "2") or (task[2] == "3"):
+									if (task[1] == task[2]):
+										return False
+									else:
+										continue
+								else:
+									return False
+							else:
+								return False
 						else:
 							return False
 					
 					# Command + 3 parameters
 					elif len(task) == 4:
 						if taskCode == "w":
-							continue
+							if self.isValid(self.ISO1_ALPHABET, task[1]):
+								if self.isValid(self.ISO2_ALPHABET, task[2]):
+									if (len(task[3]) > 0) and (self.isValid(self.ISO3_ALPHABET, task[3])):
+										continue
+									else:
+										return False
+								else:
+									return False
+							else:
+								return False
 						elif taskCode == "wb":
-							continue
+							if self.hexStringToBytes(task[1]) != None:
+								if self.hexStringToBytes(task[2]) != None:
+									if (len(task[3]) > 0) and (self.hexStringToBytes(task[3]) != None):
+										continue
+									else:
+										return False
+								else:
+									return False
+							else:
+								return False
 						elif taskCode == "bc":
-							continue
+							if (int(task[1]) >= 5) and (int(task[1]) <= 8) and (int(task[2]) >= 5) and (int(task[2]) <= 8) and (int(task[3]) >= 5) and (int(task[3]) <= 8):
+								continue
+							else:
+								return False
 						elif taskCode == "bi":
-							continue
+							if (task[1] == "-") or (task[1] == "210") or (task[1] == "75"):
+								if (task[2] == "-") or (task[2] == "210") or (task[2] == "75"):
+									if (task[3] == "210") or (task[3] == "75"):
+										continue
+									else:
+										return False
+								else:
+									return False
+							else:
+								return False
 						elif taskCode == "e":
-							continue
+							if (task[1] == "1") or (task[1] == "2") or (task[1] == "3"):
+								if (task[2] == "1") or (task[2] == "2") or (task[2] == "3"):
+									if (task[3] == "1") or (task[3] == "2") or (task[3] == "3"):
+										if (task[1] == task[2]) or (task[1] == task[3]) or (task[2] == task[3]):
+											return False
+										else:
+											continue
+									else:
+										return False
+								else:
+									return False
+							else:
+								return False
 						else:
 							return False
 					
