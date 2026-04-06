@@ -10,6 +10,11 @@
 import sys
 import hid
 
+
+# -------------------------------------------------------------------- #
+#  MSR605X driver-like class                                           #
+# -------------------------------------------------------------------- #
+
 # Main device class
 class MSR605X:
 	# CONSTANTS
@@ -602,6 +607,10 @@ class MSR605X:
 		else:
 			return "?"
 
+
+# -------------------------------------------------------------------- #
+#  Text User Interface class                                           #
+# -------------------------------------------------------------------- #
 
 # Command Line Utility class
 class Interactive:
@@ -1931,7 +1940,10 @@ class Interactive:
 		return
 
 
-# Autorun section
+# -------------------------------------------------------------------- #
+#  Autorun section                                                     #
+# -------------------------------------------------------------------- #
+
 if __name__ == "__main__":
 	cli = Interactive()
 	cli.interpreter()
