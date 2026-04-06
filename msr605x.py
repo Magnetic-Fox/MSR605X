@@ -621,6 +621,7 @@ class Interactive:
 		self.vid = vendorID
 		self.pid = productID
 		self.rid = reportID
+		self.dataOnlyMode = False
 		self.deviceOpened = False
 		self.MSR = MSR605X(self.vid, self.pid, self.rid.to_bytes())
 		return
@@ -682,7 +683,7 @@ class Interactive:
 	def toHex(self, byte):
 		hexVal = hex(byte)[2:].upper()
 		
-		if byte > 16:
+		if byte >= 16:
 			return hexVal
 		else:
 			return "0" + hexVal
@@ -718,10 +719,10 @@ class Interactive:
 	
 	# Help display method
 	def displayHelp(self):
-		print("ISO 7811 mode:                              RAW mode:")
+		print("ISO 7811 mode:                              RAW mode (* - sets 8 BPC):")
 		print("  -r                 - read card              -rb                - read card")
-		print("  -w T1 [T2 [T3]]    - write card             -wb T1 [T2 [T3]]   - write card")
-		print("  -c                 - copy card              -cb                - copy card")
+		print("  -w T1 [T2 [T3]]    - write card             -wb T1 [T2 [T3]]   - write card *")
+		print("  -c                 - copy card              -cb                - copy card  *")
 		print("")
 		print("Bit settings:                               Coercivity:")
 		print("  -bc 7 5 5          - bits per char (5-8)    -h                 - use Hi-Co")
@@ -880,6 +881,9 @@ class Interactive:
 		
 	# RAW mode write method
 	def writeRAW(self, track1, track2, track3):
+		# Otherwise, MSR605X behaves buggy...
+		self.setBPC(8, 8, 8)
+		
 		print("RAW write preparation...")
 		
 		print(" *  Track 1 data conversion...", end = "")
@@ -929,6 +933,9 @@ class Interactive:
 	
 	# RAW mode card copy method
 	def copyRAW(self):
+		# Otherwise, MSR605X behaves buggy...
+		self.setBPC(8, 8, 8)
+		
 		print("RAW copy, please swipe a source card...", end = "")
 		sys.stdout.flush()
 		data = self.MSR.readRawData()
@@ -1231,7 +1238,7 @@ class Interactive:
 		except:
 			return -1
 		
-	# Task list checker method (I know it should be programmed better way...)
+	# Task list validator method (I know it should be programmed better way...)
 	def checkTaskList(self, taskList):
 		try:
 			for task in taskList:
@@ -1303,8 +1310,8 @@ class Interactive:
 						# Hard reset
 						elif taskCode == "hr":
 							continue
+						# Unknown command
 						else:
-							# Unknown command
 							return False
 							
 					# Command + 1 parameter
@@ -1358,8 +1365,8 @@ class Interactive:
 							else:
 								# Wrong input
 								return False
+						# Unknown command
 						else:
-							# Unknown command
 							return False
 					
 					# Command + 2 parameters
@@ -1423,8 +1430,8 @@ class Interactive:
 							else:
 								# Wrong input
 								return False
+						# Unknown command
 						else:
-							# Unknown command
 							return False
 					
 					# Command + 3 parameters
@@ -1499,8 +1506,8 @@ class Interactive:
 							else:
 								# Wrong input
 								return False
+						# Unknown command
 						else:
-							# Unknown command
 							return False
 					
 					# Command + too much parameters
@@ -1550,17 +1557,107 @@ class Interactive:
 			output = None
 			
 		return output
+	
+	# Is data only mode selected check method
+	def isDataOnlySelected(self, taskList):
+		try:
+			if self.taskList.index(["-p"]) > -1:
+				return True
+			else:
+				return False
+		except:
+			return False
 		
 	# Interpreter method
 	def interpreter(self):
-		self.headerDisplay()
 		if len(sys.argv) <= 1:
+			self.headerDisplay()
 			self.displayHelp()
 		else:
 			self.taskList = self.argumentExtractor(sys.argv[1:])
 			if self.checkTaskList(self.taskList):
-				print(self.taskList)
+				if self.isDataOnlySelected(self.taskList):
+					self.taskList.pop(self.taskList.index(["-p"]))
+					self.dataOnlyMode = True
+				else:
+					self.headerDisplay()
+					
+					self.open()
+				
+				for task in self.taskList:
+					taskCode = task[0][1:]
+					
+					try:
+						if taskCode == "r":
+							self.readISO()
+						elif taskCode == "w": # TODO
+							pass
+						elif taskCode == "c":
+							self.copyISO()
+						elif taskCode == "rb":
+							self.readRAW()
+						elif taskCode == "wb": # TODO
+							pass
+						elif taskCode == "cb":
+							self.copyRAW()
+						elif taskCode == "bc": # TODO
+							pass
+						elif taskCode == "bi": # TODO
+							pass
+						elif taskCode == "h":
+							self.setHiCo()
+						elif taskCode == "l":
+							self.setLoCo()
+						elif taskCode == "z": # TODO
+							pass
+						elif taskCode == "e": # TODO
+							pass
+						elif taskCode == "m":
+							self.deviceModel()
+						elif taskCode == "f":
+							self.firmwareVersion()
+						elif taskCode == "i0":
+							self.allLEDOff()
+						elif taskCode == "i1":
+							self.greenLED()
+						elif taskCode == "i2":
+							self.greenAndYellowLED()
+						elif taskCode == "i3":
+							self.redLED()
+						elif taskCode == "i4":
+							self.allLEDOn()
+						elif taskCode == "p": # TODO
+							pass
+						elif taskCode == "vid": # TODO
+							pass
+						elif taskCode == "pid": # TODO
+							pass
+						elif taskCode == "rid": # TODO
+							pass
+						elif taskCode == "tc":
+							self.communicationTest()
+						elif taskCode == "zs":
+							self.getLeadingZeroes()
+						elif taskCode == "gc":
+							self.getCoercivity()
+						elif taskCode == "ts":
+							self.sensorTest()
+						elif taskCode == "tr":
+							self.RAMTest()
+						elif taskCode == "sr":
+							self.softReset()
+						elif taskCode == "hr":
+							self.hardReset()
+						else:
+							print("UNKNOWN COMMAND!")
+						
+					except:
+						print("COMMAND FAILED!")
+				
+				self.close()
+					
 			else:
+				self.headerDisplay()
 				self.displayHelp()
 		return
 
@@ -1569,3 +1666,6 @@ class Interactive:
 if __name__ == "__main__":
 	cli = Interactive()
 	cli.interpreter()
+	#cli.open()
+	#cli.setHiCo()
+	#cli.eraseCard(True, True, True)
