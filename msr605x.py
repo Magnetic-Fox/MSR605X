@@ -1774,28 +1774,35 @@ class Interactive:
 				for task in self.taskList:
 					taskCode = task[0][1:]
 					try:
+						# VID, PID and RID changed in preprocessing
 						if (taskCode == "vid") or (taskCode == "pid") or (taskCode == "rid"):
+							# Vendor ID change command
 							if taskCode == "vid":
 								self.newDeviceSetting()
 								self.oldVID = self.vid
 								self.setVendorID(self.getIntFromString(task[1]))
+							# Product ID change command
 							elif taskCode == "pid":
 								self.newDeviceSetting()
 								self.oldPID = self.pid
 								self.setProductID(self.getIntFromString(task[1]))
+							# Report ID change command
 							elif taskCode == "rid":
 								self.oldRID = self.rid
 								self.setReportID(self.getIntFromString(task[1]).to_bytes())
 						else:
-							# Close and open the device on change (also on the first iteration)
+							# Close and open the device on address change (also on the first iteration)
 							if self.settingNewDevice:
 								self.newDeviceSetting(False)
 								self.close()
 								if not self.open():
+									# Stop program on open error
 									break
 							
+							# ISO mode card read command
 							if taskCode == "r":
 								self.readISO()
+							# ISO mode card write command
 							elif taskCode == "w":
 								if len(task) == 2:
 									self.writeISO(task[1], "", "")
@@ -1803,10 +1810,13 @@ class Interactive:
 									self.writeISO(task[1], task[2], "")
 								elif len(task) == 4:
 									self.writeISO(task[1], task[2], task[3])
+							# ISO mode card copy command
 							elif taskCode == "c":
 								self.copyISO()
+							# RAW mode card read command
 							elif taskCode == "rb":
 								self.readRAW()
+							# RAW mode card write command
 							elif taskCode == "wb":
 								if len(task) == 2:
 									self.writeRAW(task[1], "", "")
@@ -1814,11 +1824,15 @@ class Interactive:
 									self.writeRAW(task[1], task[2], "")
 								elif len(task) == 4:
 									self.writeRAW(task[1], task[2], task[3])
+							# RAW mode card copy command
 							elif taskCode == "cb":
 								self.copyRAW()
+							# Bits per character change command
 							elif taskCode == "bc":
 								self.setBPC(int(task[1]), int(task[2]), int(task[3]))
+							# Bits per inch change command
 							elif taskCode == "bi":
+								# Get settings from arguments
 								try:
 									track1BPI = int(task[1])
 								except:
@@ -1831,13 +1845,18 @@ class Interactive:
 									track3BPI = int(task[3])
 								except:
 									track3BPI = None
+								# Actual set
 								self.setBPI(track1BPI, track2BPI, track3BPI)
+							# Hi-Co mode set command
 							elif taskCode == "h":
 								self.setHiCo()
+							# Lo-Co mode set command
 							elif taskCode == "l":
 								self.setLoCo()
+							# Leading zeroes change command
 							elif taskCode == "z":
 								self.setLeadingZeroes(int(task[1]), int(task[2]))
+							# Card erase command
 							elif taskCode == "e":
 								eraseTrack1 = False
 								eraseTrack2 = False
@@ -1849,46 +1868,66 @@ class Interactive:
 								if (task[1] == "3") or ((len(task) > 2) and (task[2] == "3")) or ((len(task) > 3) and (task[3] == "3")):
 									eraseTrack3 = True
 								self.eraseCard(eraseTrack1, eraseTrack2, eraseTrack3)
+							# Device model gathering command
 							elif taskCode == "m":
 								self.deviceModel()
+							# Firmware version gathering command
 							elif taskCode == "f":
 								self.firmwareVersion()
+							# All LEDs off command
 							elif taskCode == "i0":
 								self.allLEDOff()
+							# Green LED on command
 							elif taskCode == "i1":
 								self.greenLED()
+							# Green and yellow LEDs on command
 							elif taskCode == "i2":
 								self.greenAndYellowLED()
+							# Red LED on command
 							elif taskCode == "i3":
 								self.redLED()
+							# All LEDs on command
 							elif taskCode == "i4":
 								self.allLEDOn()
+							# Silent mode on command
 							elif taskCode == "p":
 								self.dataOnlyMode = True
+							# Communication test command
 							elif taskCode == "tc":
 								self.communicationTest()
+							# Leading zeroes setting gathering command
 							elif taskCode == "zs":
 								self.getLeadingZeroes()
+							# Coercivity setting gathering command
 							elif taskCode == "gc":
 								self.getCoercivity()
+							# Sensor test command (PROBABLY UNSUPPORTED!)
 							elif taskCode == "ts":
 								self.sensorTest()
+							# RAM test command (PROBABLY UNSUPPORTED!)
 							elif taskCode == "tr":
 								self.RAMTest()
+							# Soft reset command
 							elif taskCode == "sr":
 								self.softReset()
+							# Hard reset command
 							elif taskCode == "hr":
 								self.hardReset()
+							# Unknown command
 							else:
 								if not self.dataOnlyMode:
 									print("UNKNOWN COMMAND!")
 					except:
+						# Command failed
 						if not self.dataOnlyMode:
 							print("COMMAND FAILED!")
+				# Close device at the end (if needed)
 				self.close()
+			# Arguments error
 			else:
 				self.headerDisplay()
 				self.displayHelp()
+		# Interpreter end
 		return
 
 
