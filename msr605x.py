@@ -2,7 +2,7 @@
 
 # Simple MSR605X driver
 #
-# by Magnetic-Fox, 02-05.04.2026
+# by Magnetic-Fox, 02-06.04.2026
 #
 # (C)2026 Bartłomiej "Magnetic-Fox" Węgrzyn
 
@@ -114,6 +114,11 @@ class MSR605X:
 	def setDevice(self, vendorID, productID):
 		self.vendorID = vendorID
 		self.productID = productID
+		return
+		
+	# Report ID set method
+	def setReportID(self, reportID):
+		self.reportID = reportID
 		return
 		
 	# Timeout method set method
@@ -600,21 +605,41 @@ class MSR605X:
 
 # Command Line Utility class
 class Interactive:
-	# Constants
-	ISO1_ALPHABET = " #$%()-./0123456789?ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^"
-	ISO2_ALPHABET = "0123456789;=?"
-	ISO3_ALPHABET = "0123456789;=?"
+	# CONSTANTS
+	# % and ? excluded as they can't be used for data (start and end sentinel)
+	ISO1_ALPHABET = " #$()-./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^"
 	
+	# ; and ? excluded as they can't be used for data (start and end sentinel)
+	ISO2_ALPHABET = "0123456789="
+	
+	# ; and ? excluded as they can't be used for data (start and end sentinel)
+	ISO3_ALPHABET = "0123456789="
+	
+	# METHODS
 	# Constructor
-	def __init__(self, vid = 0x0801, pid = 0x0003, rid = 0xFF):
-		self.vid = vid
-		self.pid = pid
-		self.rid = rid
+	def __init__(self, vendorID = 0x0801, productID = 0x0003, reportID = 0xFF):
+		self.vid = vendorID
+		self.pid = productID
+		self.rid = reportID
+		self.deviceOpened = False
 		self.MSR = MSR605X(self.vid, self.pid, self.rid.to_bytes())
+		return
 
 	# Destructor
 	def __del__(self):
 		self.close()
+		return
+		
+	# Device address setter method
+	def setDevice(self, vendorID, productID):
+		self.vid = vendorID
+		self.pid = productID
+		return
+		
+	# Report ID setter method
+	def setReportID(self, reportID):
+		self.rid = reportID
+		return
 		
 	# Open wrapper
 	def open(self):
@@ -623,16 +648,28 @@ class Interactive:
 		
 		try:
 			self.MSR.open()
+			self.deviceOpened = True
 			print(" OK!")
 			return True
 		except:
 			print(" ERROR!")
+			self.deviceOpened = False
 			return False
 		
 	# Close wrapper
 	def close(self):
-		self.MSR.close()
-		return
+		if self.deviceOpened:
+			print("Closing device at " + "{:04x}".format(self.vid).upper() + ":" + "{:04x}".format(self.pid).upper() + " with report ID = " + "{:02x}".format(self.rid).upper() + "...", end = "")
+			sys.stdout.flush()
+			
+			try:
+				self.MSR.close()
+				self.deviceOpened = False
+				print(" OK!")
+				return True
+			except:
+				print(" ERROR!")
+				return False
 	
 	# Check if string is valid
 	def isValid(self, alphabet, string):
@@ -691,14 +728,14 @@ class Interactive:
 		print("Leading zeroes:                            Other card operations:")
 		print("  -z 61 22          - set leading zeroes     -e 1 2 3           - erase tracks")
 		print("")
-		print("Device information:                        Device status:")
+		print("Miscellaneous:                             Device status:")
 		print("  -m                - device model           -tc               - comm. test")
 		print("  -f                - firmware version       -zs               - lead zeroes")
-		print("                                             -gc               - coercivity")
-		print("Miscellaneous:                               -ts               - sensor test")
-		print("  -i0               - all LED off            -tr               - RAM test")
-		print("  -i<1,2,3>         - LED on (1, 2 or 3)     -sr               - soft reset")
-		print("  -ia               - all LED on             -hr               - hard reset")
+		print("  -i<0,1,2,3>       - LED control            -gc               - coercivity")
+		print("  -ia               - all LED on             -ts               - sensor test")
+		print("  -vid 0x0801       - set vendor ID          -tr               - RAM test")
+		print("  -pid 0x0003       - set product ID         -sr               - soft reset")
+		print("  -rid 0xFF         - set report ID          -hr               - hard reset")
 		return
 	
 	# ISO 7811 mode read method
@@ -1178,13 +1215,166 @@ class Interactive:
 		self.MSR.hardReset()
 		return
 		
+	# Task list checker method
+	def checkTaskList(self, taskList):
+		try:
+			for task in taskList:
+				if (task[0].islower()) and (task[0][0] == "-"):
+					taskCode = task[0][1:]
+					
+					# Only command
+					if len(task) == 1:
+						if taskCode == "r":
+							continue
+						elif taskCode == "rb":
+							continue
+						elif taskCode == "c":
+							continue
+						elif taskCode == "cb":
+							continue
+						elif taskCode == "h":
+							continue
+						elif taskCode == "l":
+							continue
+						elif taskCode == "m":
+							continue
+						elif taskCode == "f":
+							continue
+						elif taskCode == "i0":
+							continue
+						elif taskCode == "i1":
+							continue
+						elif taskCode == "i2":
+							continue
+						elif taskCode == "i3":
+							continue
+						elif taskCode == "ia":
+							continue
+						elif taskCode == "tc":
+							continue
+						elif taskCode == "zs":
+							continue
+						elif taskCode == "gc":
+							continue
+						elif taskCode == "ts":
+							continue
+						elif taskCode == "tr":
+							continue
+						elif taskCode == "sr":
+							continue
+						elif taskCode == "hr":
+							continue
+						else:
+							return False
+							
+					# Command + 1 parameter
+					elif len(task) == 2:
+						if taskCode == "w":
+							continue
+						elif taskCode == "wb":
+							continue
+						elif taskCode == "bi":
+							continue
+						elif taskCode == "e":
+							continue
+						elif taskCode == "vid":
+							continue
+						elif taskCode == "pid":
+							continue
+						elif taskCode == "rid":
+							continue
+						else:
+							return False
+					
+					# Command + 2 parameters
+					elif len(task) == 3:
+						if taskCode == "w":
+							continue
+						elif taskCode == "wb":
+							continue
+						elif taskCode == "bi":
+							continue
+						elif taskCode == "z":
+							continue
+						elif taskCode == "e":
+							continue
+						else:
+							return False
+					
+					# Command + 3 parameters
+					elif len(task) == 4:
+						if taskCode == "w":
+							continue
+						elif taskCode == "wb":
+							continue
+						elif taskCode == "bc":
+							continue
+						elif taskCode == "bi":
+							continue
+						elif taskCode == "e":
+							continue
+						else:
+							return False
+					
+					# Command + too much parameters
+					else:
+						return False
+				
+				# First parameter on task array is not command
+				else:
+					return False
+
+		# On interpretation error - parameters are wrong
+		except:
+			return False
+		
+		# Everything passed - command and parameters correct
+		return True
+		
+	# Argument extractor method (to the task list)
+	def argumentExtractor(self, data):
+		output = []
+		temp = None
+		
+		# Extract every argument
+		for element in data:
+			try:
+				# If we have a command (only strings starting with minus and lower case)
+				if (element.islower()) and (element[0] == "-"):
+					# Skip this step on first iteration (when temp is None)
+					if temp != None:
+						# But otherwise add temporary buffer to output
+						output += [temp]
+					# Start new temporary buffer
+					temp = [element]
+				else:
+					# Add to temporary buffer
+					temp += [element]
+				
+			except:
+				# Skip errors
+				pass
+				
+		# Add everything left in temporary buffer
+		if (temp != None) and (len(temp) != 0):
+			output += [temp]
+			
+		if output == []:
+			output = None
+			
+		return output
+		
 	# Interpreter method
 	def interpreter(self):
-		if len(sys.argv) == 1:
-			cli.headerDisplay()
-			cli.displayHelp()
+		self.headerDisplay()
+		if len(sys.argv) <= 1:
+			self.displayHelp()
 		else:
-			pass
+			self.taskList = self.argumentExtractor(sys.argv[1:])
+			if self.checkTaskList(self.taskList):
+				print(self.taskList)
+			else:
+				self.displayHelp()
 		return
 
 
