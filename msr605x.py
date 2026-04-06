@@ -617,13 +617,17 @@ class Interactive:
 	
 	# METHODS
 	# Constructor
-	def __init__(self, vendorID = 0x0801, productID = 0x0003, reportID = 0xFF):
+	def __init__(self, vendorID = 0x0801, productID = 0x0003, reportID = b"\xff"):
 		self.vid = vendorID
 		self.pid = productID
 		self.rid = reportID
+		self.oldVID = self.vid
+		self.oldPID = self.pid
+		self.oldRID = self.rid
 		self.dataOnlyMode = False
 		self.deviceOpened = False
-		self.MSR = MSR605X(self.vid, self.pid, self.rid.to_bytes())
+		self.settingNewDevice = True
+		self.MSR = MSR605X(self.vid, self.pid, self.rid)
 		return
 
 	# Destructor
@@ -631,9 +635,20 @@ class Interactive:
 		self.close()
 		return
 		
-	# Device address setter method
-	def setDevice(self, vendorID, productID):
+	# New device setting flag setter method
+	def newDeviceSetting(self, state = True):
+		self.settingNewDevice = state
+		return
+	
+	# Vendor ID setter method
+	def setVendorID(self, vendorID):
+		self.newDeviceSetting()
 		self.vid = vendorID
+		return
+		
+	# Product ID setter method
+	def setProductID(self, productID):
+		self.newDeviceSetting()
 		self.pid = productID
 		return
 		
@@ -644,32 +659,40 @@ class Interactive:
 		
 	# Open wrapper
 	def open(self):
-		print("Opening device at " + "{:04x}".format(self.vid).upper() + ":" + "{:04x}".format(self.pid).upper() + " with report ID = " + "{:02x}".format(self.rid).upper() + "...", end = "")
-		sys.stdout.flush()
+		if not self.dataOnlyMode:
+			print("Opening device at " + "{:04x}".format(self.vid).upper() + ":" + "{:04x}".format(self.pid).upper() + " with report ID = " + "{:02x}".format(self.rid[0]).upper() + "...", end = "")
+			sys.stdout.flush()
 		
 		try:
+			self.MSR.setDevice(self.vid, self.pid)
+			self.MSR.setReportID(self.rid)
 			self.MSR.open()
 			self.deviceOpened = True
-			print(" OK!")
+			if not self.dataOnlyMode:
+				print(" OK!")
 			return True
 		except:
-			print(" ERROR!")
+			if not self.dataOnlyMode:
+				print(" ERROR!")
 			self.deviceOpened = False
 			return False
 		
 	# Close wrapper
 	def close(self):
 		if self.deviceOpened:
-			print("Closing device at " + "{:04x}".format(self.vid).upper() + ":" + "{:04x}".format(self.pid).upper() + " with report ID = " + "{:02x}".format(self.rid).upper() + "...", end = "")
-			sys.stdout.flush()
+			if not self.dataOnlyMode:
+				print("Closing device at " + "{:04x}".format(self.oldVID).upper() + ":" + "{:04x}".format(self.oldPID).upper() + " with report ID = " + "{:02x}".format(self.oldRID[0]).upper() + "...", end = "")
+				sys.stdout.flush()
 			
 			try:
 				self.MSR.close()
 				self.deviceOpened = False
-				print(" OK!")
+				if not self.dataOnlyMode:
+					print(" OK!")
 				return True
 			except:
-				print(" ERROR!")
+				if not self.dataOnlyMode:
+					print(" ERROR!")
 				return False
 	
 	# Check if string is valid
@@ -712,39 +735,42 @@ class Interactive:
 	
 	# Header display method
 	def headerDisplay(self):
-		print("MSR605X Command Line Utility")
-		print("by Magnetic-Fox, April 2026")
-		print("")
+		if not self.dataOnlyMode:
+			print("MSR605X Command Line Utility")
+			print("by Magnetic-Fox, April 2026")
+			print("")
 		return
 	
 	# Help display method
 	def displayHelp(self):
-		print("ISO 7811 mode:                              RAW mode (* - sets 8 BPC):")
-		print("  -r                 - read card              -rb                - read card")
-		print("  -w T1 [T2 [T3]]    - write card             -wb T1 [T2 [T3]]   - write card *")
-		print("  -c                 - copy card              -cb                - copy card  *")
-		print("")
-		print("Bit settings:                               Coercivity:")
-		print("  -bc 7 5 5          - bits per char (5-8)    -h                 - use Hi-Co")
-		print("  -bi 210 [75 [210]] - bits per inch          -l                 - use Lo-Co")
-		print("")
-		print("Leading zeroes:                             Other card operations:")
-		print("  -z 61 22           - set T1&3 T2 (0-255)    -e 1 [2 [3]]       - erase tracks")
-		print("")
-		print("Miscellaneous:                              Device status:")
-		print("  -m                 - device model           -tc                - comm. test")
-		print("  -f                 - firmware version       -zs                - lead zeroes")
-		print("  -i<0-4>            - LED control (4: all)   -gc                - coercivity")
-		print("  -p                 - data only output       -ts                - sensor test")
-		print("  -vid 0x0801        - set vendor ID          -tr                - RAM test")
-		print("  -pid 0x0003        - set product ID         -sr                - soft reset")
-		print("  -rid 0xFF          - set report ID          -hr                - hard reset")
+		if not self.dataOnlyMode:
+			print("ISO 7811 mode:                              RAW mode (* - sets 8 BPC):")
+			print("  -r                 - read card              -rb                - read card")
+			print("  -w T1 [T2 [T3]]    - write card             -wb T1 [T2 [T3]]   - write card *")
+			print("  -c                 - copy card              -cb                - copy card  *")
+			print("")
+			print("Bit settings:                               Coercivity:")
+			print("  -bc 7 5 5          - bits per char (5-8)    -h                 - use Hi-Co")
+			print("  -bi 210 [75 [210]] - bits per inch          -l                 - use Lo-Co")
+			print("")
+			print("Leading zeroes:                             Other card operations:")
+			print("  -z 61 22           - set T1&3 T2 (0-255)    -e 1 [2 [3]]       - erase tracks")
+			print("")
+			print("Miscellaneous:                              Device status:")
+			print("  -m                 - device model           -tc                - comm. test")
+			print("  -f                 - firmware version       -zs                - lead zeroes")
+			print("  -i<0-4>            - LED control (4: all)   -gc                - coercivity")
+			print("  -p                 - data only output       -ts                - sensor test")
+			print("  -vid 0x0801        - set vendor ID          -tr                - RAM test")
+			print("  -pid 0x0003        - set product ID         -sr                - soft reset")
+			print("  -rid 0xFF          - set report ID          -hr                - hard reset")
 		return
 	
 	# ISO 7811 mode read method
 	def readISO(self):
-		print("ISO read, please swipe a card...", end = "")
-		sys.stdout.flush()
+		if not self.dataOnlyMode:
+			print("ISO read, please swipe a card...", end = "")
+			sys.stdout.flush()
 		status, data1, data2, data3 = self.MSR.read()
 		
 		if (data1 == ""):
@@ -763,89 +789,120 @@ class Interactive:
 			data3 = "<read error>"
 		
 		if status == MSR605X.SB_RW_OK:
-			print(" OK!")
-			print(" *  Track 1: " + data1)
-			print(" *  Track 2: " + data2)
-			print(" *  Track 3: " + data3)
+			if not self.dataOnlyMode:
+				print(" OK!")
+				print(" *  Track 1: " + data1)
+				print(" *  Track 2: " + data2)
+				print(" *  Track 3: " + data3)
+			else:
+				print(data1)
+				print(data2)
+				print(data3)
 		else:
-			print(" ERROR!")
+			if not self.dataOnlyMode:
+				print(" ERROR!")
 		
 		return
 		
 	# ISO 7811 mode write method
 	def writeISO(self, track1, track2, track3):
-		print("ISO write preparation...")
-		
-		print(" *  Track 1 data check...", end = "")
+		if not self.dataOnlyMode:
+			print("ISO write preparation...")
+			print(" *  Track 1 data check...", end = "")
+			
 		try:
 			if (track1Error := not self.isValid(self.ISO1_ALPHABET, track1)):
-				print(" ERROR!")
+				if not self.dataOnlyMode:
+					print(" ERROR!")
 			else:
-				print(" OK!")
+				if not self.dataOnlyMode:
+					print(" OK!")
 		except:
-			print(" ERROR!")
+			if not self.dataOnlyMode:
+				print(" ERROR!")
 			track1Error = True
 			
-		print(" *  Track 2 data check...", end = "")
+		if not self.dataOnlyMode:
+			print(" *  Track 2 data check...", end = "")
+			
 		try:
 			if (track2Error := not self.isValid(self.ISO2_ALPHABET, track2)):
-				print(" ERROR!")
+				if not self.dataOnlyMode:
+					print(" ERROR!")
 			else:
-				print(" OK!")
+				if not self.dataOnlyMode:
+					print(" OK!")
 		except:
-			print(" ERROR!")
+			if not self.dataOnlyMode:
+				print(" ERROR!")
 			track2Error = True
+
+		if not self.dataOnlyMode:
+			print(" *  Track 3 data check...", end = "")
 			
-		print(" *  Track 3 data check...", end = "")
 		try:
 			if (track3Error := not self.isValid(self.ISO3_ALPHABET, track3)):
-				print(" ERROR!")
+				if not self.dataOnlyMode:
+					print(" ERROR!")
 			else:
-				print(" OK!")
+				if not self.dataOnlyMode:
+					print(" OK!")
 		except:
-			print(" ERROR!")
+			if not self.dataOnlyMode:
+				print(" ERROR!")
 			track3Error = True
 		
 		if (track1Error or track2Error or track3Error) == False:
-			print("ISO write, please swipe a card...", end = "")
-			sys.stdout.flush()
+			if not self.dataOnlyMode:
+				print("ISO write, please swipe a card...", end = "")
+				sys.stdout.flush()
 			if (len(track1) > 0) or (len(track2) > 0) or (len(track3) > 0):
 				if self.MSR.write(track1, track2, track3):
-					print(" OK!")
+					if not self.dataOnlyMode:
+						print(" OK!")
 				else:
-					print(" ERROR!")
+					if not self.dataOnlyMode:
+						print(" ERROR!")
 			else:
-				print(" NOTHING TO WRITE!")
+				if not self.dataOnlyMode:
+					print(" NOTHING TO WRITE!")
 		else:
-			print("ISO write stopped, wrong input data!")
+			if not self.dataOnlyMode:
+				print("ISO write stopped, wrong input data!")
 		
 		return
 	
 	# ISO 7811 mode card copy method
 	def copyISO(self):
-		print("ISO copy, please swipe a source card...", end = "")
-		sys.stdout.flush()
+		if not self.dataOnlyMode:
+			print("ISO copy, please swipe a source card...", end = "")
+			sys.stdout.flush()
 		data = self.MSR.read()
 		
 		if data[0] == MSR605X.SB_RW_OK:
-			print(" OK!")
-			print("ISO copy, please swipe a target card...", end = "")
-			sys.stdout.flush()
-			if self.MSR.write(data[1], data[2], data[3]):
+			if not self.dataOnlyMode:
 				print(" OK!")
-				print(" *  ISO card copy finished successfully!")
+				print("ISO copy, please swipe a target card...", end = "")
+				sys.stdout.flush()
+			if self.MSR.write(data[1], data[2], data[3]):
+				if not self.dataOnlyMode:
+					print(" OK!")
+					print(" *  ISO card copy finished successfully!")
 			else:
-				print(" ERROR!")
+				if not self.dataOnlyMode:
+					print(" ERROR!")
 			
 		else:
-			print(" ERROR!")
+			if not self.dataOnlyMode:
+				print(" ERROR!")
 			
 		return
 			
 	# RAW mode read method
 	def readRAW(self):
-		print("RAW read, please swipe a card...", end = "")
-		sys.stdout.flush()
+		if not self.dataOnlyMode:
+			print("RAW read, please swipe a card...", end = "")
+			sys.stdout.flush()
 		status, data1, data2, data3 = self.MSR.readRawData()
 		
 		if (data1 == b""):
@@ -870,12 +927,18 @@ class Interactive:
 			data3 = self.bytesToHex(data3)
 		
 		if status == MSR605X.SB_RW_OK:
-			print(" OK!")
-			print(" *  Track 1: " + data1)
-			print(" *  Track 2: " + data2)
-			print(" *  Track 3: " + data3)
+			if not self.dataOnlyMode:
+				print(" OK!")
+				print(" *  Track 1: " + data1)
+				print(" *  Track 2: " + data2)
+				print(" *  Track 3: " + data3)
+			else:
+				print(data1)
+				print(data2)
+				print(data3)
 		else:
-			print(" ERROR!")
+			if not self.dataOnlyMode:
+				print(" ERROR!")
 		
 		return
 		
@@ -884,50 +947,65 @@ class Interactive:
 		# Otherwise, MSR605X behaves buggy...
 		self.setBPC(8, 8, 8)
 		
-		print("RAW write preparation...")
-		
-		print(" *  Track 1 data conversion...", end = "")
+		if not self.dataOnlyMode:
+			print("RAW write preparation...")
+			print(" *  Track 1 data conversion...", end = "")
+			
 		try:
 			track1Data = self.hexStringToBytes(track1)
 			track1Error = False
-			print(" OK!")
+			if not self.dataOnlyMode:
+				print(" OK!")
 		except:
 			track1Data = b""
 			track1Error = True
-			print(" ERROR!")
+			if not self.dataOnlyMode:
+				print(" ERROR!")
+				
+		if not self.dataOnlyMode:
+			print(" *  Track 2 data conversion...", end = "")
 			
-		print(" *  Track 2 data conversion...", end = "")
 		try:
 			track2Data = self.hexStringToBytes(track2)
 			track2Error = False
-			print(" OK!")
+			if not self.dataOnlyMode:
+				print(" OK!")
 		except:
 			track2Data = b""
 			track2Error = True
-			print(" ERROR!")
-		
-		print(" *  Track 3 data conversion...", end = "")
+			if not self.dataOnlyMode:
+				print(" ERROR!")
+				
+		if not self.dataOnlyMode:
+			print(" *  Track 3 data conversion...", end = "")
 		try:
 			track3Data = self.hexStringToBytes(track3)
 			track3Error = False
-			print(" OK!")
+			if not self.dataOnlyMode:
+				print(" OK!")
 		except:
 			track3Data = b""
 			track3Error = True
-			print(" ERROR!")
+			if not self.dataOnlyMode:
+				print(" ERROR!")
 		
 		if (track1Error or track2Error or track3Error) == False:
-			print("RAW write, please swipe a card...", end = "")
-			sys.stdout.flush()
+			if not self.dataOnlyMode:
+				print("RAW write, please swipe a card...", end = "")
+				sys.stdout.flush()
 			if (len(track1Data) > 0) or (len(track2Data) > 0) or (len(track3Data) > 0):
 				if self.MSR.writeRawData(track1Data, track2Data, track3Data):
-					print(" OK!")
+					if not self.dataOnlyMode:
+						print(" OK!")
 				else:
-					print(" ERROR!")
+					if not self.dataOnlyMode:
+						print(" ERROR!")
 			else:
-				print(" NOTHING TO WRITE!")
+				if not self.dataOnlyMode:
+					print(" NOTHING TO WRITE!")
 		else:
-			print("RAW write stopped, wrong input data!")
+			if not self.dataOnlyMode:
+				print("RAW write stopped, wrong input data!")
 		
 		return
 	
@@ -936,291 +1014,392 @@ class Interactive:
 		# Otherwise, MSR605X behaves buggy...
 		self.setBPC(8, 8, 8)
 		
-		print("RAW copy, please swipe a source card...", end = "")
-		sys.stdout.flush()
+		if not self.dataOnlyMode:
+			print("RAW copy, please swipe a source card...", end = "")
+			sys.stdout.flush()
 		data = self.MSR.readRawData()
 		
 		if data[0] == MSR605X.SB_RW_OK:
-			print(" OK!")
-			print("RAW copy, please swipe a target card...", end = "")
-			sys.stdout.flush()
-			if self.MSR.writeRawData(data[1], data[2], data[3]):
+			if not self.dataOnlyMode:
 				print(" OK!")
-				print(" *  RAW card copy finished successfully!")
+				print("RAW copy, please swipe a target card...", end = "")
+				sys.stdout.flush()
+			if self.MSR.writeRawData(data[1], data[2], data[3]):
+				if not self.dataOnlyMode:
+					print(" OK!")
+					print(" *  RAW card copy finished successfully!")
 			else:
-				print(" ERROR!")
+				if not self.dataOnlyMode:
+					print(" ERROR!")
 			
 		else:
-			print(" ERROR!")
+			if not self.dataOnlyMode:
+				print(" ERROR!")
 			
 		return
 			
 	# Bits per character set method
 	def setBPC(self, track1, track2, track3):
-		print("Bits per character setting...", end = "")
-		sys.stdout.flush()
+		if not self.dataOnlyMode:
+			print("Bits per character setting...", end = "")
+			sys.stdout.flush()
 		
 		if ((track1 >= 1) and (track1 <= 8) and (track2 >= 1) and (track2 <= 8) and (track3 >= 1) and (track3 <= 8)):
 			response = self.MSR.setBPC(track1, track2, track3)
 			if response[0]:
-				print(" OK! (" + str(response[1]) + ", " + str(response[2]) + ", " + str(response[3]) + ")")
+				if not self.dataOnlyMode:
+					print(" OK! (" + str(response[1]) + ", " + str(response[2]) + ", " + str(response[3]) + ")")
 			else:
-				print(" ERROR!")
+				if not self.dataOnlyMode:
+					print(" ERROR!")
 		else:
-			print(" ERROR!")
+			if not self.dataOnlyMode:
+				print(" ERROR!")
 		
 		return
 	
 	# Bits per inch set method
 	def setBPI(self, track1, track2, track3):
-		print("Bits per inch setting...", end = "")
+		if not self.dataOnlyMode:
+			print("Bits per inch setting...", end = "")
 		if (track1 == None) and (track2 == None) and (track3 == None):
-			print(" NOTHING CHANGED!")
+			if not self.dataOnlyMode:
+				print(" NOTHING CHANGED!")
 		else:
-			print("")
+			if not self.dataOnlyMode:
+				print("")
 		
 		if track1 != None:
-			print(" *  Track 1: ", end = "")
+			if not self.dataOnlyMode:
+				print(" *  Track 1: ", end = "")
 			sys.stdout.flush()
 			if (track1 == 210) or (track1 == 75):
 				if (track1 == 210):
 					if self.MSR.selectBPI(MSR605X.ISO_TRACK1_210BPI):
-						print(" 210 bpi")
+						if not self.dataOnlyMode:
+							print(" 210 bpi")
 					else:
-						print(" ERROR!")
+						if not self.dataOnlyMode:
+							print(" ERROR!")
 				else:
 					if self.MSR.selectBPI(MSR605X.ISO_TRACK1_75BPI):
-						print(" 75 bpi")
+						if not self.dataOnlyMode:
+							print(" 75 bpi")
 					else:
-						print(" ERROR!")
+						if not self.dataOnlyMode:
+							print(" ERROR!")
 			else:
-				print(" ERROR!")
+				if not self.dataOnlyMode:
+					print(" ERROR!")
 				
 		if track2 != None:
-			print(" *  Track 2: ", end = "")
+			if not self.dataOnlyMode:
+				print(" *  Track 2: ", end = "")
 			sys.stdout.flush()
 			if (track2 == 210) or (track2 == 75):
 				if (track2 == 210):
 					if self.MSR.selectBPI(MSR605X.ISO_TRACK2_210BPI):
-						print(" 210 bpi")
+						if not self.dataOnlyMode:
+							print(" 210 bpi")
 					else:
-						print(" ERROR!")
+						if not self.dataOnlyMode:
+							print(" ERROR!")
 				else:
 					if self.MSR.selectBPI(MSR605X.ISO_TRACK2_75BPI):
-						print(" 75 bpi")
+						if not self.dataOnlyMode:
+							print(" 75 bpi")
 					else:
-						print(" ERROR!")
+						if not self.dataOnlyMode:
+							print(" ERROR!")
 			else:
-				print(" ERROR!")
+				if not self.dataOnlyMode:
+					print(" ERROR!")
 			
 		if track3 != None:
-			print(" *  Track 3: ", end = "")
+			if not self.dataOnlyMode:
+				print(" *  Track 3: ", end = "")
 			sys.stdout.flush()
 			if (track3 == 210) or (track3 == 75):
 				if (track3 == 210):
 					if self.MSR.selectBPI(MSR605X.ISO_TRACK3_210BPI):
-						print(" 210 bpi")
+						if not self.dataOnlyMode:
+							print(" 210 bpi")
 					else:
-						print(" ERROR!")
+						if not self.dataOnlyMode:
+							print(" ERROR!")
 				else:
 					if self.MSR.selectBPI(MSR605X.ISO_TRACK3_75BPI):
-						print(" 75 bpi")
+						if not self.dataOnlyMode:
+							print(" 75 bpi")
 					else:
-						print(" ERROR!")
+						if not self.dataOnlyMode:
+							print(" ERROR!")
 			else:
-				print(" ERROR!")
+				if not self.dataOnlyMode:
+					print(" ERROR!")
 			
 		return
 	
 	# Hi-Co set method
 	def setHiCo(self):
-		print("Hi-Co setting...", end = "")
-		sys.stdout.flush()
+		if not self.dataOnlyMode:
+			print("Hi-Co setting...", end = "")
+			sys.stdout.flush()
 		
 		if self.MSR.setHiCo():
-			print(" OK!")
+			if not self.dataOnlyMode:
+				print(" OK!")
 		else:
-			print(" ERROR!")
+			if not self.dataOnlyMode:
+				print(" ERROR!")
 			
 		return
 		
 	# Lo-Co set method
 	def setLoCo(self):
-		print("Lo-Co setting...", end = "")
-		sys.stdout.flush()
+		if not self.dataOnlyMode:
+			print("Lo-Co setting...", end = "")
+			sys.stdout.flush()
 		
 		if self.MSR.setLoCo():
-			print(" OK!")
+			if not self.dataOnlyMode:
+				print(" OK!")
 		else:
-			print(" ERROR!")
+			if not self.dataOnlyMode:
+				print(" ERROR!")
 		
 		return
 		
 	# Leading zeroes set method
 	def setLeadingZeroes(self, leadZeroTrack1and3, leadZeroTrack2):
-		print("Leading zeroes setting...", end = "")
-		sys.stdout.flush()
+		if not self.dataOnlyMode:
+			print("Leading zeroes setting...", end = "")
+			sys.stdout.flush()
 		
 		if ((leadZeroTrack1and3 >= 0) and (leadZeroTrack1and3 <= 255)) and ((leadZeroTrack2 >= 0) and (leadZeroTrack2 <= 255)):
 			if self.MSR.setLeadingZero(leadZeroTrack1and3, leadZeroTrack2):
-				print(" OK!")
+				if not self.dataOnlyMode:
+					print(" OK! (" + str(leadZeroTrack1and3) + ", " + str(leadZeroTrack2) + ")")
 			else:
-				print(" ERROR!")
+				if not self.dataOnlyMode:
+					print(" ERROR!")
 		else:
-			print(" ERROR!")
+			if not self.dataOnlyMode:
+				print(" ERROR!")
 		
 		return
 	
 	# Track erasing method
 	def eraseCard(self, track1, track2, track3):
-		print("Card erase, please swipe a card...", end = "")
-		sys.stdout.flush()
+		if not self.dataOnlyMode:
+			print("Card erase, please swipe a card...", end = "")
+			sys.stdout.flush()
 		
 		if (track1 == False) and (track2 == False) and (track3 == False):
-			print(" NOTHING ERASED!")
+			if not self.dataOnlyMode:
+				print(" NOTHING ERASED!")
 			
 		else:
 			if self.MSR.eraseCard(track1, track2, track3):
-				print(" OK! (", end = "")
+				if not self.dataOnlyMode:
+					print(" OK! (", end = "")
 				
 				if track1:
-					print("track 1", end = "")
+					if not self.dataOnlyMode:
+						print("track 1", end = "")
 					
 				if (track1 and track2) or (track1 and track3):
-					print(", ", end = "")
+					if not self.dataOnlyMode:
+						print(", ", end = "")
 					
 				if track2:
-					print("track 2", end = "")
+					if not self.dataOnlyMode:
+						print("track 2", end = "")
 					
 				if (track2 and track3):
-					print(", ", end = "")
+					if not self.dataOnlyMode:
+						print(", ", end = "")
 					
 				if track3:
-					print("track 3", end = "")
+					if not self.dataOnlyMode:
+						print("track 3", end = "")
 					
-				print(")")
+				if not self.dataOnlyMode:
+					print(")")
 			else:
-				print(" ERROR!")
+				if not self.dataOnlyMode:
+					print(" ERROR!")
 		
 		return
 	
 	# Device model get method
 	def deviceModel(self):
-		print("Device model: ", end = "")
-		sys.stdout.flush()
+		if not self.dataOnlyMode:
+			print("Device model: ", end = "")
+			sys.stdout.flush()
 		print(self.MSR.getDeviceModel())
 		return
 		
 	# Firmware version get method
 	def firmwareVersion(self):
-		print("Firmware version: ", end = "")
-		sys.stdout.flush()
+		if not self.dataOnlyMode:
+			print("Firmware version: ", end = "")
+			sys.stdout.flush()
 		print(self.MSR.getFirmwareVersion())
 		return
 	
 	# All LEDs off method
 	def allLEDOff(self):
-		print("Turning all LEDs off...", end = "")
-		sys.stdout.flush()
+		if not self.dataOnlyMode:
+			print("Turning all LEDs off...", end = "")
+			sys.stdout.flush()
 		self.MSR.allLedOff()
-		print(" OK!")
+		if not self.dataOnlyMode:
+			print(" OK!")
 		return
 		
 	# Green LED on method
 	def greenLED(self):
-		print("Turning green LED on...", end = "")
-		sys.stdout.flush()
+		if not self.dataOnlyMode:
+			print("Turning green LED on...", end = "")
+			sys.stdout.flush()
 		self.MSR.greenLedOn()
-		print(" OK!")
+		if not self.dataOnlyMode:
+			print(" OK!")
 		return
 		
 	# Green and yellow LED on method
 	def greenAndYellowLED(self):
-		print("Turning green and yellow LED on...", end = "")
-		sys.stdout.flush()
+		if not self.dataOnlyMode:
+			print("Turning green and yellow LED on...", end = "")
+			sys.stdout.flush()
 		self.MSR.yellowLedOn()
-		print(" OK!")
+		if not self.dataOnlyMode:
+			print(" OK!")
 		return
 		
 	# Red LED on method
 	def redLED(self):
-		print("Turning red LED on...", end = "")
-		sys.stdout.flush()
+		if not self.dataOnlyMode:
+			print("Turning red LED on...", end = "")
+			sys.stdout.flush()
 		self.MSR.redLedOn()
-		print(" OK!")
+		if not self.dataOnlyMode:
+			print(" OK!")
 		return
 		
 	# All LEDs on method
 	def allLEDOn(self):
-		print("Turning all LEDs on...", end = "")
-		sys.stdout.flush()
+		if not self.dataOnlyMode:
+			print("Turning all LEDs on...", end = "")
+			sys.stdout.flush()
 		self.MSR.allLedOn()
-		print(" OK!")
+		if not self.dataOnlyMode:
+			print(" OK!")
 		return
 		
 	# Communication test method
 	def communicationTest(self):
-		print("Communication test pending...", end = "")
-		sys.stdout.flush()
+		if not self.dataOnlyMode:
+			print("Communication test pending...", end = "")
+			sys.stdout.flush()
 		if self.MSR.communicationTest():
-			print(" OK!")
+			if not self.dataOnlyMode:
+				print(" OK!")
+			else:
+				print("1")
 		else:
-			print(" ERROR!")
+			if not self.dataOnlyMode:
+				print(" ERROR!")
+			else:
+				print("0")
 		return
 		
 	# Leading zeroes setting gathering method
 	def getLeadingZeroes(self):
-		print("Leading zeroes information gathering...", end = "")
-		sys.stdout.flush()
+		if not self.dataOnlyMode:
+			print("Leading zeroes information gathering...", end = "")
+			sys.stdout.flush()
 		leadZeroTrack1and3, leadZeroTrack2 = self.MSR.checkLeadingZero()
-		print(" OK!")
-		print(" *  Track 1 & Track 3: " + str(leadZeroTrack1and3))
-		print(" *  Track 2:           " + str(leadZeroTrack2))
+		if not self.dataOnlyMode:
+			print(" OK!")
+			print(" *  Track 1 & Track 3: " + str(leadZeroTrack1and3))
+			print(" *  Track 2:           " + str(leadZeroTrack2))
+		else:
+			print(str(leadZeroTrack1and3))
+			print(str(leadZeroTrack2))
 		return
 		
 	# Set coercivity gathering method
 	def getCoercivity(self):
-		print("Coercivity setting gathering...", end = "")
-		sys.stdout.flush()
+		if not self.dataOnlyMode:
+			print("Coercivity setting gathering...", end = "")
+			sys.stdout.flush()
 		coercivity = self.MSR.getCoercivitySetting()
-		print(" ", end = "")
+		if not self.dataOnlyMode:
+			print(" ", end = "")
 		if coercivity == "H":
-			print("Hi-Co")
+			if not self.dataOnlyMode:
+				print("Hi-Co")
+			else:
+				print("H")
 		elif coercivity == "L":
-			print("Lo-Co")
+			if not self.dataOnlyMode:
+				print("Lo-Co")
+			else:
+				print("L")
 		else:
-			print("Unknown")
+			if not self.dataOnlyMode:
+				print("Unknown")
+			else:
+				print("?")
 		return
 		
 	# Sensor test method (PROBABLY UNSUPPORTED OPERATION!)
 	def sensorTest(self):
-		print("Sensor test pending...", end = "")
-		sys.stdout.flush()
+		if not self.dataOnlyMode:
+			print("Sensor test pending...", end = "")
+			sys.stdout.flush()
 		if self.MSR.sensorTest():
-			print(" OK!")
+			if not self.dataOnlyMode:
+				print(" OK!")
+			else:
+				print("1")
 		else:
-			print(" ERROR!")
+			if not self.dataOnlyMode:
+				print(" ERROR!")
+			else:
+				print("0")
 		return
 		
 	# RAM test method (PROBABLY UNSUPPORTED OPERATION!)
 	def RAMTest(self):
-		print("RAM test pending...", end = "")
-		sys.stdout.flush()
+		if not self.dataOnlyMode:
+			print("RAM test pending...", end = "")
+			sys.stdout.flush()
 		if self.MSR.ramTest():
-			print(" OK!")
+			if not self.dataOnlyMode:
+				print(" OK!")
+			else:
+				print("1")
 		else:
-			print(" ERROR!")
+			if not self.dataOnlyMode:
+				print(" ERROR!")
+			else:
+				print("0")
 		return
 		
 	# Soft reset method
 	def softReset(self):
-		print("Device reset (soft)...")
+		if not self.dataOnlyMode:
+			print("Device reset (soft)...")
 		self.MSR.reset()
 		return
 		
 	# Hard reset method
 	def hardReset(self):
-		print("Device reset (hard)...")
+		if not self.dataOnlyMode:
+			print("Device reset (hard)...")
 		self.MSR.hardReset()
 		return
 		
@@ -1395,7 +1574,7 @@ class Interactive:
 								return False
 						# Set BPI (track 1 and 2 only)
 						elif taskCode == "bi":
-							if (task[1] == "-") or (task[1] == "210") or (task[1] == "75"):
+							if (task[1] == "") or (task[1] == "210") or (task[1] == "75"):
 								if (task[2] == "210") or (task[2] == "75"):
 									continue
 								else:
@@ -1474,8 +1653,8 @@ class Interactive:
 								return False
 						# Set BPI (all tracks)
 						elif taskCode == "bi":
-							if (task[1] == "-") or (task[1] == "210") or (task[1] == "75"):
-								if (task[2] == "-") or (task[2] == "210") or (task[2] == "75"):
+							if (task[1] == "") or (task[1] == "210") or (task[1] == "75"):
+								if (task[2] == "") or (task[2] == "210") or (task[2] == "75"):
 									if (task[3] == "210") or (task[3] == "75"):
 										continue
 									else:
@@ -1561,101 +1740,152 @@ class Interactive:
 	# Is data only mode selected check method
 	def isDataOnlySelected(self, taskList):
 		try:
-			if self.taskList.index(["-p"]) > -1:
-				return True
-			else:
-				return False
+			return self.taskList.index(["-p"]) > -1
 		except:
 			return False
 		
 	# Interpreter method
 	def interpreter(self):
+		# On no arguments
 		if len(sys.argv) <= 1:
 			self.headerDisplay()
 			self.displayHelp()
+		# When there are arguments
 		else:
+			# Extract arguments
 			self.taskList = self.argumentExtractor(sys.argv[1:])
+			# Check if arguments are correct
 			if self.checkTaskList(self.taskList):
+				# Check if "silent mode" is to be enabled
 				if self.isDataOnlySelected(self.taskList):
-					self.taskList.pop(self.taskList.index(["-p"]))
+					# Delete all occurrences of "-p" command on the list
+					while True:
+						try:
+							self.taskList.pop(self.taskList.index(["-p"]))
+						except:
+							break
+					# Set silent mode
 					self.dataOnlyMode = True
 				else:
+					# Display header when not in silent mode
 					self.headerDisplay()
-					
-					self.open()
 				
+				# Execute all tasks from list
 				for task in self.taskList:
 					taskCode = task[0][1:]
-					
 					try:
-						if taskCode == "r":
-							self.readISO()
-						elif taskCode == "w": # TODO
-							pass
-						elif taskCode == "c":
-							self.copyISO()
-						elif taskCode == "rb":
-							self.readRAW()
-						elif taskCode == "wb": # TODO
-							pass
-						elif taskCode == "cb":
-							self.copyRAW()
-						elif taskCode == "bc": # TODO
-							pass
-						elif taskCode == "bi": # TODO
-							pass
-						elif taskCode == "h":
-							self.setHiCo()
-						elif taskCode == "l":
-							self.setLoCo()
-						elif taskCode == "z": # TODO
-							pass
-						elif taskCode == "e": # TODO
-							pass
-						elif taskCode == "m":
-							self.deviceModel()
-						elif taskCode == "f":
-							self.firmwareVersion()
-						elif taskCode == "i0":
-							self.allLEDOff()
-						elif taskCode == "i1":
-							self.greenLED()
-						elif taskCode == "i2":
-							self.greenAndYellowLED()
-						elif taskCode == "i3":
-							self.redLED()
-						elif taskCode == "i4":
-							self.allLEDOn()
-						elif taskCode == "p": # TODO
-							pass
-						elif taskCode == "vid": # TODO
-							pass
-						elif taskCode == "pid": # TODO
-							pass
-						elif taskCode == "rid": # TODO
-							pass
-						elif taskCode == "tc":
-							self.communicationTest()
-						elif taskCode == "zs":
-							self.getLeadingZeroes()
-						elif taskCode == "gc":
-							self.getCoercivity()
-						elif taskCode == "ts":
-							self.sensorTest()
-						elif taskCode == "tr":
-							self.RAMTest()
-						elif taskCode == "sr":
-							self.softReset()
-						elif taskCode == "hr":
-							self.hardReset()
+						if (taskCode == "vid") or (taskCode == "pid") or (taskCode == "rid"):
+							if taskCode == "vid":
+								self.newDeviceSetting()
+								self.oldVID = self.vid
+								self.setVendorID(self.getIntFromString(task[1]))
+							elif taskCode == "pid":
+								self.newDeviceSetting()
+								self.oldPID = self.pid
+								self.setProductID(self.getIntFromString(task[1]))
+							elif taskCode == "rid":
+								self.oldRID = self.rid
+								self.setReportID(self.getIntFromString(task[1]).to_bytes())
 						else:
-							print("UNKNOWN COMMAND!")
-						
+							# Close and open the device on change (also on the first iteration)
+							if self.settingNewDevice:
+								self.newDeviceSetting(False)
+								self.close()
+								if not self.open():
+									break
+							
+							if taskCode == "r":
+								self.readISO()
+							elif taskCode == "w":
+								if len(task) == 2:
+									self.writeISO(task[1], "", "")
+								elif len(task) == 3:
+									self.writeISO(task[1], task[2], "")
+								elif len(task) == 4:
+									self.writeISO(task[1], task[2], task[3])
+							elif taskCode == "c":
+								self.copyISO()
+							elif taskCode == "rb":
+								self.readRAW()
+							elif taskCode == "wb":
+								if len(task) == 2:
+									self.writeRAW(task[1], "", "")
+								elif len(task) == 3:
+									self.writeRAW(task[1], task[2], "")
+								elif len(task) == 4:
+									self.writeRAW(task[1], task[2], task[3])
+							elif taskCode == "cb":
+								self.copyRAW()
+							elif taskCode == "bc":
+								self.setBPC(int(task[1]), int(task[2]), int(task[3]))
+							elif taskCode == "bi":
+								try:
+									track1BPI = int(task[1])
+								except:
+									track1BPI = None
+								try:
+									track2BPI = int(task[2])
+								except:
+									track2BPI = None
+								try:
+									track3BPI = int(task[3])
+								except:
+									track3BPI = None
+								self.setBPI(track1BPI, track2BPI, track3BPI)
+							elif taskCode == "h":
+								self.setHiCo()
+							elif taskCode == "l":
+								self.setLoCo()
+							elif taskCode == "z":
+								self.setLeadingZeroes(int(task[1]), int(task[2]))
+							elif taskCode == "e":
+								eraseTrack1 = False
+								eraseTrack2 = False
+								eraseTrack3 = False
+								if (task[1] == "1") or ((len(task) > 2) and (task[2] == "1")) or ((len(task) > 3) and (task[3] == "1")):
+									eraseTrack1 = True
+								if (task[1] == "2") or ((len(task) > 2) and (task[2] == "2")) or ((len(task) > 3) and (task[3] == "2")):
+									eraseTrack2 = True
+								if (task[1] == "3") or ((len(task) > 2) and (task[2] == "3")) or ((len(task) > 3) and (task[3] == "3")):
+									eraseTrack3 = True
+								self.eraseCard(eraseTrack1, eraseTrack2, eraseTrack3)
+							elif taskCode == "m":
+								self.deviceModel()
+							elif taskCode == "f":
+								self.firmwareVersion()
+							elif taskCode == "i0":
+								self.allLEDOff()
+							elif taskCode == "i1":
+								self.greenLED()
+							elif taskCode == "i2":
+								self.greenAndYellowLED()
+							elif taskCode == "i3":
+								self.redLED()
+							elif taskCode == "i4":
+								self.allLEDOn()
+							elif taskCode == "p":
+								self.dataOnlyMode = True
+							elif taskCode == "tc":
+								self.communicationTest()
+							elif taskCode == "zs":
+								self.getLeadingZeroes()
+							elif taskCode == "gc":
+								self.getCoercivity()
+							elif taskCode == "ts":
+								self.sensorTest()
+							elif taskCode == "tr":
+								self.RAMTest()
+							elif taskCode == "sr":
+								self.softReset()
+							elif taskCode == "hr":
+								self.hardReset()
+							else:
+								if not self.dataOnlyMode:
+									print("UNKNOWN COMMAND!")
 					except:
-						print("COMMAND FAILED!")
-				
+						if not self.dataOnlyMode:
+							print("COMMAND FAILED!")
 				self.close()
-					
 			else:
 				self.headerDisplay()
 				self.displayHelp()
@@ -1666,6 +1896,3 @@ class Interactive:
 if __name__ == "__main__":
 	cli = Interactive()
 	cli.interpreter()
-	#cli.open()
-	#cli.setHiCo()
-	#cli.eraseCard(True, True, True)
