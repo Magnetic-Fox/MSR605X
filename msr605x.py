@@ -173,9 +173,13 @@ class MSR605X:
 	def dataFill(self, data, size):
 		return data + b"\x00" * (size - len(data))
 		
+	# Helper method to prepare data frames to be sent
+	def dataFramesPrepare(self, data):
+		return [b"\x00" + data[0:62]] + self.dataSplit(data[62:], 63)
+		
 	# Write automation method (slicing + sending)
 	def writeData(self, data):
-		dataChunks = [b"\x00" + data[0:62]] + self.dataSplit(data[62:], 63)
+		dataChunks = self.dataFramesPrepare(data)
 		
 		for dataChunk in dataChunks:
 			self.hidDevice.write(self.reportID + self.dataFill(dataChunk, 63))
@@ -347,7 +351,7 @@ class MSR605X:
 		self.rawData += self.END_SEQUENCE_W
 		return
 		
-	# Raw string to be written from raw tracks data preparation method
+	# Raw string to be written from raw tracks data preparation method (8-bit mode only for now)
 	def prepareRAWData(self, track1, track2, track3):
 		# Start with start sequence
 		self.rawData = self.START_SEQUENCE
@@ -967,7 +971,7 @@ class Interactive:
 		
 	# RAW mode write method
 	def writeRAW(self, track1, track2, track3):
-		# Otherwise, MSR605X behaves buggy...
+		# The easiest way for now
 		self.setBPC(8, 8, 8)
 		
 		if not self.dataOnlyMode:
@@ -1034,7 +1038,7 @@ class Interactive:
 	
 	# RAW mode card copy method
 	def copyRAW(self):
-		# Otherwise, MSR605X behaves buggy...
+		# The easiest way for now
 		self.setBPC(8, 8, 8)
 		
 		if not self.dataOnlyMode:
