@@ -1,4 +1,4 @@
-# MSR605X utility
+# MSR605X Utility
 
 Python library with additional text user interface to be used as a standalone solution.
 
@@ -181,7 +181,7 @@ Now, if everything finished properly, MSR605X should be available to use without
 | `eraseCard`            | `track1`, `track2`, `track3`           | card erase method (single or even all tracks)                           |
 | `selectBPI`            | `settingByte`                          | bytes per inch setter method (single or even all tracks)                |
 | `readRawData`          | *none*                                 | RAW card read method                                                    |
-| `writeRawData`         | `track1`, `track2`, `track3`           | RAW card write method (buggy - see below)                               |
+| `writeRawData`         | `track1`, `track2`, `track3`           | RAW card write method (**buggy - see below**)                           |
 | `getDeviceModel`       | *none*                                 | device model gathering method                                           |
 | `getFirmwareVersion`   | *none*                                 | firmware version gathering method                                       |
 | `setBPC`               | `track1`, `track2`, `track3`           | bits per character setter method                                        |
