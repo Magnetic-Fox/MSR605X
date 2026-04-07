@@ -5,6 +5,7 @@ Python library with additional text user interface to be used as a standalone so
 ## Introduction
 
 This project aims to be the easiest possible, but fail-safe Python solution for HID-type MSR605X magstripe reader/writer device, which might be used as a library or as a standalone program with typical text user interface.
+Maybe the code isn't the cleanest, but I wanted to make it a one-file solution for ease of use. That's why I decided to write such a detailed readme file, which might be considered a documentation.
 
 ## How it was started?
 
