@@ -257,11 +257,13 @@ def breakProcedure:
 | `argumentExtractor`  | `data`     | string array to task list converter method (e.g. `sys.argv`)                                |
 
 #### Text User Interface methods
-| Name            | Parameters | Description                   |
-| --------------- | ---------- | ----------------------------- |
-| `headerDisplay` | *none*     | program header display method |
-| `displayHelp`   | *none*     | program help display method   |
-| `interpreter`   | *none*     | main interpreter method       |
+| Name              | Parameters                          | Description                    |
+| ----------------- | ----------------------------------- | ------------------------------ |
+| `headerDisplay`   | *none*                              | program header display method  |
+| `displayHelp`     | *none*                              | program help display method    |
+| `ISOdataPrintOut` | `status`, `data1`, `data2`, `data3` | ISO read data print out method |
+| `RAWdataPrintOut` | `status`, `data1`, `data2`, `data3` | RAW read data print out method |
+| `interpreter`     | *none*                              | main interpreter method        |
 
 #### MSR605X command wrappers for Text User Interface 
 | Name                | Parameters                             | Description                                                                |
