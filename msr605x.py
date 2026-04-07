@@ -175,9 +175,16 @@ class MSR605X:
 		
 	# Write automation method (slicing + sending)
 	def writeData(self, data):
-		dataChunks = self.dataSplit(data, 64)
-		for dataChunk in dataChunks:
-			self.hidDevice.write(self.reportID + self.dataFill(dataChunk, 64))
+		dataChunk1 = data[0:62]
+		dataChunksX = self.dataSplit(data[62:], 63)
+		dataChunks = [dataChunk1] + dataChunksX
+		
+		for index in range(len(dataChunks)):
+			if index == 0:
+				self.hidDevice.write(self.reportID + b"\x00" + self.dataFill(dataChunks[index], 62))
+			else:
+				self.hidDevice.write(self.reportID + self.dataFill(dataChunks[index], 63))
+		
 		return
 		
 	# Hard write automation method (filling + sending)
