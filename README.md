@@ -125,7 +125,7 @@ Now, if everything finished properly, MSR605X should be available to use without
 ### Methods
 
 #### Technical methods:
-* `__init__             (vendorID = DEFAULT_VID, productID = DEFAULT_PID, reportID = DEFAULT_RID, timeout = DEFAULT_TIMEOUT, continuousTimeout = DEFAULT_CONTINUOUS_TIMEOUT, breakProcedure = None)` - the easiest constructor, used to initialize class on object creation
+* `__init__             (vendorID, productID, reportID, timeout, continuousTimeout, breakProcedure)` - the easiest constructor, used to initialize class on object creation
 * `__del__              (-)` - kind of a destructor to close device if forgotten
 
 #### Internal helper methods:
@@ -135,7 +135,7 @@ Now, if everything finished properly, MSR605X should be available to use without
 * `dataFill             (data, size)` - data chunk to fixed size filler (filling with zeroes)
 * `writeData            (data)` - data to device writer method
 * `hardWriteData        (data)` - data to device writer method (hard mode - working only with hard reset command)
-* `readData             (continuousTimeout = None)` - data read from device method (with or without continuous timeout; continuous timeout works like a loop with next iterations occurring after short timeout, e.g. 1 second)
+* `readData             (continuousTimeout)` - data read from device method (with or without continuous timeout; continuous timeout works like a loop with next iterations occurring after short timeout, e.g. 1 second)
 * `exportISOData        (-)` - export all tracks ISO data from response from device
 * `exportRAWData        (-)` - export all tracks RAW data from response from device
 * `prepareISOData       (track1, track2, track3)` - ISO tracks data to data block converter
@@ -201,7 +201,7 @@ I hope to find out why it behaves like that and to resolve that issue as soon as
 ## Disclaimer
 
 I've made much effort to provide here working codes with hope they'll be useful and free from any bugs (except for those listed above).
-However I can't guarantee anything. The software and solutions here are provided "AS IS" and **I take no responsibility for anything. You're using them on Your own risk!**
+However I can't guarantee anything. The software is provided here "AS IS" and **I take no responsibility for anything. You're using it on Your own risk!**
 
 ## License
 
