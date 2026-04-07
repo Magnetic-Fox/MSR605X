@@ -43,11 +43,13 @@ Now, if everything finished properly, MSR605X should be available to use without
 ### Constants
 
 #### Default values (VID + PID for MSR605X and additionals)
-* `DEFAULT_VID` =>                  0x0801 (default Vendor ID for MSR605X)
-* `DEFAULT_PID` =>                  0x0003 (default Product ID for MSR605X)
-* `DEFAULT_RID` =>                    0xFF (byte-like; default, working Report ID for MSR605X)
-* `DEFAULT_TIMEOUT` =>                 100 (default, short timeout for readData method in milliseconds)
-* `DEFAULT_CONTINUOUS_TIMEOUT` =>     1000 (default, continuous timeout for continuous read in readData method in milliseconds)
+| Name                         | Value    | Description                                                                        |
+| ---------------------------- | -------- | ---------------------------------------------------------------------------------- |
+| `DEFAULT_VID`                | `0x0801` | default Vendor ID for MSR605X                                                      |
+| `DEFAULT_PID`                | `0x0003` | default Product ID for MSR605X                                                     |
+| `DEFAULT_RID`                | `0xFF`   | byte-like; default, working Report ID for MSR605X                                  |
+| `DEFAULT_TIMEOUT`            | `100`    | default, short timeout for readData method in milliseconds                         |
+| `DEFAULT_CONTINUOUS_TIMEOUT` | `1000`   | default, continuous timeout for continuous read in readData method in milliseconds |
 
 #### Typical constants
 * `ESC` =>                 0x1B     (byte-like; escape character code)
