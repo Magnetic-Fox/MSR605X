@@ -187,7 +187,7 @@ A `break procedure` is a simple piece of code which can decide if readData metho
 It might be useful for situations, where external procedure might want to stop waiting for user to swipe the card.
 
 It can be as easy as (let's say 10 stored in `someInformation` means that we have to break):
-```
+```python
 def breakProcedure:
 	global someInformation
 	return someInformation == 10
