@@ -162,32 +162,32 @@ Now, if everything finished properly, MSR605X should be available to use without
 | `close`                | *none*                  | device close method                                                                      |
 
 #### Actual device command control methods:
-| Name                   | Parameters                             | Description                                                         |
-| ---------------------- | -------------------------------------- | ------------------------------------------------------------------- |
-| `hardReset`            | *none*                                 | hard reset method                                                   |
-| `reset`                | *none*                                 | soft reset method                                                   |
-| `read`                 | *none*                                 | ISO card read method                                                |
-| `write`                | `iso1`, `iso2`, `iso3`                 | ISO card write method (single or even all tracks)                   |
-| `communicationTest`    | *none*                                 | device communication test method                                    |
-| `allLedOff`            | *none*                                 | all LEDs off method                                                 |
-| `allLedOn`             | *none*                                 | all LEDs on method                                                  |
-| `greenLedOn`           | *none*                                 | green LED on method                                                 |
-| `yellowLedOn`          | *none*                                 | yellow LED on method (which in fact turns on GREEN and yellow LEDs) |
-| `redLedOn`             | *none*                                 | red LED on method (which in fact turns OFF green and yellow LEDs)   |
+| Name                   | Parameters                             | Description                                                             |
+| ---------------------- | -------------------------------------- | ----------------------------------------------------------------------- |
+| `hardReset`            | *none*                                 | hard reset method                                                       |
+| `reset`                | *none*                                 | soft reset method                                                       |
+| `read`                 | *none*                                 | ISO card read method                                                    |
+| `write`                | `iso1`, `iso2`, `iso3`                 | ISO card write method (single or even all tracks)                       |
+| `communicationTest`    | *none*                                 | device communication test method                                        |
+| `allLedOff`            | *none*                                 | all LEDs off method                                                     |
+| `allLedOn`             | *none*                                 | all LEDs on method                                                      |
+| `greenLedOn`           | *none*                                 | green LED on method                                                     |
+| `yellowLedOn`          | *none*                                 | yellow LED on method (which in fact turns on GREEN and yellow LEDs)     |
+| `redLedOn`             | *none*                                 | red LED on method (which in fact turns OFF green and yellow LEDs)       |
 | `sensorTest`           | *none*                                 | sensor test method (**PROBABLY UNSUPPORTED COMMAND IN MSR605X**)        |
 | `ramTest`              | *none*                                 | RAM test method (**PROBABLY UNSUPPORTED COMMAND IN MSR605X**)           |
-| `setLeadingZero`       | `leadZeroTrack1and3`, `leadZeroTrack2` | leading zeroes for track 1 & 3 and track 2 setter method            |
-| `checkLeadingZero`     | *none*                                 | leading zeroes gathering method                                     |
-| `eraseCard`            | `track1`, `track2`, `track3`           | card erase method (single or even all tracks)                       |
-| `selectBPI`            | `settingByte`                          | bytes per inch setter method (single or even all tracks)            |
-| `readRawData`          | *none*                                 | RAW card read method                                                |
-| `writeRawData`         | `track1`, `track2`, `track3`           | RAW card write method (buggy - see below)                           |
-| `getDeviceModel`       | *none*                                 | device model gathering method                                       |
-| `getFirmwareVersion`   | *none*                                 | firmware version gathering method                                   |
-| `setBPC`               | `track1`, `track2`, `track3`           | bits per character setter method                                    |
-| `setHiCo`              | *none*                                 | high coercivity card setter method                                  |
-| `setLoCo`              | *none*                                 | low coercivity card setter method                                   |
-| `getCoercivitySetting` | *none*                                 | coercivity setting gathering method                                 |
+| `setLeadingZero`       | `leadZeroTrack1and3`, `leadZeroTrack2` | leading zeroes for track 1 & 3 and track 2 setter method                |
+| `checkLeadingZero`     | *none*                                 | leading zeroes gathering method                                         |
+| `eraseCard`            | `track1`, `track2`, `track3`           | card erase method (single or even all tracks)                           |
+| `selectBPI`            | `settingByte`                          | bytes per inch setter method (single or even all tracks)                |
+| `readRawData`          | *none*                                 | RAW card read method                                                    |
+| `writeRawData`         | `track1`, `track2`, `track3`           | RAW card write method (buggy - see below)                               |
+| `getDeviceModel`       | *none*                                 | device model gathering method                                           |
+| `getFirmwareVersion`   | *none*                                 | firmware version gathering method                                       |
+| `setBPC`               | `track1`, `track2`, `track3`           | bits per character setter method                                        |
+| `setHiCo`              | *none*                                 | high coercivity card setter method                                      |
+| `setLoCo`              | *none*                                 | low coercivity card setter method                                       |
+| `getCoercivitySetting` | *none*                                 | coercivity setting gathering method                                     |
 
 ## Break procedure
 
