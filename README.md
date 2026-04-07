@@ -142,48 +142,52 @@ Now, if everything finished properly, MSR605X should be available to use without
 | `bytesToLSB`     | `msbBytes`                                                                | byte string from MSB to LSB converter method                                                                                                                              |
 | `dataSplit`      | `data`, `size`                                                            | full data to data chunks splitter method                                                                                                                                  |
 | `dataFill`       | `data`, `size`                                                            | data chunk to fixed size filler (filling with zeroes)                                                                                                                     |
-| `writeData`      | `data)`                                                                   | data to device writer method                                                                                                                                              |
-| `hardWriteData`  | `data)`                                                                   | data to device writer method (hard mode - working only with hard reset command)                                                                                           |
+| `writeData`      | `data`                                                                    | data to device writer method                                                                                                                                              |
+| `hardWriteData`  | `data`                                                                    | data to device writer method (hard mode - working only with hard reset command)                                                                                           |
 | `readData`       | `continuousTimeout`                                                       | data read from device method (with or without continuous timeout; continuous timeout works like a loop with next iterations occurring after short timeout, e.g. 1 second) |
 | `exportISOData`  | *none*                                                                    | export all tracks ISO data from response from device                                                                                                                      |
 | `exportRAWData`  | *none*                                                                    | export all tracks RAW data from response from device                                                                                                                      |
-| `prepareISOData` | `track1`, `track2`, `track3)`                                             | ISO tracks data to data block converter                                                                                                                                   |
-| `prepareRAWData` | `track1`, `track2`, `track3)`                                             | RAW tracks data to raw data block converter (with automated byte data to LSB byte data)                                                                                   |
+| `prepareISOData` | `track1`, `track2`, `track3`                                              | ISO tracks data to data block converter                                                                                                                                   |
+| `prepareRAWData` | `track1`, `track2`, `track3`                                              | RAW tracks data to raw data block converter (with automated byte data to LSB byte data)                                                                                   |
 
 #### Initialization methods:
-* `setDevice            (vendorID, productID)` - simple vendor ID and product ID setter method
-* `setReportID          (reportID)` - simple report ID setter method
-* `setTimeout           (timeout)` - simple timeout setter method
-* `setContinuousTimeout (continuousTimeout)` - simple continuous timeout setter method
-* `setBreakProcedure    (breakProcedure)` - continuous read break procedure address setter method (read about break procedure below)
-* `open                 (-)` - device open method
-* `close                (-)` - device close method
+| Name                   | Parameters              | Description                                                                              |
+| ---------------------- | ----------------------- | ---------------------------------------------------------------------------------------- |
+| `setDevice`            | `vendorID`, `productID` | simple vendor ID and product ID setter method                                            |
+| `setReportID`          | `reportID`              | simple report ID setter method                                                           |
+| `setTimeout`           | `timeout`               | simple timeout setter method                                                             |
+| `setContinuousTimeout` | `continuousTimeout`     | simple continuous timeout setter method                                                  |
+| `setBreakProcedure`    | `breakProcedure`        | continuous read break procedure address setter method (read about break procedure below) |
+| `open`                 | *none*                  | device open method                                                                       |
+| `close`                | *none*                  | device close method                                                                      |
 
 #### Actual device command control methods:
-* `hardReset            (-)` - hard reset method
-* `reset                (-)` - soft reset method
-* `read                 (-)` - ISO card read method
-* `write                (iso1, iso2, iso3)` - ISO card write method (single or even all tracks)
-* `communicationTest    (-)` - device communication test method
-* `allLedOff            (-)` - all LEDs off method
-* `allLedOn             (-)` - all LEDs on method
-* `greenLedOn           (-)` - green LED on method
-* `yellowLedOn          (-)` - yellow LED on method (which in fact turns on GREEN and yellow LEDs)
-* `redLedOn             (-)` - red LED on method (which in fact turns OFF green and yellow LEDs)
-* `sensorTest           (-)` - sensor test method (PROBABLY UNSUPPORTED COMMAND IN MSR605X)
-* `ramTest              (-)` - RAM test method (PROBABLY UNSUPPORTED COMMAND IN MSR605X)
-* `setLeadingZero       (leadZeroTrack1and3, leadZeroTrack2)` - leading zeroes for track 1 & 3 and track 2 setter method
-* `checkLeadingZero     (-)` - leading zeroes gathering method
-* `eraseCard            (track1, track2, track3)` - card erase method (single or even all tracks)
-* `selectBPI            (settingByte)` - bytes per inch setter method (single or even all tracks)
-* `readRawData          (-)` - RAW card read method
-* `writeRawData         (track1, track2, track3)` - RAW card write method (buggy - see below)
-* `getDeviceModel       (-)` - device model gathering method
-* `getFirmwareVersion   (-)` - firmware version gathering method
-* `setBPC               (track1, track2, track3)` - bits per character setter method
-* `setHiCo              (-)` - high coercivity card setter method
-* `setLoCo              (-)` - low coercivity card setter method
-* `getCoercivitySetting (-)` - coercivity setting gathering method
+| Name                   | Parameters                             | Description                                                         |
+| ---------------------- | -------------------------------------- | ------------------------------------------------------------------- |
+* `hardReset`            | *none*                                 | hard reset method                                                   |
+* `reset`                | *none*                                 | soft reset method                                                   |
+* `read`                 | *none*                                 | ISO card read method                                                |
+* `write`                | `iso1`, `iso2`, `iso3`                 | ISO card write method (single or even all tracks)                   |
+* `communicationTest`    | *none*                                 | device communication test method                                    |
+* `allLedOff`            | *none*                                 | all LEDs off method                                                 |
+* `allLedOn`             | *none*                                 | all LEDs on method                                                  |
+* `greenLedOn`           | *none*                                 | green LED on method                                                 |
+* `yellowLedOn`          | *none*                                 | yellow LED on method (which in fact turns on GREEN and yellow LEDs) |
+* `redLedOn`             | *none*                                 | red LED on method (which in fact turns OFF green and yellow LEDs)   |
+* `sensorTest`           | *none*                                 | sensor test method (PROBABLY UNSUPPORTED COMMAND IN MSR605X)        |
+* `ramTest`              | *none*                                 | RAM test method (PROBABLY UNSUPPORTED COMMAND IN MSR605X)           |
+* `setLeadingZero`       | `leadZeroTrack1and3`, `leadZeroTrack2` | leading zeroes for track 1 & 3 and track 2 setter method            |
+* `checkLeadingZero`     | *none*                                 | leading zeroes gathering method                                     |
+* `eraseCard`            | `track1`, `track2`, `track3`           | card erase method (single or even all tracks)                       |
+* `selectBPI`            | `settingByte`                          | bytes per inch setter method (single or even all tracks)            |
+* `readRawData`          | *none*                                 | RAW card read method                                                |
+* `writeRawData`         | `track1`, `track2`, `track3`           | RAW card write method (buggy - see below)                           |
+* `getDeviceModel`       | *none*                                 | device model gathering method                                       |
+* `getFirmwareVersion`   | *none*                                 | firmware version gathering method                                   |
+* `setBPC`               | `track1`, `track2`, `track3`           | bits per character setter method                                    |
+* `setHiCo`              | *none*                                 | high coercivity card setter method                                  |
+* `setLoCo`              | *none*                                 | low coercivity card setter method                                   |
+* `getCoercivitySetting` | *none*                                 | coercivity setting gathering method                                 |
 
 ## Break procedure
 
