@@ -31,7 +31,7 @@ TODO, AS I DON'T HAVE ACCESS TO THIS FILE NOW AND SIMPLY CAN'T REMEMBER ITS CONT
 ```
 
 After creating such file, if You don't want to restart Your system, to make this rule work, type in the terminal those two commands:
-```sh
+```shell
 sudo udevadm control --reload-rules
 sudo udevadm trigger
 ```
