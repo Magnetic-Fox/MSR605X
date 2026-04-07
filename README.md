@@ -56,17 +56,14 @@ Now, if everything finished properly, MSR605X should be available to use without
 #### Response constants
 * `NO_DATA` = ESC + b"+" (no data response code)
 * `BAD_DATA` = ESC + b"*" (data read error response code)
-
 * `CMD_OK` = ESC + b"0" (command successful code)
 * `CMD_FAIL` = ESC + b"A" (command fail code)
 * `COMM_OK` = ESC + b"y" (communication OK code)
-
 * `SB_RW_OK` = b"0" (status byte - read/write OK)
 * `SB_RW_ERROR` = b"1" (status byte - read/write error)
 * `SB_CMD_ERROR` = b"2" (status byte - command error)
 * `SB_CMD_INVALID` = b"4" (status byte - invalid command)
 * `SB_SWIPE_ERROR` = b"9" (status byte - card swipe error)
-
 * `HICO_SET` = ESC + b"h" (Hi-Co set response)
 * `LOCO_SET` = ESC + b"l" (Lo-Co set response)
 
@@ -77,15 +74,12 @@ Now, if everything finished properly, MSR605X should be available to use without
 * `ISO1_DATA_START` = ESC + b"\x01" (ISO Track 1 - start sequence)
 * `ISO2_DATA_START` = ESC + b"\x02" (ISO Track 2 - start sequence)
 * `ISO3_DATA_START` = ESC + b"\x03" (ISO Track 3 - start sequence)
-
 * `START_SENTINEL_1` = "%" (ISO 7811, track 1 - start sentinel)
 * `START_SENTINEL_2_3` = ";" (ISO 7811, track 2 and 3 - start sentinel)
 * `END_SENTINEL` = "?" (ISO 7811, all tracks - end sentinel)
-
 * `ISO_TRACK1` = 1 (set track 1 constant - for OR-like operations)
 * `ISO_TRACK2` = 2 (set track 2 constant - for OR-like operations)
 * `ISO_TRACK3` = 4 (set track 3 constant - for OR-like operations)
-
 * `ISO_TRACK1_210BPI` = b"\xa1" (track 1 - 210bpi setting byte)
 * `ISO_TRACK1_75BPI` = b"\xa0" (track 1 - 75bpi setting byte)
 * `ISO_TRACK2_210BPI` = b"\xd2" (track 2 - 210bpi setting byte)
@@ -115,7 +109,6 @@ Now, if everything finished properly, MSR605X should be available to use without
 * `CMD_SET_HICO` = ESC + b"x" (Hi-Co setting command)
 * `CMD_SET_LOCO` = ESC + b"y" (Lo-Co setting command)
 * `CMD_GET_COERCIVITY` = ESC + b"d" (coercivity setting gathering command)
-
 * `FORCE_CMD_MODE` = b"\x00\xc2" (force command start sequence)
 
 #### Probably not supported commands in MSR605X
@@ -185,7 +178,6 @@ It can be as easy as (let's say 10 stored in `someInformation` means that we hav
 ```
 def breakProcedure:
 	global someInformation
-	
 	return someInformation == 10
 ```
 
