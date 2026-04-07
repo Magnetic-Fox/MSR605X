@@ -205,11 +205,11 @@ def breakProcedure:
 
 ### Constants
 
-| Name            | Value                                              | Description                                                                                              |
-| --------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `ISO1_ALPHABET` | ` #$()-./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^` | ISO 7811, Track 1 alphabet, `%` and `?` excluded as they can't be used for data (start and end sentinel) |
-| `ISO2_ALPHABET` | `0123456789=`                                      | ISO 7811, Track 2 alphabet, `;` and `?` excluded as they can't be used for data (start and end sentinel) |
-| `ISO3_ALPHABET` | `0123456789=`                                      | ISO 7811, Track 3 alphabet, `;` and `?` excluded as they can't be used for data (start and end sentinel) |
+| Name            | Value                                                    | Description                                                                                              |
+| --------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `ISO1_ALPHABET` | `{SPACE}#$()-./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^` | ISO 7811, Track 1 alphabet, `%` and `?` excluded as they can't be used for data (start and end sentinel) |
+| `ISO2_ALPHABET` | `0123456789=`                                            | ISO 7811, Track 2 alphabet, `;` and `?` excluded as they can't be used for data (start and end sentinel) |
+| `ISO3_ALPHABET` | `0123456789=`                                            | ISO 7811, Track 3 alphabet, `;` and `?` excluded as they can't be used for data (start and end sentinel) |
 
 ## Bugs
 
