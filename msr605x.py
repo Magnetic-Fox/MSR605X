@@ -624,6 +624,11 @@ class Interactive:
 	# ; and ? excluded as they can't be used for data (start and end sentinel)
 	ISO3_ALPHABET = "0123456789="
 	
+	# Maximum data length for ISO 7811 tracks
+	ISO1_MAXSIZE = 76
+	ISO2_MAXSIZE = 37
+	ISO3_MAXSIZE = 104
+	
 	# METHODS
 	# Constructor
 	def __init__(self, vendorID = 0x0801, productID = 0x0003, reportID = b"\xff"):
@@ -705,10 +710,13 @@ class Interactive:
 				return False
 	
 	# Check if string is valid
-	def isValid(self, alphabet, string):
-		for char in string:
-			if not char in alphabet:
-				return False
+	def isValid(self, alphabet, maxLength, string):
+		if len(string) > maxLength:
+			return False
+		else:
+			for char in string:
+				if not char in alphabet:
+					return False
 		return True
 		
 	# Byte to hex conversion method
@@ -820,7 +828,7 @@ class Interactive:
 			print(" *  Track 1 data check...", end = "")
 			
 		try:
-			if (track1Error := not self.isValid(self.ISO1_ALPHABET, track1)):
+			if (track1Error := not self.isValid(self.ISO1_ALPHABET, self.ISO1_MAXSIZE, track1)):
 				if not self.dataOnlyMode:
 					print(" ERROR!")
 			else:
@@ -835,7 +843,7 @@ class Interactive:
 			print(" *  Track 2 data check...", end = "")
 			
 		try:
-			if (track2Error := not self.isValid(self.ISO2_ALPHABET, track2)):
+			if (track2Error := not self.isValid(self.ISO2_ALPHABET, self.ISO2_MAXSIZE, track2)):
 				if not self.dataOnlyMode:
 					print(" ERROR!")
 			else:
@@ -850,7 +858,7 @@ class Interactive:
 			print(" *  Track 3 data check...", end = "")
 			
 		try:
-			if (track3Error := not self.isValid(self.ISO3_ALPHABET, track3)):
+			if (track3Error := not self.isValid(self.ISO3_ALPHABET, self.ISO3_MAXSIZE, track3)):
 				if not self.dataOnlyMode:
 					print(" ERROR!")
 			else:
@@ -1506,7 +1514,7 @@ class Interactive:
 					elif len(task) == 2:
 						# Card write - ISO mode (track 1 only)
 						if taskCode == "w":
-							if (len(task[1]) > 0) and (self.isValid(self.ISO1_ALPHABET, task[1])):
+							if (len(task[1]) > 0) and (self.isValid(self.ISO1_ALPHABET, self.ISO1_MAXSIZE, task[1])):
 								continue
 							else:
 								# Wrong input
@@ -1561,8 +1569,8 @@ class Interactive:
 					elif len(task) == 3:
 						# Card write - ISO mode (track 1 and 2 only)
 						if taskCode == "w":
-							if self.isValid(self.ISO1_ALPHABET, task[1]):
-								if (len(task[2]) > 0) and (self.isValid(self.ISO2_ALPHABET, task[2])):
+							if self.isValid(self.ISO1_ALPHABET, self.ISO1_MAXSIZE, task[1]):
+								if (len(task[2]) > 0) and (self.isValid(self.ISO2_ALPHABET, self.ISO2_MAXSIZE, task[2])):
 									continue
 								else:
 									# Wrong input
@@ -1626,9 +1634,9 @@ class Interactive:
 					elif len(task) == 4:
 						# Card write - ISO mode (all tracks)
 						if taskCode == "w":
-							if self.isValid(self.ISO1_ALPHABET, task[1]):
-								if self.isValid(self.ISO2_ALPHABET, task[2]):
-									if (len(task[3]) > 0) and (self.isValid(self.ISO3_ALPHABET, task[3])):
+							if self.isValid(self.ISO1_ALPHABET, self.ISO1_MAXSIZE, task[1]):
+								if self.isValid(self.ISO2_ALPHABET, self.ISO2_MAXSIZE, task[2]):
+									if (len(task[3]) > 0) and (self.isValid(self.ISO3_ALPHABET, self.ISO3_MAXSIZE, task[3])):
 										continue
 									else:
 										# Wrong input
