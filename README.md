@@ -174,8 +174,8 @@ Now, if everything finished properly, MSR605X should be available to use without
 | `greenLedOn`           | *none*                                 | green LED on method                                                 |
 | `yellowLedOn`          | *none*                                 | yellow LED on method (which in fact turns on GREEN and yellow LEDs) |
 | `redLedOn`             | *none*                                 | red LED on method (which in fact turns OFF green and yellow LEDs)   |
-| `sensorTest`           | *none*                                 | sensor test method (PROBABLY UNSUPPORTED COMMAND IN MSR605X)        |
-| `ramTest`              | *none*                                 | RAM test method (PROBABLY UNSUPPORTED COMMAND IN MSR605X)           |
+| `sensorTest`           | *none*                                 | sensor test method (**PROBABLY UNSUPPORTED COMMAND IN MSR605X**)        |
+| `ramTest`              | *none*                                 | RAM test method (**PROBABLY UNSUPPORTED COMMAND IN MSR605X**)           |
 | `setLeadingZero`       | `leadZeroTrack1and3`, `leadZeroTrack2` | leading zeroes for track 1 & 3 and track 2 setter method            |
 | `checkLeadingZero`     | *none*                                 | leading zeroes gathering method                                     |
 | `eraseCard`            | `track1`, `track2`, `track3`           | card erase method (single or even all tracks)                       |
