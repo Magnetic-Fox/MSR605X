@@ -798,33 +798,42 @@ class Interactive:
 		status, data1, data2, data3 = self.MSR.read()
 		
 		if (data1 == ""):
-			data1 = "<no data>"
+			if not self.dataOnlyMode:
+				data1 = "<no data>"
+			else:
+				data1 = ""
 		elif (data1 == None):
 			data1 = "<read error>"
 			
 		if (data2 == ""):
-			data2 = "<no data>"
+			if not self.dataOnlyMode:
+				data2 = "<no data>"
+			else:
+				data2 = ""
 		elif (data2 == None):
 			data2 = "<read error>"
 			
 		if (data3 == ""):
-			data3 = "<no data>"
+			if not self.dataOnlyMode:
+				data3 = "<no data>"
+			else:
+				data3 = ""
 		elif (data3 == None):
 			data3 = "<read error>"
 		
-		if status == MSR605X.SB_RW_OK:
-			if not self.dataOnlyMode:
+		if not self.dataOnlyMode:
+			if status == MSR605X.SB_RW_OK:
 				print(" OK!")
-				print(" *  Track 1: " + data1)
-				print(" *  Track 2: " + data2)
-				print(" *  Track 3: " + data3)
 			else:
-				print(data1)
-				print(data2)
-				print(data3)
-		else:
-			if not self.dataOnlyMode:
 				print(" ERROR!")
+				
+			print(" *  Track 1: " + data1)
+			print(" *  Track 2: " + data2)
+			print(" *  Track 3: " + data3)
+		else:
+			print(data1)
+			print(data2)
+			print(data3)
 		
 		return
 		
@@ -930,39 +939,48 @@ class Interactive:
 		status, data1, data2, data3 = self.MSR.readRawData()
 		
 		if (data1 == b""):
-			data1 = "<no data>"
+			if not self.dataOnlyMode:
+				data1 = "<no data>"
+			else:
+				data1 = ""
 		elif (data1 == None):
 			data1 = "<read error>"
 		else:
 			data1 = self.bytesToHex(data1)
 			
 		if (data2 == b""):
-			data2 = "<no data>"
+			if not self.dataOnlyMode:
+				data2 = "<no data>"
+			else:
+				data2 = ""
 		elif (data2 == None):
 			data2 = "<read error>"
 		else:
 			data2 = self.bytesToHex(data2)
 			
 		if (data3 == b""):
-			data3 = "<no data>"
+			if not self.dataOnlyMode:
+				data3 = "<no data>"
+			else:
+				data3 = ""
 		elif (data3 == None):
 			data3 = "<read error>"
 		else:
 			data3 = self.bytesToHex(data3)
 		
-		if status == MSR605X.SB_RW_OK:
-			if not self.dataOnlyMode:
+		if not self.dataOnlyMode:
+			if status == MSR605X.SB_RW_OK:
 				print(" OK!")
-				print(" *  Track 1: " + data1)
-				print(" *  Track 2: " + data2)
-				print(" *  Track 3: " + data3)
 			else:
-				print(data1)
-				print(data2)
-				print(data3)
-		else:
-			if not self.dataOnlyMode:
 				print(" ERROR!")
+				
+			print(" *  Track 1: " + data1)
+			print(" *  Track 2: " + data2)
+			print(" *  Track 3: " + data3)
+		else:
+			print(data1)
+			print(data2)
+			print(data3)
 		
 		return
 		
