@@ -74,26 +74,26 @@ Now, if everything finished properly, MSR605X should be available to use without
 | `LOCO_SET`       | `ESC l` | Lo-Co set response                       |
 
 #### Data sequence, track and ISO constants
-| Name                 | Value      | Description                                                |
-| -------------------- | ---------- | ---------------------------------------------------------- |
-| `START_SEQUENCE`     | `ESC s`    | data sequence start                                        |
-| `END_SEQUENCE_W`     | `? FS`     | data sequence end - for writing                            |
-| `END_SEQUENCE`       | `? FS ESC` | data sequence end - helper for reading                     |
-| `ISO1_DATA_START`    | `ESC 0x01` | ISO Track 1 - start sequence                               |
-| `ISO2_DATA_START`    | `ESC 0x02` | ISO Track 2 - start sequence                               |
-| `ISO3_DATA_START`    | `ESC 0x03` | ISO Track 3 - start sequence                               |
-| `START_SENTINEL_1`   | `%`        | ISO 7811, track 1 - start sentinel                         |
-| `START_SENTINEL_2_3` | `;`        | ISO 7811, track 2 and 3 - start sentinel                   |
-| `END_SENTINEL`       | `?`        | ISO 7811, all tracks - end sentinel                        |
-| `ISO_TRACK1`         | `1`        | set track 1 constant - for OR-like operations (0b00000001) |
-| `ISO_TRACK2`         | `2`        | set track 2 constant - for OR-like operations (0b00000010) |
-| `ISO_TRACK3`         | `4`        | set track 3 constant - for OR-like operations (0b00000100) |
-| `ISO_TRACK1_210BPI`  | `0xA1`     | track 1 - 210bpi setting byte                              |
-| `ISO_TRACK1_75BPI`   | `0xA0`     | track 1 - 75bpi setting byte                               |
-| `ISO_TRACK2_210BPI`  | `0xD2`     | track 2 - 210bpi setting byte                              |
-| `ISO_TRACK2_75BPI`   | `0x4B`     | track 2 - 75bpi setting byte                               |
-| `ISO_TRACK3_210BPI`  | `0xC1`     | track 3 - 210bpi setting byte                              |
-| `ISO_TRACK3_75BPI`   | `0xC0`     | track 3 - 75bpi setting byte                               |
+| Name                 | Value      | Description                                                  |
+| -------------------- | ---------- | ------------------------------------------------------------ |
+| `START_SEQUENCE`     | `ESC s`    | data sequence start                                          |
+| `END_SEQUENCE_W`     | `? FS`     | data sequence end - for writing                              |
+| `END_SEQUENCE`       | `? FS ESC` | data sequence end - helper for reading                       |
+| `ISO1_DATA_START`    | `ESC 0x01` | ISO Track 1 - start sequence                                 |
+| `ISO2_DATA_START`    | `ESC 0x02` | ISO Track 2 - start sequence                                 |
+| `ISO3_DATA_START`    | `ESC 0x03` | ISO Track 3 - start sequence                                 |
+| `START_SENTINEL_1`   | `%`        | ISO 7811, track 1 - start sentinel                           |
+| `START_SENTINEL_2_3` | `;`        | ISO 7811, track 2 and 3 - start sentinel                     |
+| `END_SENTINEL`       | `?`        | ISO 7811, all tracks - end sentinel                          |
+| `ISO_TRACK1`         | `1`        | set track 1 constant - for OR-like operations (`0b00000001`) |
+| `ISO_TRACK2`         | `2`        | set track 2 constant - for OR-like operations (`0b00000010`) |
+| `ISO_TRACK3`         | `4`        | set track 3 constant - for OR-like operations (`0b00000100`) |
+| `ISO_TRACK1_210BPI`  | `0xA1`     | track 1 - 210bpi setting byte                                |
+| `ISO_TRACK1_75BPI`   | `0xA0`     | track 1 - 75bpi setting byte                                 |
+| `ISO_TRACK2_210BPI`  | `0xD2`     | track 2 - 210bpi setting byte                                |
+| `ISO_TRACK2_75BPI`   | `0x4B`     | track 2 - 75bpi setting byte                                 |
+| `ISO_TRACK3_210BPI`  | `0xC1`     | track 3 - 210bpi setting byte                                |
+| `ISO_TRACK3_75BPI`   | `0xC0`     | track 3 - 75bpi setting byte                                 |
 
 #### Command constants
 | Name                  | Value       | Description                               |
@@ -162,32 +162,32 @@ Now, if everything finished properly, MSR605X should be available to use without
 | `close`                | *none*                  | device close method                                                                      |
 
 #### Actual device command control methods
-| Name                   | Parameters                             | Description                                                             |
-| ---------------------- | -------------------------------------- | ----------------------------------------------------------------------- |
-| `hardReset`            | *none*                                 | hard reset method                                                       |
-| `reset`                | *none*                                 | soft reset method                                                       |
-| `read`                 | *none*                                 | ISO card read method                                                    |
-| `write`                | `iso1`, `iso2`, `iso3`                 | ISO card write method (single or even all tracks)                       |
-| `communicationTest`    | *none*                                 | device communication test method                                        |
-| `allLedOff`            | *none*                                 | all LEDs off method                                                     |
-| `allLedOn`             | *none*                                 | all LEDs on method                                                      |
-| `greenLedOn`           | *none*                                 | green LED on method                                                     |
-| `yellowLedOn`          | *none*                                 | yellow LED on method (which in fact turns on GREEN and yellow LEDs)     |
-| `redLedOn`             | *none*                                 | red LED on method (which in fact turns OFF green and yellow LEDs)       |
-| `sensorTest`           | *none*                                 | sensor test method (**PROBABLY UNSUPPORTED COMMAND IN MSR605X**)        |
-| `ramTest`              | *none*                                 | RAM test method (**PROBABLY UNSUPPORTED COMMAND IN MSR605X**)           |
-| `setLeadingZero`       | `leadZeroTrack1and3`, `leadZeroTrack2` | leading zeroes for track 1 & 3 and track 2 setter method                |
-| `checkLeadingZero`     | *none*                                 | leading zeroes gathering method                                         |
-| `eraseCard`            | `track1`, `track2`, `track3`           | card erase method (single or even all tracks)                           |
-| `selectBPI`            | `settingByte`                          | bytes per inch setter method (single or even all tracks)                |
-| `readRawData`          | *none*                                 | RAW card read method                                                    |
-| `writeRawData`         | `track1`, `track2`, `track3`           | RAW card write method (**buggy - see below**)                           |
-| `getDeviceModel`       | *none*                                 | device model gathering method                                           |
-| `getFirmwareVersion`   | *none*                                 | firmware version gathering method                                       |
-| `setBPC`               | `track1`, `track2`, `track3`           | bits per character setter method                                        |
-| `setHiCo`              | *none*                                 | high coercivity card setter method                                      |
-| `setLoCo`              | *none*                                 | low coercivity card setter method                                       |
-| `getCoercivitySetting` | *none*                                 | coercivity setting gathering method                                     |
+| Name                   | Parameters                             | Description                                                         |
+| ---------------------- | -------------------------------------- | ------------------------------------------------------------------- |
+| `hardReset`            | *none*                                 | hard reset method                                                   |
+| `reset`                | *none*                                 | soft reset method                                                   |
+| `read`                 | *none*                                 | ISO card read method                                                |
+| `write`                | `iso1`, `iso2`, `iso3`                 | ISO card write method (single or even all tracks)                   |
+| `communicationTest`    | *none*                                 | device communication test method                                    |
+| `allLedOff`            | *none*                                 | all LEDs off method                                                 |
+| `allLedOn`             | *none*                                 | all LEDs on method                                                  |
+| `greenLedOn`           | *none*                                 | green LED on method                                                 |
+| `yellowLedOn`          | *none*                                 | yellow LED on method (which in fact turns on GREEN and yellow LEDs) |
+| `redLedOn`             | *none*                                 | red LED on method (which in fact turns OFF green and yellow LEDs)   |
+| `sensorTest`           | *none*                                 | sensor test method (**PROBABLY UNSUPPORTED COMMAND IN MSR605X**)    |
+| `ramTest`              | *none*                                 | RAM test method (**PROBABLY UNSUPPORTED COMMAND IN MSR605X**)       |
+| `setLeadingZero`       | `leadZeroTrack1and3`, `leadZeroTrack2` | leading zeroes for track 1 & 3 and track 2 setter method            |
+| `checkLeadingZero`     | *none*                                 | leading zeroes gathering method                                     |
+| `eraseCard`            | `track1`, `track2`, `track3`           | card erase method (single or even all tracks)                       |
+| `selectBPI`            | `settingByte`                          | bytes per inch setter method (single or even all tracks)            |
+| `readRawData`          | *none*                                 | RAW card read method                                                |
+| `writeRawData`         | `track1`, `track2`, `track3`           | RAW card write method (**buggy - see below**)                       |
+| `getDeviceModel`       | *none*                                 | device model gathering method                                       |
+| `getFirmwareVersion`   | *none*                                 | firmware version gathering method                                   |
+| `setBPC`               | `track1`, `track2`, `track3`           | bits per character setter method                                    |
+| `setHiCo`              | *none*                                 | high coercivity card setter method                                  |
+| `setLoCo`              | *none*                                 | low coercivity card setter method                                   |
+| `getCoercivitySetting` | *none*                                 | coercivity setting gathering method                                 |
 
 ## Break procedure
 
@@ -207,45 +207,43 @@ def breakProcedure:
 
 | Name            | Value                                                    | Description                                                                                              |
 | --------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `ISO1_ALPHABET` | `{SPACE}#$()-./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^` | ISO 7811, Track 1 alphabet, `%` and `?` excluded as they can't be used for data (start and end sentinel) |
-| `ISO2_ALPHABET` | `0123456789=`                                            | ISO 7811, Track 2 alphabet, `;` and `?` excluded as they can't be used for data (start and end sentinel) |
-| `ISO3_ALPHABET` | `0123456789=`                                            | ISO 7811, Track 3 alphabet, `;` and `?` excluded as they can't be used for data (start and end sentinel) |
+| `ISO1_ALPHABET` | `{SPACE}#$()-./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^` | ISO 7811, track 1 alphabet; `%` and `?` excluded as they can't be used for data (start and end sentinel) |
+| `ISO2_ALPHABET` | `0123456789=`                                            | ISO 7811, track 2 alphabet; `;` and `?` excluded as they can't be used for data (start and end sentinel) |
+| `ISO3_ALPHABET` | `0123456789=`                                            | ISO 7811, track 3 alphabet; `;` and `?` excluded as they can't be used for data (start and end sentinel) |
 
 ### Methods
 
 #### Technical methods
-| Name       | Parameters                          | Description                                         |
-| ---------- | ----------------------------------- | --------------------------------------------------- |
-| `__init__` | `vendorID`, `productID`, `reportID` | simple constructor to initialize Interactive object |
-| `__del__`  | *none*                              | simple destructor to close device (if forgotten)    |
+| Name       | Parameters                          | Description                                                                                                     |
+| ---------- | ----------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `__init__` | `vendorID`, `productID`, `reportID` | simple constructor to initialize Interactive object (`0x0000` - `0xFFFF`, `0x0000` - `0xFFFF`, `0x00` - `0xFF`) |
+| `__del__`  | *none*                              | simple destructor to close device (if forgotten)                                                                |
 
 #### Device control methods
-| Name               | Parameters  | Description                                                           |
-| ------------------ | ----------- | --------------------------------------------------------------------- |
-| `setVendorID`      | `vendorID`  | vendor ID setter method (uses newDeviceSetting method automatically)  |
-| `setProductID`     | `productID` | product ID setter method (uses newDeviceSetting method automatically) |
-| `setReportID`      | `reportID`  | report ID setter method                                               |
-| `open`             | *none*      | device opening method                                                 |
-| `close`            | *none*      | device closing method                                                 |
+| Name               | Parameters  | Description                                                                                    |
+| ------------------ | ----------- | ---------------------------------------------------------------------------------------------- |
+| `setVendorID`      | `vendorID`  | vendor ID setter method (`0x0000` - `0xFFFF`; executes newDeviceSetting method automatically)  |
+| `setProductID`     | `productID` | product ID setter method (`0x0000` - `0xFFFF`; executes newDeviceSetting method automatically) |
+| `setReportID`      | `reportID`  | report ID setter method (`0x00` - `0xFF`)                                                      |
+| `open`             | *none*      | device opening method                                                                          |
+| `close`            | *none*      | device closing method                                                                          |
 
 #### Internal helper methods
-| Name                 | Parameters           | Description                                                      |
-| -------------------- | -------------------- | ---------------------------------------------------------------- |
-| `newDeviceSetting`   | `state`              | device changing state manipulation method                        |
-| `isValid`            | `alphabet`, `string` | string validator method                                          |
-| `toHex`              | `byte`               | byte to 2-digit hex value converter method                       |
-| `bytesToHex`         | `byteString`         | byte string to 2-digit hex value converter method                |
-| `hexStringToBytes`   | `inputString`        | 2-digit hex values string to byte object converter method        |
-| `isDataOnlySelected` | `taskList`           | is silent mode selection present on the task list checker method |
+| Name                 | Parameters           | Description                                                                                            |
+| -------------------- | -------------------- | ------------------------------------------------------------------------------------------------------ |
+| `newDeviceSetting`   | `state`              | device address changing state manipulation method (`True`/`False`)                                     |
+| `isValid`            | `alphabet`, `string` | string validator method (alphabet and user strings)                                                    |
+| `toHex`              | `byte`               | byte to 2-digit hex value converter method (`0` - `255`)                                               |
+| `bytesToHex`         | `byteString`         | byte string to 2-digit hex value converter method (byte-like object)                                   |
+| `hexStringToBytes`   | `inputString`        | 2-digit hex values string to byte object converter method (string formatted like `46 75 72 72 79 ...`) |
+| `isDataOnlySelected` | `taskList`           | is silent mode selection present on the task list checker method                                       |
 
 #### Interpreter methods
-| Name                 | Parameters | Description                                              |
-| -------------------- | ---------- | -------------------------------------------------------- |
-| `getIntFromString`   | `string`   | string of most popular types to integer converter method |
-| `checkTaskList`      | `taskList` | task list validator method                               |
-| `argumentExtractor`  | `data`     | string array (sys.argv) to task list converter method    |
-
-
+| Name                 | Parameters | Description                                                  |
+| -------------------- | ---------- | ------------------------------------------------------------ |
+| `getIntFromString`   | `string`   | string of most popular types to integer converter method     |
+| `checkTaskList`      | `taskList` | task list validator method                                   |
+| `argumentExtractor`  | `data`     | string array (e.g. `sys.argv`) to task list converter method |
 
 #### Text User Interface methods
 | Name            | Parameters | Description                   |
@@ -263,12 +261,12 @@ def breakProcedure:
 | `readRAW`           | *none*                                 | RAW card read wrapper method                                               |
 | `writeRAW`          | `track1`, `track2`, `track3`           | RAW card write wrapper method (**buggy - see below**)                      |
 | `copyRAW`           | *none*                                 | RAW card copy wrapper method (**buggy - see below**)                       |
-| `setBPC`            | `track1`, `track2`, `track3`           | bits per character setter wrapper method                                   |
-| `setBPI`            | `track1`, `track2`, `track3`           | bits per inch setter wrapper method                                        |
+| `setBPC`            | `track1`, `track2`, `track3`           | bits per character setter wrapper method (`5` - `7`)                       |
+| `setBPI`            | `track1`, `track2`, `track3`           | bits per inch setter wrapper method (`None`, `75`, `210`)                  |
 | `setHiCo`           | *none*                                 | Hi-Co mode setter wrapper method                                           |
 | `setLoCo`           | *none*                                 | Lo-Co mode setter wrapper method                                           |
-| `setLeadingZeroes`  | `leadZeroTrack1and3`, `leadZeroTrack2` | leading zeroes setter wrapper method                                       |
-| `eraseCard`         | `track1`, `track2`, `track3`           | card erase wrapper method                                                  |
+| `setLeadingZeroes`  | `leadZeroTrack1and3`, `leadZeroTrack2` | leading zeroes setter wrapper method (`0` - `255`)                         |
+| `eraseCard`         | `track1`, `track2`, `track3`           | card erase wrapper method (`True`/`False` sets which track to erase)       |
 | `deviceModel`       | *none*                                 | device model gathering wrapper method                                      |
 | `firmwareVersion`   | *none*                                 | device firmware version gathering wrapper method                           |
 | `allLEDOff`         | *none*                                 | all LEDs off wrapper method                                                |
@@ -292,6 +290,10 @@ This makes writeRawData method partly unusable, when the whole command size exce
 RAW write and card copy works of course, but not for huge amount of data/big cards.
 
 I hope to find out why it behaves like that and to resolve that issue as soon as possible.
+
+Can't say it is really a bug, but RAW card writing (so, copying too) needs to be done after setting 8 bits per character data interpretation for all tracks.
+Without doing so, MSR605X behaves a bit buggy (e.g. sometimes want data in LSB format, sometimes not). As I have seen so far, MSRX program allows RAW card writing in 8 bits per character format only.
+I'll do some research yet, but I think it's just normal behavior for this device.
 
 ## Disclaimer
 
