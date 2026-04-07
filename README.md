@@ -130,23 +130,25 @@ Now, if everything finished properly, MSR605X should be available to use without
 ### Methods
 
 #### Technical methods:
-| Name       | Parameters                                                                | Description                                                          |
-| ---------- | ------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| `__init__` | vendorID, productID, reportID, timeout, continuousTimeout, breakProcedure | the easiest constructor, used to initialize class on object creation |
-| `__del__`  | *none*                                                                    | kind of a destructor to close device if forgotten                    |
+| Name       | Parameters                                                                            | Description                                                          |
+| ---------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `__init__` | `vendorID`, `productID`, `reportID`, `timeout`, `continuousTimeout`, `breakProcedure` | the easiest constructor, used to initialize class on object creation |
+| `__del__`  | *none*                                                                                | kind of a destructor to close device if forgotten                    |
 
 #### Internal helper methods:
-* `toLSB                (msbByte)` - byte from MSB to LSB converter
-* `bytesToLSB           (msbBytes)` - byte string from MSB to LSB converter method
-* `dataSplit            (data, size)` - full data to data chunks splitter method
-* `dataFill             (data, size)` - data chunk to fixed size filler (filling with zeroes)
-* `writeData            (data)` - data to device writer method
-* `hardWriteData        (data)` - data to device writer method (hard mode - working only with hard reset command)
-* `readData             (continuousTimeout)` - data read from device method (with or without continuous timeout; continuous timeout works like a loop with next iterations occurring after short timeout, e.g. 1 second)
-* `exportISOData        (-)` - export all tracks ISO data from response from device
-* `exportRAWData        (-)` - export all tracks RAW data from response from device
-* `prepareISOData       (track1, track2, track3)` - ISO tracks data to data block converter
-* `prepareRAWData       (track1, track2, track3)` - RAW tracks data to raw data block converter (with automated byte data to LSB byte data)
+| Name             | Parameters                                                                | Description                                                                                                                                                               |
+| ---------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `toLSB`          | `msbByte`                                                                 | byte from MSB to LSB converter                                                                                                                                            |
+| `bytesToLSB`     | `msbBytes`                                                                | byte string from MSB to LSB converter method                                                                                                                              |
+| `dataSplit`      | `data`, `size`                                                            | full data to data chunks splitter method                                                                                                                                  |
+| `dataFill`       | `data`, `size`                                                            | data chunk to fixed size filler (filling with zeroes)                                                                                                                     |
+| `writeData`      | `data)`                                                                   | data to device writer method                                                                                                                                              |
+| `hardWriteData`  | `data)`                                                                   | data to device writer method (hard mode - working only with hard reset command)                                                                                           |
+| `readData`       | `continuousTimeout`                                                       | data read from device method (with or without continuous timeout; continuous timeout works like a loop with next iterations occurring after short timeout, e.g. 1 second) |
+| `exportISOData`  | *none*                                                                    | export all tracks ISO data from response from device                                                                                                                      |
+| `exportRAWData`  | *none*                                                                    | export all tracks RAW data from response from device                                                                                                                      |
+| `prepareISOData` | `track1`, `track2`, `track3)`                                             | ISO tracks data to data block converter                                                                                                                                   |
+| `prepareRAWData` | `track1`, `track2`, `track3)`                                             | RAW tracks data to raw data block converter (with automated byte data to LSB byte data)                                                                                   |
 
 #### Initialization methods:
 * `setDevice            (vendorID, productID)` - simple vendor ID and product ID setter method
