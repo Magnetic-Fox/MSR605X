@@ -129,13 +129,13 @@ Now, if everything finished properly, MSR605X should be available to use without
 
 ### Methods
 
-#### Technical methods:
+#### Technical methods
 | Name       | Parameters                                                                            | Description                                                          |
 | ---------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
 | `__init__` | `vendorID`, `productID`, `reportID`, `timeout`, `continuousTimeout`, `breakProcedure` | the easiest constructor, used to initialize class on object creation |
 | `__del__`  | *none*                                                                                | kind of a destructor to close device if forgotten                    |
 
-#### Internal helper methods:
+#### Internal helper methods
 | Name             | Parameters                                                                | Description                                                                                                                                                               |
 | ---------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `toLSB`          | `msbByte`                                                                 | byte from MSB to LSB converter                                                                                                                                            |
@@ -150,7 +150,7 @@ Now, if everything finished properly, MSR605X should be available to use without
 | `prepareISOData` | `track1`, `track2`, `track3`                                              | ISO tracks data to data block converter                                                                                                                                   |
 | `prepareRAWData` | `track1`, `track2`, `track3`                                              | RAW tracks data to raw data block converter (with automated byte data to LSB byte data)                                                                                   |
 
-#### Initialization methods:
+#### Initialization methods
 | Name                   | Parameters              | Description                                                                              |
 | ---------------------- | ----------------------- | ---------------------------------------------------------------------------------------- |
 | `setDevice`            | `vendorID`, `productID` | simple vendor ID and product ID setter method                                            |
@@ -161,7 +161,7 @@ Now, if everything finished properly, MSR605X should be available to use without
 | `open`                 | *none*                  | device open method                                                                       |
 | `close`                | *none*                  | device close method                                                                      |
 
-#### Actual device command control methods:
+#### Actual device command control methods
 | Name                   | Parameters                             | Description                                                             |
 | ---------------------- | -------------------------------------- | ----------------------------------------------------------------------- |
 | `hardReset`            | *none*                                 | hard reset method                                                       |
@@ -211,9 +211,82 @@ def breakProcedure:
 | `ISO2_ALPHABET` | `0123456789=`                                            | ISO 7811, Track 2 alphabet, `;` and `?` excluded as they can't be used for data (start and end sentinel) |
 | `ISO3_ALPHABET` | `0123456789=`                                            | ISO 7811, Track 3 alphabet, `;` and `?` excluded as they can't be used for data (start and end sentinel) |
 
+### Methods
+
+#### Technical methods
+| Name       | Parameters                          | Description                                         |
+| ---------- | ----------------------------------- | --------------------------------------------------- |
+| `__init__` | `vendorID`, `productID`, `reportID` | simple constructor to initialize Interactive object |
+| `__del__`  | *none*                              | simple destructor to close device (if forgotten)    |
+
+#### Device control methods
+| Name               | Parameters  | Description                                                           |
+| ------------------ | ----------- | --------------------------------------------------------------------- |
+| `setVendorID`      | `vendorID`  | vendor ID setter method (uses newDeviceSetting method automatically)  |
+| `setProductID`     | `productID` | product ID setter method (uses newDeviceSetting method automatically) |
+| `setReportID`      | `reportID`  | report ID setter method                                               |
+| `open`             | *none*      | device opening method                                                 |
+| `close`            | *none*      | device closing method                                                 |
+
+#### Internal helper methods
+| Name                 | Parameters           | Description                                                      |
+| -------------------- | -------------------- | ---------------------------------------------------------------- |
+| `newDeviceSetting`   | `state`              | device changing state manipulation method                        |
+| `isValid`            | `alphabet`, `string` | string validator method                                          |
+| `toHex`              | `byte`               | byte to 2-digit hex value converter method                       |
+| `bytesToHex`         | `byteString`         | byte string to 2-digit hex value converter method                |
+| `hexStringToBytes`   | `inputString`        | 2-digit hex values string to byte object converter method        |
+| `isDataOnlySelected` | `taskList`           | is silent mode selection present on the task list checker method |
+
+#### Interpreter methods
+| Name                 | Parameters | Description                                              |
+| -------------------- | ---------- | -------------------------------------------------------- |
+| `getIntFromString`   | `string`   | string of most popular types to integer converter method |
+| `checkTaskList`      | `taskList` | task list validator method                               |
+| `argumentExtractor`  | `data`     | string array (sys.argv) to task list converter method    |
+
+
+
+#### Text User Interface methods
+| Name            | Parameters | Description                   |
+| --------------- | ---------- | ----------------------------- |
+| `headerDisplay` | *none*     | program header display method |
+| `displayHelp`   | *none*     | program help display method   |
+| `interpreter`   | *none*     | main interpreter method       |
+
+#### MSR605X command wrappers for Text User Interface 
+| Name                | Parameters                             | Description                                                                |
+| ------------------- | -------------------------------------- | -------------------------------------------------------------------------- |
+| `readISO`           | *none*                                 | ISO card read wrapper method                                               |
+| `writeISO`          | `track1`, `track2`, `track3`           | ISO card write wrapper method                                              |
+| `copyISO`           | *none*                                 | ISO card copy wrapper method                                               |
+| `readRAW`           | *none*                                 | RAW card read wrapper method                                               |
+| `writeRAW`          | `track1`, `track2`, `track3`           | RAW card write wrapper method (**buggy - see below**)                      |
+| `copyRAW`           | *none*                                 | RAW card copy wrapper method (**buggy - see below**)                       |
+| `setBPC`            | `track1`, `track2`, `track3`           | bits per character setter wrapper method                                   |
+| `setBPI`            | `track1`, `track2`, `track3`           | bits per inch setter wrapper method                                        |
+| `setHiCo`           | *none*                                 | Hi-Co mode setter wrapper method                                           |
+| `setLoCo`           | *none*                                 | Lo-Co mode setter wrapper method                                           |
+| `setLeadingZeroes`  | `leadZeroTrack1and3`, `leadZeroTrack2` | leading zeroes setter wrapper method                                       |
+| `eraseCard`         | `track1`, `track2`, `track3`           | card erase wrapper method                                                  |
+| `deviceModel`       | *none*                                 | device model gathering wrapper method                                      |
+| `firmwareVersion`   | *none*                                 | device firmware version gathering wrapper method                           |
+| `allLEDOff`         | *none*                                 | all LEDs off wrapper method                                                |
+| `greenLED`          | *none*                                 | green LED on wrapper method                                                |
+| `greenAndYellowLED` | *none*                                 | green and yellow LEDs on (yellowLedOn wrapper) method                      |
+| `redLED`            | *none*                                 | red LED on wrapper method                                                  |
+| `allLEDOn`          | *none*                                 | all LEDs on wrapper method                                                 |
+| `communicationTest` | *none*                                 | communication test wrapper method                                          |
+| `getLeadingZeroes`  | *none*                                 | leading zeroes setting gathering wrapper method                            |
+| `getCoercivity`     | *none*                                 | coercivity setting wrapper method                                          |
+| `sensorTest`        | *none*                                 | sensor test wrapper method (**OPERATION PROBABLY UNSUPPORTED IN MSR605X**) |
+| `RAMTest`           | *none*                                 | RAM test wrapper method (**OPERATION PROBABLY UNSUPPORTED IN MSR605X**)    |
+| `softReset`         | *none*                                 | soft reset wrapper method                                                  |
+| `hardReset`         | *none*                                 | hard reset wrapper method                                                  |
+
 ## Bugs
 
-Unfortunately, yes. But limited to RAW writing and copying only (as far as I was able to test everything).
+Unfortunately, yes. But limited to RAW card writing and copying only (as far as I was able to test everything).
 For unknown reasons, sending more than two data packets to the MSR605X device makes it reject incomming command (which has to be fragmentarized to be sent as a whole).
 This makes writeRawData method partly unusable, when the whole command size exceeds 127 bytes, which of course affect RAW writing and copying a card.
 RAW write and card copy works of course, but not for huge amount of data/big cards.
@@ -227,7 +300,7 @@ However I can't guarantee anything. The software is provided here "AS IS" and **
 
 ## License
 
-Free, with respect to the author (me).
+Free. Use with respect to the author (me).
 
 Bartłomiej "Magnetic-Fox" Węgrzyn,
 April 7, 2026
