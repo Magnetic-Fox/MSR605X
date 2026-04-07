@@ -6,7 +6,7 @@ Python library with additional text user interface to be used as a standalone so
 
 This project aims to be the easiest possible, but fail-safe Python solution for HID-type MSR605X magstripe reader/writer device, which might be used as a library or as a standalone program with typical text user interface.
 
-## How it was started
+## How it was started?
 
 Last time I (finally!) moved to the Linux Mint system (which I really love).
 However, I couldn't make official MSRX program run properly under Wine (which was a bit shocking as Wine is a very good solution and MSRX seems to be one of the easiest piece of software to run) and the other MSR-related projects found on the internet just weren't working for me for strange reasons (assertion errors, etc.).
@@ -14,7 +14,7 @@ I then decided to start something really simple to be able to read and write ISO
 I thought it would probably never work, but when the first operations succeeded, I wanted to go further - that's how `MSR605X` class was written.
 And when it was ready to use I started writing `Interactive` class to provide basic text user interface support.
 
-## Dependencies (what is needed to run this code)?
+## Dependencies (what is needed to run this code?)
 
 The only additional library that is needed to run this code is `hid` library, which on Linux Mint can be found in APT under the name `python3-hid` (where it is described as "cython3 interface to hidapi").
 The `sys` library (which You can find in imports at the top of this code) is here only for user input/output support (interpreter).
