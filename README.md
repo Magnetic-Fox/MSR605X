@@ -130,8 +130,9 @@ Now, if everything finished properly, MSR605X should be available to use without
 ### Methods
 
 #### Technical methods:
-* `__init__             (vendorID, productID, reportID, timeout, continuousTimeout, breakProcedure)` - the easiest constructor, used to initialize class on object creation
-* `__del__              (-)` - kind of a destructor to close device if forgotten
+| Name       | Parameters                                                                | Description                                                          |
+| `__init__` | vendorID, productID, reportID, timeout, continuousTimeout, breakProcedure | the easiest constructor, used to initialize class on object creation |
+| `__del__`  | *none*                                                                    | kind of a destructor to close device if forgotten                    |
 
 #### Internal helper methods:
 * `toLSB                (msbByte)` - byte from MSB to LSB converter
