@@ -1075,7 +1075,6 @@ class Interactive:
 		
 		if data[0] == MSR605X.SB_RW_OK:
 			if not self.dataOnlyMode:
-				#print(" OK!")
 				self.RAWdataPrintOut(data[0], data[1], data[2], data[3])
 				print("RAW copy, please swipe a target card...", end = "")
 				sys.stdout.flush()
