@@ -137,10 +137,10 @@ Now, if everything finished properly, MSR605X should be available to use without
 ### Methods
 
 #### Technical methods
-| Name       | Parameters                                                                            | Description                                                                                                              |
-| ---------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `__init__` | `vendorID`, `productID`, `reportID`, `timeout`, `continuousTimeout`, `breakProcedure` | constructor, used to initialize class on object creation (2x `0x0000` - `0xFFFF`, `0x00` - `0xFF`, 2x `int`, `function`) |
-| `__del__`  | *none*                                                                                | destructor, used to close device if forgotten                                                                            |
+| Name       | Parameters                                                                            | Description                                                                                                                        |
+| ---------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `__init__` | `vendorID`, `productID`, `reportID`, `timeout`, `continuousTimeout`, `breakProcedure` | constructor, used to initialize class on object creation (2x `0x0000` - `0xFFFF`, `0x00` - `0xFF`, 2x `int`, `function` or `None`) |
+| `__del__`  | *none*                                                                                | destructor, used to close device if forgotten                                                                                      |
 
 #### Internal helper methods
 | Name             | Parameters                                                                | Description                                                                                                                                                                      |
