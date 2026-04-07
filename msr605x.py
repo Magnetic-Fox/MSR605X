@@ -127,7 +127,7 @@ class MSR605X:
 		return
 		
 	# Timeout method set method
-	def setTimout(self, timeout):
+	def setTimeout(self, timeout):
 		self.timeout = timeout
 		return
 		
