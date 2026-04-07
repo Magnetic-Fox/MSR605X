@@ -2,7 +2,7 @@
 
 # Simple MSR605X driver
 #
-# by Magnetic-Fox, 02-06.04.2026
+# by Magnetic-Fox, 02-07.04.2026
 #
 # (C)2026 Bartłomiej "Magnetic-Fox" Węgrzyn
 
@@ -777,14 +777,14 @@ class Interactive:
 			print("Leading zeroes:                             Other card operations:")
 			print("  -z 61 22           - set T1&3 T2 (0-255)    -e 1 [2 [3]]       - erase tracks")
 			print("")
-			print("Miscellaneous:                              Device status:")
+			print("Misc. (* - OK only with device commands):   Device status:")
 			print("  -m                 - device model           -tc                - comm. test")
 			print("  -f                 - firmware version       -zs                - lead zeroes")
 			print("  -i<0-4>            - LED control (4: all)   -gc                - coercivity")
 			print("  -p                 - data only output       -ts                - sensor test")
-			print("  -vid 0x0801        - set vendor ID          -tr                - RAM test")
-			print("  -pid 0x0003        - set product ID         -sr                - soft reset")
-			print("  -rid 0xFF          - set report ID          -hr                - hard reset")
+			print("  -vid 0x0801        - set vendor ID  *       -tr                - RAM test")
+			print("  -pid 0x0003        - set product ID *       -sr                - soft reset")
+			print("  -rid 0xFF          - set report ID  *       -hr                - hard reset")
 		return
 	
 	# ISO 7811 mode read method
@@ -1764,6 +1764,15 @@ class Interactive:
 			return self.taskList.index(["-p"]) > -1
 		except:
 			return False
+			
+	# Is only device address and report ID settings on the task list check method
+	def isOnlyDeviceSettingsOnList(self, taskList):
+		tempList = []
+		
+		for task in taskList:
+			tempList += [task[0]]
+		
+		return set(tempList).issubset(set(["-vid", "-pid", "-rid"]))
 		
 	# Interpreter method
 	def interpreter(self):
@@ -1775,8 +1784,11 @@ class Interactive:
 		else:
 			# Extract arguments
 			self.taskList = self.argumentExtractor(sys.argv[1:])
+			if self.isOnlyDeviceSettingsOnList(self.taskList):
+				self.headerDisplay()
+				self.displayHelp()
 			# Check if arguments are correct
-			if self.checkTaskList(self.taskList):
+			elif self.checkTaskList(self.taskList):
 				# Check if "silent mode" is to be enabled
 				if self.isDataOnlySelected(self.taskList):
 					# Delete all occurrences of "-p" command on the list
