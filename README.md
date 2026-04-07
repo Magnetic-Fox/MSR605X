@@ -143,19 +143,20 @@ Now, if everything finished properly, MSR605X should be available to use without
 | `__del__`  | *none*                                                                                | destructor, used to close device if forgotten                                                                                      |
 
 #### Internal helper methods
-| Name             | Parameters                                                                | Description                                                                                                                                                                      |
-| ---------------- | ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `toLSB`          | `msbByte`                                                                 | byte from MSB to LSB converter (`0` - `255`)                                                                                                                                     |
-| `bytesToLSB`     | `msbBytes`                                                                | byte string from MSB to LSB converter method (`byte-like object`)                                                                                                                |
-| `dataSplit`      | `data`, `size`                                                            | full data to data chunks splitter method (`byte-like object`, `int`)                                                                                                             |
-| `dataFill`       | `data`, `size`                                                            | data chunk to fixed size filler (filling with zeroes) (`byte-like object`, `int`)                                                                                                |
-| `writeData`      | `data`                                                                    | data to device writer method (`byte-like object`)                                                                                                                                |
-| `hardWriteData`  | `data`                                                                    | data to device writer method (hard mode - working only with hard reset command; `byte-like object`)                                                                              |
-| `readData`       | `continuousTimeout`                                                       | data read from device method (with or without continuous timeout; continuous timeout works like a loop with next iterations occurring after short timeout, e.g. 1 second; `int`) |
-| `exportISOData`  | *none*                                                                    | export all tracks ISO data from response from device                                                                                                                             |
-| `exportRAWData`  | *none*                                                                    | export all tracks RAW data from response from device                                                                                                                             |
-| `prepareISOData` | `track1`, `track2`, `track3`                                              | ISO tracks data to data block converter (`string`s)                                                                                                                              |
-| `prepareRAWData` | `track1`, `track2`, `track3`                                              | RAW tracks data to raw data block converter (with automated byte data to LSB byte data; `byte-like object`s)                                                                     |
+| Name                | Parameters                                                                | Description                                                                                                                                                                      |
+| ------------------- | ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `toLSB`             | `msbByte`                                                                 | byte from MSB to LSB converter (`0` - `255`)                                                                                                                                     |
+| `bytesToLSB`        | `msbBytes`                                                                | byte string from MSB to LSB converter method (`byte-like object`)                                                                                                                |
+| `dataSplit`         | `data`, `size`                                                            | full data to data chunks splitter method (`byte-like object`, `int`)                                                                                                             |
+| `dataFill`          | `data`, `size`                                                            | data chunk to fixed size filler (filling with zeroes) (`byte-like object`, `int`)                                                                                                |
+| `dataFramesPrepare` | `data`                                                                    | data frames to be sent to the HID device preparation method                                                                                                                      |
+| `writeData`         | `data`                                                                    | data to device writer method (`byte-like object`)                                                                                                                                |
+| `hardWriteData`     | `data`                                                                    | data to device writer method (hard mode - working only with hard reset command; `byte-like object`)                                                                              |
+| `readData`          | `continuousTimeout`                                                       | data read from device method (with or without continuous timeout; continuous timeout works like a loop with next iterations occurring after short timeout, e.g. 1 second; `int`) |
+| `exportISOData`     | *none*                                                                    | export all tracks ISO data from response from device                                                                                                                             |
+| `exportRAWData`     | *none*                                                                    | export all tracks RAW data from response from device                                                                                                                             |
+| `prepareISOData`    | `track1`, `track2`, `track3`                                              | ISO tracks data to data block converter (`string`s)                                                                                                                              |
+| `prepareRAWData`    | `track1`, `track2`, `track3`                                              | RAW tracks data to raw data block converter (with automated byte data to LSB byte data; `byte-like object`s)                                                                     |
 
 #### Initialization methods
 | Name                   | Parameters              | Description                                                                                           |
@@ -188,7 +189,7 @@ Now, if everything finished properly, MSR605X should be available to use without
 | `eraseCard`            | `track1`, `track2`, `track3`           | card erase method (single or even all tracks; 3x `True`/`False`)          |
 | `selectBPI`            | `settingByte`                          | bytes per inch setter method (`byte-like object`)                         |
 | `readRawData`          | *none*                                 | RAW card read method                                                      |
-| `writeRawData`         | `track1`, `track2`, `track3`           | RAW card write method (`byte-like object`s; **buggy - see below**)        |
+| `writeRawData`         | `track1`, `track2`, `track3`           | RAW card write method (`byte-like object`s)                               |
 | `getDeviceModel`       | *none*                                 | device model gathering method                                             |
 | `getFirmwareVersion`   | *none*                                 | firmware version gathering method                                         |
 | `setBPC`               | `track1`, `track2`, `track3`           | bits per character setter method (3x `5` - `8`)                           |
@@ -239,14 +240,15 @@ def breakProcedure:
 | `close`            | *none*      | device closing method                                                                          |
 
 #### Internal helper methods
-| Name                 | Parameters                  | Description                                                                                                        |
-| -------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `newDeviceSetting`   | `state`                     | device address changing state manipulation method (`True`/`False`)                                                 |
-| `isValid`            | `alphabet`, `int`, `string` | string validator method (alphabet `string`, maximum data length as `int`, user `string`)                           |
-| `toHex`              | `byte`                      | byte to 2-digit hex value converter method (`0` - `255`)                                                           |
-| `bytesToHex`         | `byteString`                | byte string to 2-digit hex value converter method (`byte-like object`)                                             |
-| `hexStringToBytes`   | `inputString`               | 2-digit hex values string to byte object converter method (string formatted like `46 55 52 52 59 ...`)             |
-| `isDataOnlySelected` | `taskList`                  | is silent mode selection present on the task list checker method (e.g. output from the `argumentExtractor` method) |
+| Name                         | Parameters                  | Description                                                                                                        |
+| ---------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `newDeviceSetting`           | `state`                     | device address changing state manipulation method (`True`/`False`)                                                 |
+| `isValid`                    | `alphabet`, `int`, `string` | string validator method (alphabet `string`, maximum data length as `int`, user `string`)                           |
+| `toHex`                      | `byte`                      | byte to 2-digit hex value converter method (`0` - `255`)                                                           |
+| `bytesToHex`                 | `byteString`                | byte string to 2-digit hex value converter method (`byte-like object`)                                             |
+| `hexStringToBytes`           | `inputString`               | 2-digit hex values string to byte object converter method (string formatted like `46 55 52 52 59 ...`)             |
+| `isDataOnlySelected`         | `taskList`                  | is silent mode selection present on the task list checker method (e.g. output from the `argumentExtractor` method) |
+| `isOnlyDeviceSettingsOnList` | `taskList`                  | is only device address and report ID settings on the task list checker method                                      |
 
 #### Interpreter methods
 | Name                 | Parameters | Description                                                                                 |
@@ -269,8 +271,8 @@ def breakProcedure:
 | `writeISO`          | `track1`, `track2`, `track3`           | ISO card write wrapper method (`string`s)                                  |
 | `copyISO`           | *none*                                 | ISO card copy wrapper method                                               |
 | `readRAW`           | *none*                                 | RAW card read wrapper method                                               |
-| `writeRAW`          | `track1`, `track2`, `track3`           | RAW card write wrapper method (`hexString`s; **buggy - see below**)        |
-| `copyRAW`           | *none*                                 | RAW card copy wrapper method (**buggy - see below**)                       |
+| `writeRAW`          | `track1`, `track2`, `track3`           | RAW card write wrapper method (`hexString`s; 8-bit mode only for now)      |
+| `copyRAW`           | *none*                                 | RAW card copy wrapper method (8-bit mode only for now)                     |
 | `setBPC`            | `track1`, `track2`, `track3`           | bits per character setter wrapper method (`5` - `8`)                       |
 | `setBPI`            | `track1`, `track2`, `track3`           | bits per inch setter wrapper method (3x `None`, `75` or `210`)             |
 | `setHiCo`           | *none*                                 | Hi-Co mode setter wrapper method                                           |
@@ -366,10 +368,6 @@ Any write operation (card erase and copy included) will obviously fail in such s
 It is even possible to do it this way:
 `./msr605x.py -h -w "TEST" "123" "456"`
 
-### RAW writing of long data or copying big cards ends with error
-
-Please refer to the "Bugs" section.
-
 ### Why turning on the yellow LED turns on green too?
 
 That's the way manufacturer created this device. Yellow LED on command in fact turns on green and yellow and turns off the red one.
@@ -378,35 +376,14 @@ That's the way manufacturer created this device. Yellow LED on command in fact t
 
 Yup, unfortunately. This command actually turns off green and yellow LED and turns on the red one.
 
-### RAW write sets 8 bits per character for all tracks - why?
-
-Please refer to the "Bugs" section.
-
 ## Devices used for testing
 
 I only have one MSR605X device, which announces itself to the system as `DEFTUN MSR Reader in FS Mode` / `MagTek Magstripe Insert Reader` (`0801:0003`).
 It is possible that there are devices compatible with MSR605X that will not work with this solution. If You can test it - please, tell me if something don't work.
 
-## Bugs
-
-Unfortunately, yes. But limited to RAW card writing and copying only (as far as I was able to test everything).
-For unknown reasons, sending more than two data packets to the MSR605X device makes it reject incomming command (which has to be fragmentarized to be sent as a whole).
-This makes writeRawData method partly unusable, when the whole command size exceeds 127 bytes, which of course affect RAW writing and copying a card.
-RAW write and card copy works of course, but not for huge amount of data/big cards.
-
-I hope to find out why it behaves like that and to resolve that issue as soon as possible.
-
-Can't say it is really a bug, but RAW card writing (so, copying too) needs to be done after setting 8 bits per character data interpretation for all tracks.
-Without doing so, MSR605X behaves a bit buggy (e.g. sometimes want data in LSB format, sometimes not). As I have seen so far, MSRX program allows RAW card writing in 8 bits per character format only.
-I'll do some research yet, but I think it's just normal behavior for this device.
-
-### Hope for some help
-
-If You know anything technical about MSR605X (and not a MSR605) which may help to address those issues, please contact me.
-
 ## Disclaimer
 
-I've made much effort to provide here working codes with hope they'll be useful and free from any bugs (except for those listed above).
+I've made much effort to provide here working codes with hope they'll be useful and free from any bugs.
 However I can't guarantee anything. The software is provided here "AS IS" and **I take no responsibility for anything. You're using it on Your own risk!**
 
 ## License
