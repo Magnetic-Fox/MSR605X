@@ -642,9 +642,6 @@ class Interactive:
 		self.vid = vendorID
 		self.pid = productID
 		self.rid = reportID
-		self.oldVID = self.vid
-		self.oldPID = self.pid
-		self.oldRID = self.rid
 		self.dataOnlyMode = False
 		self.deviceOpened = False
 		self.settingNewDevice = True
@@ -702,7 +699,7 @@ class Interactive:
 	def close(self):
 		if self.deviceOpened:
 			if not self.dataOnlyMode:
-				print("Closing device at " + "{:04x}".format(self.oldVID).upper() + ":" + "{:04x}".format(self.oldPID).upper() + " with report ID = " + "{:02x}".format(self.oldRID[0]).upper() + "...", end = "")
+				print("Closing device at " + "{:04x}".format(self.vid).upper() + ":" + "{:04x}".format(self.pid).upper() + " with report ID = " + "{:02x}".format(self.rid[0]).upper() + "...", end = "")
 				sys.stdout.flush()
 			
 			try:
@@ -1803,16 +1800,13 @@ class Interactive:
 							# Vendor ID change command
 							if taskCode == "vid":
 								self.newDeviceSetting()
-								self.oldVID = self.vid
 								self.setVendorID(self.getIntFromString(task[1]))
 							# Product ID change command
 							elif taskCode == "pid":
 								self.newDeviceSetting()
-								self.oldPID = self.pid
 								self.setProductID(self.getIntFromString(task[1]))
 							# Report ID change command
 							elif taskCode == "rid":
-								self.oldRID = self.rid
 								self.setReportID(self.getIntFromString(task[1]).to_bytes())
 						else:
 							# Close and open the device on address change (also on the first iteration)
