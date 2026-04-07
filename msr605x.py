@@ -25,6 +25,21 @@ class MSR605X:
 	DEFAULT_TIMEOUT = 100
 	DEFAULT_CONTINUOUS_TIMEOUT = 1000
 	
+	# ISO 7811
+	# % and ? excluded as they can't be used for data (start and end sentinel)
+	ISO1_ALPHABET = " #$()-./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^"
+	
+	# ; and ? excluded as they can't be used for data (start and end sentinel)
+	ISO2_ALPHABET = "0123456789="
+	
+	# ; and ? excluded as they can't be used for data (start and end sentinel)
+	ISO3_ALPHABET = "0123456789="
+	
+	# Maximum data length for ISO 7811 tracks
+	ISO1_MAXSIZE = 76
+	ISO2_MAXSIZE = 37
+	ISO3_MAXSIZE = 104
+	
 	# Command and typical constants
 	ESC = b"\x1b"
 	FS = b"\x1c"
@@ -616,6 +631,16 @@ class MSR605X:
 				return "?"
 		else:
 			return "?"
+			
+	# Check if string is valid
+	def isValid(self, alphabet, maxLength, string):
+		if len(string) > maxLength:
+			return False
+		else:
+			for char in string:
+				if not char in alphabet:
+					return False
+		return True
 
 
 # -------------------------------------------------------------------- #
@@ -624,21 +649,6 @@ class MSR605X:
 
 # Command Line Utility class
 class Interactive:
-	# CONSTANTS
-	# % and ? excluded as they can't be used for data (start and end sentinel)
-	ISO1_ALPHABET = " #$()-./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^"
-	
-	# ; and ? excluded as they can't be used for data (start and end sentinel)
-	ISO2_ALPHABET = "0123456789="
-	
-	# ; and ? excluded as they can't be used for data (start and end sentinel)
-	ISO3_ALPHABET = "0123456789="
-	
-	# Maximum data length for ISO 7811 tracks
-	ISO1_MAXSIZE = 76
-	ISO2_MAXSIZE = 37
-	ISO3_MAXSIZE = 104
-	
 	# METHODS
 	# Constructor
 	def __init__(self, vendorID = 0x0801, productID = 0x0003, reportID = b"\xff"):
@@ -715,16 +725,6 @@ class Interactive:
 				if not self.dataOnlyMode:
 					print(" ERROR!")
 				return False
-	
-	# Check if string is valid
-	def isValid(self, alphabet, maxLength, string):
-		if len(string) > maxLength:
-			return False
-		else:
-			for char in string:
-				if not char in alphabet:
-					return False
-		return True
 		
 	# Byte to hex conversion method
 	def toHex(self, byte):
@@ -835,7 +835,7 @@ class Interactive:
 			print(" *  Track 1 data check...", end = "")
 			
 		try:
-			if (track1Error := not self.isValid(self.ISO1_ALPHABET, self.ISO1_MAXSIZE, track1)):
+			if (track1Error := not self.MSR.isValid(self.MSR.ISO1_ALPHABET, self.MSR.ISO1_MAXSIZE, track1)):
 				if not self.dataOnlyMode:
 					print(" ERROR!")
 			else:
@@ -850,7 +850,7 @@ class Interactive:
 			print(" *  Track 2 data check...", end = "")
 			
 		try:
-			if (track2Error := not self.isValid(self.ISO2_ALPHABET, self.ISO2_MAXSIZE, track2)):
+			if (track2Error := not self.MSR.isValid(self.MSR.ISO2_ALPHABET, self.MSR.ISO2_MAXSIZE, track2)):
 				if not self.dataOnlyMode:
 					print(" ERROR!")
 			else:
@@ -865,7 +865,7 @@ class Interactive:
 			print(" *  Track 3 data check...", end = "")
 			
 		try:
-			if (track3Error := not self.isValid(self.ISO3_ALPHABET, self.ISO3_MAXSIZE, track3)):
+			if (track3Error := not self.MSR.isValid(self.MSR.ISO3_ALPHABET, self.MSR.ISO3_MAXSIZE, track3)):
 				if not self.dataOnlyMode:
 					print(" ERROR!")
 			else:
@@ -1521,7 +1521,7 @@ class Interactive:
 					elif len(task) == 2:
 						# Card write - ISO mode (track 1 only)
 						if taskCode == "w":
-							if (len(task[1]) > 0) and (self.isValid(self.ISO1_ALPHABET, self.ISO1_MAXSIZE, task[1])):
+							if (len(task[1]) > 0) and (self.MSR.isValid(self.MSR.ISO1_ALPHABET, self.MSR.ISO1_MAXSIZE, task[1])):
 								continue
 							else:
 								# Wrong input
@@ -1576,8 +1576,8 @@ class Interactive:
 					elif len(task) == 3:
 						# Card write - ISO mode (track 1 and 2 only)
 						if taskCode == "w":
-							if self.isValid(self.ISO1_ALPHABET, self.ISO1_MAXSIZE, task[1]):
-								if (len(task[2]) > 0) and (self.isValid(self.ISO2_ALPHABET, self.ISO2_MAXSIZE, task[2])):
+							if self.MSR.isValid(self.MSR.ISO1_ALPHABET, self.MSR.ISO1_MAXSIZE, task[1]):
+								if (len(task[2]) > 0) and (self.MSR.isValid(self.MSR.ISO2_ALPHABET, self.MSR.ISO2_MAXSIZE, task[2])):
 									continue
 								else:
 									# Wrong input
@@ -1641,9 +1641,9 @@ class Interactive:
 					elif len(task) == 4:
 						# Card write - ISO mode (all tracks)
 						if taskCode == "w":
-							if self.isValid(self.ISO1_ALPHABET, self.ISO1_MAXSIZE, task[1]):
-								if self.isValid(self.ISO2_ALPHABET, self.ISO2_MAXSIZE, task[2]):
-									if (len(task[3]) > 0) and (self.isValid(self.ISO3_ALPHABET, self.ISO3_MAXSIZE, task[3])):
+							if self.MSR.isValid(self.MSR.ISO1_ALPHABET, self.MSR.ISO1_MAXSIZE, task[1]):
+								if self.MSR.isValid(self.MSR.ISO2_ALPHABET, self.MSR.ISO2_MAXSIZE, task[2]):
+									if (len(task[3]) > 0) and (self.MSR.isValid(self.MSR.ISO3_ALPHABET, self.MSR.ISO3_MAXSIZE, task[3])):
 										continue
 									else:
 										# Wrong input
