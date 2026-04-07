@@ -179,11 +179,8 @@ class MSR605X:
 		
 	# Write automation method (slicing + sending)
 	def writeData(self, data):
-		dataChunks = self.dataFramesPrepare(data)
-		
-		for dataChunk in dataChunks:
+		for dataChunk in self.dataFramesPrepare(data):
 			self.hidDevice.write(self.reportID + self.dataFill(dataChunk, 63))
-		
 		return
 		
 	# Hard write automation method (filling + sending)
