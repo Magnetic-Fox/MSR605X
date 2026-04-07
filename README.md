@@ -354,7 +354,7 @@ But please note that sensor and RAM tests would probably return errors (they are
 
 ## Known issues
 
-Not with my code, but with the device itself.
+Actually not with my code, but with the device itself.
 
 ### Card write or erase ends with error
 
