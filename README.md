@@ -52,70 +52,80 @@ Now, if everything finished properly, MSR605X should be available to use without
 | `DEFAULT_CONTINUOUS_TIMEOUT` | `1000`   | default, continuous timeout for continuous read in readData method in milliseconds |
 
 #### Typical constants
-* `ESC` =>                 0x1B     (byte-like; escape character code)
-* `FS` =>                  0x1C     (byte-like; file separator character code)
+| Name  | Value  | Description                              |
+| ----- | ------ | ---------------------------------------- |
+| `ESC` | `0x1B` | byte-like; escape character code         |
+| `FS`  | `0x1C` | byte-like; file separator character code |
 
 #### Response constants
-* `NO_DATA` =>             ESC +    (no data response code)
-* `BAD_DATA` =>            ESC *    (data read error response code)
-* `CMD_OK` =>              ESC 0    (command successful code)
-* `CMD_FAIL` =>            ESC A    (command fail code)
-* `COMM_OK` =>             ESC y    (communication OK code)
-* `SB_RW_OK` =>            0x30     (status byte - read/write OK)
-* `SB_RW_ERROR` =>         0x31     (status byte - read/write error)
-* `SB_CMD_ERROR` =>        0x32     (status byte - command error)
-* `SB_CMD_INVALID` =>      0x34     (status byte - invalid command)
-* `SB_SWIPE_ERROR` =>      0x39     (status byte - card swipe error)
-* `HICO_SET` =>            ESC h    (Hi-Co set response)
-* `LOCO_SET` =>            ESC l    (Lo-Co set response)
+| Name             | Value   | Description                              |
+| ---------------- | ------- | ---------------------------------------- |
+| `NO_DATA`        | `ESC +` | no data response code                    |
+| `BAD_DATA`       | `ESC *` | data read error response code            |
+| `CMD_OK`         | `ESC 0` | command successful code                  |
+| `CMD_FAIL`       | `ESC A` | command fail code                        |
+| `COMM_OK`        | `ESC y` | communication OK code                    |
+| `SB_RW_OK`       | `0x30`  | status byte - read/write OK              |
+| `SB_RW_ERROR`    | `0x31`  | status byte - read/write error           |
+| `SB_CMD_ERROR`   | `0x32`  | status byte - command error              |
+| `SB_CMD_INVALID` | `0x34`  | status byte - invalid command            |
+| `SB_SWIPE_ERROR` | `0x39`  | status byte - card swipe error           |
+| `HICO_SET`       | `ESC h` | Hi-Co set response                       |
+| `LOCO_SET`       | `ESC l` | Lo-Co set response                       |
 
 #### Data sequence, track and ISO constants
-* `START_SEQUENCE` =>      ESC s    (data sequence start)
-* `END_SEQUENCE_W` =>      ? FS     (data sequence end - for writing)
-* `END_SEQUENCE` =>        ? FS ESC (data sequence end - helper for reading)
-* `ISO1_DATA_START` =>     ESC 0x01 (ISO Track 1 - start sequence)
-* `ISO2_DATA_START` =>     ESC 0x02 (ISO Track 2 - start sequence)
-* `ISO3_DATA_START` =>     ESC 0x03 (ISO Track 3 - start sequence)
-* `START_SENTINEL_1` =>    %        (ISO 7811, track 1 - start sentinel)
-* `START_SENTINEL_2_3` =>  ;        (ISO 7811, track 2 and 3 - start sentinel)
-* `END_SENTINEL` =>        ?        (ISO 7811, all tracks - end sentinel)
-* `ISO_TRACK1` =>          1        (set track 1 constant - for OR-like operations)
-* `ISO_TRACK2` =>          2        (set track 2 constant - for OR-like operations)
-* `ISO_TRACK3` =>          4        (set track 3 constant - for OR-like operations)
-* `ISO_TRACK1_210BPI` =>   0xA1     (track 1 - 210bpi setting byte)
-* `ISO_TRACK1_75BPI` =>    0xA0     (track 1 - 75bpi setting byte)
-* `ISO_TRACK2_210BPI` =>   0xD2     (track 2 - 210bpi setting byte)
-* `ISO_TRACK2_75BPI` =>    0x4B     (track 2 - 75bpi setting byte)
-* `ISO_TRACK3_210BPI` =>   0xC1     (track 3 - 210bpi setting byte)
-* `ISO_TRACK3_75BPI` =>    0xC0     (track 3 - 75bpi setting byte)
+| Name                 | Value      | Description                                   |
+| -------------------- | ---------- | --------------------------------------------- |
+| `START_SEQUENCE`     | `ESC s`    | data sequence start                           |
+| `END_SEQUENCE_W`     | `? FS`     | data sequence end - for writing               |
+| `END_SEQUENCE`       | `? FS ESC` | data sequence end - helper for reading        |
+| `ISO1_DATA_START`    | `ESC 0x01` | ISO Track 1 - start sequence                  |
+| `ISO2_DATA_START`    | `ESC 0x02` | ISO Track 2 - start sequence                  |
+| `ISO3_DATA_START`    | `ESC 0x03` | ISO Track 3 - start sequence                  |
+| `START_SENTINEL_1`   | `%`        | ISO 7811, track 1 - start sentinel            |
+| `START_SENTINEL_2_3` | `;`        | ISO 7811, track 2 and 3 - start sentinel      |
+| `END_SENTINEL`       | `?`        | ISO 7811, all tracks - end sentinel           |
+| `ISO_TRACK1`         | `1`        | set track 1 constant - for OR-like operations |
+| `ISO_TRACK2`         | `2`        | set track 2 constant - for OR-like operations |
+| `ISO_TRACK3`         | `4`        | set track 3 constant - for OR-like operations |
+| `ISO_TRACK1_210BPI`  | `0xA1`     | track 1 - 210bpi setting byte                 |
+| `ISO_TRACK1_75BPI`   | `0xA0`     | track 1 - 75bpi setting byte                  |
+| `ISO_TRACK2_210BPI`  | `0xD2`     | track 2 - 210bpi setting byte                 |
+| `ISO_TRACK2_75BPI`   | `0x4B`     | track 2 - 75bpi setting byte                  |
+| `ISO_TRACK3_210BPI`  | `0xC1`     | track 3 - 210bpi setting byte                 |
+| `ISO_TRACK3_75BPI`   | `0xC0`     | track 3 - 75bpi setting byte                  |
 
 #### Command constants
-* `CMD_RESET` =>           ESC a (reset command)
-* `CMD_READ` =>            ESC r (ISO read command)
-* `CMD_WRITE` =>           ESC w (ISO write command)
-* `CMD_COMM_TEST` =>       ESC e (communication test command)
-* `CMD_ALL_LED_OFF` =>     ESC 0x81 (all LEDs off command)
-* `CMD_ALL_LED_ON` =>      ESC 0x82 (all LEDs on command)
-* `CMD_GREEN_LED_ON` =>    ESC 0x83 (green LED on command)
-* `CMD_YELLOW_LED_ON` =>   ESC 0x84 (yellow LED on command)
-* `CMD_RED_LED_ON` =>      ESC 0x85 (red LED on command)
-* `CMD_LEAD_ZERO_SET` =>   ESC z (leading zeroes setting command)
-* `CMD_LEAD_ZERO_CHECK` => ESC l (leading zeroes gathering command)
-* `CMD_ERASE_CARD` =>      ESC c (card erase command)
-* `CMD_BPI_SELECT` =>      ESC b (BPI setting command)
-* `CMD_READ_RAW` =>        ESC m (RAW read command)
-* `CMD_WRITE_RAW` =>       ESC n (RAW write command)
-* `CMD_GET_MODEL` =>       ESC t (device model gathering command)
-* `CMD_GET_FW_VERSION` =>  ESC v (device firmware version gathering command)
-* `CMD_BPC_SET` =>         ESC o (BPC setting command)
-* `CMD_SET_HICO` =>        ESC x (Hi-Co setting command)
-* `CMD_SET_LOCO` =>        ESC y (Lo-Co setting command)
-* `CMD_GET_COERCIVITY` =>  ESC d (coercivity setting gathering command)
-* `FORCE_CMD_MODE` =>      0x00 0xC2 (force command start sequence)
+| Name                  | Value       | Description                               |
+| --------------------- | ----------- | ----------------------------------------- |
+| `CMD_RESET`           | `ESC a`     | reset command                             |
+| `CMD_READ`            | `ESC r`     | ISO read command                          |
+| `CMD_WRITE`           | `ESC w`     | ISO write command                         |
+| `CMD_COMM_TEST`       | `ESC e`     | communication test command                |
+| `CMD_ALL_LED_OFF`     | `ESC 0x81`  | all LEDs off command                      |
+| `CMD_ALL_LED_ON`      | `ESC 0x82`  | all LEDs on command                       |
+| `CMD_GREEN_LED_ON`    | `ESC 0x83`  | green LED on command                      |
+| `CMD_YELLOW_LED_ON`   | `ESC 0x84`  | yellow LED on command                     |
+| `CMD_RED_LED_ON`      | `ESC 0x85`  | red LED on command                        |
+| `CMD_LEAD_ZERO_SET`   | `ESC z`     | leading zeroes setting command            |
+| `CMD_LEAD_ZERO_CHECK` | `ESC l`     | leading zeroes gathering command          |
+| `CMD_ERASE_CARD`      | `ESC c`     | card erase command                        |
+| `CMD_BPI_SELECT`      | `ESC b`     | BPI setting command                       |
+| `CMD_READ_RAW`        | `ESC m`     | RAW read command                          |
+| `CMD_WRITE_RAW`       | `ESC n`     | RAW write command                         |
+| `CMD_GET_MODEL`       | `ESC t`     | device model gathering command            |
+| `CMD_GET_FW_VERSION`  | `ESC v`     | device firmware version gathering command |
+| `CMD_BPC_SET`         | `ESC o`     | BPC setting command                       |
+| `CMD_SET_HICO`        | `ESC x`     | Hi-Co setting command                     |
+| `CMD_SET_LOCO`        | `ESC y`     | Lo-Co setting command                     |
+| `CMD_GET_COERCIVITY`  | `ESC d`     | coercivity setting gathering command      |
+| `FORCE_CMD_MODE`      | `0x00 0xC2` | force command start sequence              |
 
 #### Probably not supported commands in MSR605X
-* `CMD_SENSOR_TEST` =>     ESC 0x86 (sensor test command)
-* `CMD_RAM_TEST` =>        ESC 0x87 (RAM test command)
+| Name              | Value      | Description         |
+| ----------------- | ---------- | ------------------- |
+| `CMD_SENSOR_TEST` | `ESC 0x86` | sensor test command |
+| `CMD_RAM_TEST`    | `ESC 0x87` | RAM test command    |
 
 ### Methods
 
