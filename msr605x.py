@@ -790,13 +790,8 @@ class Interactive:
 			print("  -rid 0xFF          - set report ID  *       -hr                - hard reset")
 		return
 	
-	# ISO 7811 mode read method
-	def readISO(self):
-		if not self.dataOnlyMode:
-			print("ISO read, please swipe a card...", end = "")
-			sys.stdout.flush()
-		status, data1, data2, data3 = self.MSR.read()
-		
+	# ISO 7811 read data print out method
+	def ISOdataPrintOut(self, status, data1, data2, data3):
 		if (data1 == ""):
 			if not self.dataOnlyMode:
 				data1 = "<no data>"
@@ -834,7 +829,18 @@ class Interactive:
 			print(data1)
 			print(data2)
 			print(data3)
-		
+			
+		return
+	
+	# ISO 7811 mode read method
+	def readISO(self):
+		if not self.dataOnlyMode:
+			print("ISO read, please swipe a card...", end = "")
+			sys.stdout.flush()
+
+		status, data1, data2, data3 = self.MSR.read()
+		self.ISOdataPrintOut(status, data1, data2, data3)
+
 		return
 		
 	# ISO 7811 mode write method
@@ -914,7 +920,7 @@ class Interactive:
 		
 		if data[0] == MSR605X.SB_RW_OK:
 			if not self.dataOnlyMode:
-				print(" OK!")
+				self.ISOdataPrintOut(data[0], data[1], data[2], data[3])
 				print("ISO copy, please swipe a target card...", end = "")
 				sys.stdout.flush()
 			if self.MSR.write(data[1], data[2], data[3]):
@@ -930,14 +936,9 @@ class Interactive:
 				print(" ERROR!")
 			
 		return
-			
-	# RAW mode read method
-	def readRAW(self):
-		if not self.dataOnlyMode:
-			print("RAW read, please swipe a card...", end = "")
-			sys.stdout.flush()
-		status, data1, data2, data3 = self.MSR.readRawData()
 		
+	# RAW read data print out method
+	def RAWdataPrintOut(self, status, data1, data2, data3):
 		if (data1 == b""):
 			if not self.dataOnlyMode:
 				data1 = "<no data>"
@@ -981,6 +982,17 @@ class Interactive:
 			print(data1)
 			print(data2)
 			print(data3)
+			
+		return
+			
+	# RAW mode read method
+	def readRAW(self):
+		if not self.dataOnlyMode:
+			print("RAW read, please swipe a card...", end = "")
+			sys.stdout.flush()
+		status, data1, data2, data3 = self.MSR.readRawData()
+		
+		self.RAWdataPrintOut(status, data1, data2, data3)
 		
 		return
 		
@@ -1063,7 +1075,8 @@ class Interactive:
 		
 		if data[0] == MSR605X.SB_RW_OK:
 			if not self.dataOnlyMode:
-				print(" OK!")
+				#print(" OK!")
+				self.RAWdataPrintOut(data[0], data[1], data[2], data[3])
 				print("RAW copy, please swipe a target card...", end = "")
 				sys.stdout.flush()
 			if self.MSR.writeRawData(data[1], data[2], data[3]):
