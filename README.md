@@ -25,12 +25,18 @@ In order to use this solution, You have to have rights to read and write to the 
 This is a bit tricky under Linux as You have to carefully find Your device and then create a udev rule file.
 Otherwise You'll have to run this code as a root (e.g. use `sudo`), which I do not recommend as it is not a good idea, especially for a long time (and not safe at all).
 
-Here is an example of my `99-msr.rules` file placed in the `/etc/udev/rules.d/` directory:
-```
-TODO, AS I DON'T HAVE ACCESS TO THIS FILE NOW AND SIMPLY CAN'T REMEMBER ITS CONTENTS...
+Here is an example of my `99-hid.rules` file placed in the `/etc/udev/rules.d/` directory:
+```console
+SUBSYSTEM=="usb", ATTRS{idVendor}=="0801", ATTRS{idProduct}=="0003", MODE="0666"
+KERNEL=="hidraw*", ATTRS{idVendor}=="0801", ATTRS{idProduct}=="0003", MODE="0666"
 ```
 
-After creating such file, if You don't want to restart Your system, to make this rule work, type in the terminal those two commands:
+I know, it is not the safest option to use 0666 mode, but others simply didn't work for me (even with `OWNER` and `GROUP` set).
+Fortunately, I'm the only user of my computer. ;)
+
+Please note, that You can use any valid name for the file. I've used `99-hid.rules`, but probably `99-msr.rules` would be good too.
+
+After creating such file, if You don't want to restart Your system, to make this rules work, type in the terminal those two commands:
 ```console
 sudo udevadm control --reload-rules
 sudo udevadm trigger
