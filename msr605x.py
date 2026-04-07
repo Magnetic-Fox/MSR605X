@@ -385,11 +385,13 @@ class MSR605X:
 	# Hard reset command send method
 	def hardReset(self):
 		self.hardWriteData(self.FORCE_CMD_MODE + self.CMD_RESET)
+		self.readData()
 		return
 		
 	# Reset command send method
 	def reset(self):
 		self.writeData(self.CMD_RESET)
+		self.readData()
 		return
 		
 	# Read command method (fully automated)
@@ -423,26 +425,31 @@ class MSR605X:
 	# All LEDs off command send method
 	def allLedOff(self):
 		self.writeData(self.CMD_ALL_LED_OFF)
+		self.readData()
 		return
 		
 	# All LEDs on command send method
 	def allLedOn(self):
 		self.writeData(self.CMD_ALL_LED_ON)
+		self.readData()
 		return
 		
 	# Turn green LED on command send method (in fact, turns on green LED only)
 	def greenLedOn(self):
 		self.writeData(self.CMD_GREEN_LED_ON)
+		self.readData()
 		return
 		
 	# Turn yellow LED on command send method (in fact, turns on green and yellow LED simultaneously)
 	def yellowLedOn(self):
 		self.writeData(self.CMD_YELLOW_LED_ON)
+		self.readData()
 		return
 
 	# Turn red LED on command send method (in fact, turns on red LED only)
 	def redLedOn(self):
 		self.writeData(self.CMD_RED_LED_ON)
+		self.readData()
 		return
 		
 	# PROBABLY UNSUPPORTED IN MSR605X: sensor test method
