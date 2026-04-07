@@ -1770,12 +1770,18 @@ class Interactive:
 			
 	# Is only device address and report ID settings on the task list check method
 	def isOnlyDeviceSettingsOnList(self, taskList):
-		tempList = []
-		
-		for task in taskList:
-			tempList += [task[0]]
-		
-		return set(tempList).issubset(set(["-vid", "-pid", "-rid"]))
+		try:
+			if taskList != None:
+				tempList = []
+				
+				for task in taskList:
+					tempList += [task[0]]
+				
+				return set(tempList).issubset(set(["-vid", "-pid", "-rid"]))
+			else:
+				return False
+		except:
+			return False
 		
 	# Interpreter method
 	def interpreter(self):
@@ -1787,6 +1793,7 @@ class Interactive:
 		else:
 			# Extract arguments
 			self.taskList = self.argumentExtractor(sys.argv[1:])
+			# Check if there are only device address settings on the list
 			if self.isOnlyDeviceSettingsOnList(self.taskList):
 				self.headerDisplay()
 				self.displayHelp()
