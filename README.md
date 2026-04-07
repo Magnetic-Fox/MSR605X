@@ -130,64 +130,64 @@ Now, if everything finished properly, MSR605X should be available to use without
 ### Methods
 
 #### Technical methods
-| Name       | Parameters                                                                            | Description                                                          |
-| ---------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| `__init__` | `vendorID`, `productID`, `reportID`, `timeout`, `continuousTimeout`, `breakProcedure` | the easiest constructor, used to initialize class on object creation |
-| `__del__`  | *none*                                                                                | kind of a destructor to close device if forgotten                    |
+| Name       | Parameters                                                                            | Description                                                                                                              |
+| ---------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `__init__` | `vendorID`, `productID`, `reportID`, `timeout`, `continuousTimeout`, `breakProcedure` | constructor, used to initialize class on object creation (2x `0x0000` - `0xFFFF`, `0x00` - `0xFF`, 2x `int`, `function`) |
+| `__del__`  | *none*                                                                                | destructor, used to close device if forgotten                                                                            |
 
 #### Internal helper methods
-| Name             | Parameters                                                                | Description                                                                                                                                                               |
-| ---------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `toLSB`          | `msbByte`                                                                 | byte from MSB to LSB converter                                                                                                                                            |
-| `bytesToLSB`     | `msbBytes`                                                                | byte string from MSB to LSB converter method                                                                                                                              |
-| `dataSplit`      | `data`, `size`                                                            | full data to data chunks splitter method                                                                                                                                  |
-| `dataFill`       | `data`, `size`                                                            | data chunk to fixed size filler (filling with zeroes)                                                                                                                     |
-| `writeData`      | `data`                                                                    | data to device writer method                                                                                                                                              |
-| `hardWriteData`  | `data`                                                                    | data to device writer method (hard mode - working only with hard reset command)                                                                                           |
-| `readData`       | `continuousTimeout`                                                       | data read from device method (with or without continuous timeout; continuous timeout works like a loop with next iterations occurring after short timeout, e.g. 1 second) |
-| `exportISOData`  | *none*                                                                    | export all tracks ISO data from response from device                                                                                                                      |
-| `exportRAWData`  | *none*                                                                    | export all tracks RAW data from response from device                                                                                                                      |
-| `prepareISOData` | `track1`, `track2`, `track3`                                              | ISO tracks data to data block converter                                                                                                                                   |
-| `prepareRAWData` | `track1`, `track2`, `track3`                                              | RAW tracks data to raw data block converter (with automated byte data to LSB byte data)                                                                                   |
+| Name             | Parameters                                                                | Description                                                                                                                                                                      |
+| ---------------- | ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `toLSB`          | `msbByte`                                                                 | byte from MSB to LSB converter (`0` - `255`)                                                                                                                                     |
+| `bytesToLSB`     | `msbBytes`                                                                | byte string from MSB to LSB converter method (`byte-like object`)                                                                                                                |
+| `dataSplit`      | `data`, `size`                                                            | full data to data chunks splitter method (`byte-like object`, `int`)                                                                                                             |
+| `dataFill`       | `data`, `size`                                                            | data chunk to fixed size filler (filling with zeroes) (`byte-like object`, `int`)                                                                                                |
+| `writeData`      | `data`                                                                    | data to device writer method (`byte-like object`)                                                                                                                                |
+| `hardWriteData`  | `data`                                                                    | data to device writer method (hard mode - working only with hard reset command; `byte-like object`)                                                                              |
+| `readData`       | `continuousTimeout`                                                       | data read from device method (with or without continuous timeout; continuous timeout works like a loop with next iterations occurring after short timeout, e.g. 1 second; `int`) |
+| `exportISOData`  | *none*                                                                    | export all tracks ISO data from response from device                                                                                                                             |
+| `exportRAWData`  | *none*                                                                    | export all tracks RAW data from response from device                                                                                                                             |
+| `prepareISOData` | `track1`, `track2`, `track3`                                              | ISO tracks data to data block converter (`string`s)                                                                                                                              |
+| `prepareRAWData` | `track1`, `track2`, `track3`                                              | RAW tracks data to raw data block converter (with automated byte data to LSB byte data; `byte-like object`s)                                                                     |
 
 #### Initialization methods
-| Name                   | Parameters              | Description                                                                              |
-| ---------------------- | ----------------------- | ---------------------------------------------------------------------------------------- |
-| `setDevice`            | `vendorID`, `productID` | simple vendor ID and product ID setter method                                            |
-| `setReportID`          | `reportID`              | simple report ID setter method                                                           |
-| `setTimeout`           | `timeout`               | simple timeout setter method                                                             |
-| `setContinuousTimeout` | `continuousTimeout`     | simple continuous timeout setter method                                                  |
-| `setBreakProcedure`    | `breakProcedure`        | continuous read break procedure address setter method (read about break procedure below) |
-| `open`                 | *none*                  | device open method                                                                       |
-| `close`                | *none*                  | device close method                                                                      |
+| Name                   | Parameters              | Description                                                                                           |
+| ---------------------- | ----------------------- | ----------------------------------------------------------------------------------------------------- |
+| `setDevice`            | `vendorID`, `productID` | simple vendor ID and product ID setter method (2x `0x0000` - `0xFFFF`)                                |
+| `setReportID`          | `reportID`              | simple report ID setter method (`0x00` - `0xFF`)                                                      |
+| `setTimeout`           | `timeout`               | simple timeout setter method (`int`)                                                                  |
+| `setContinuousTimeout` | `continuousTimeout`     | simple continuous timeout setter method (`int`)                                                       |
+| `setBreakProcedure`    | `breakProcedure`        | continuous read break procedure address setter method (`procedure`; read about break procedure below) |
+| `open`                 | *none*                  | device open method                                                                                    |
+| `close`                | *none*                  | device close method                                                                                   |
 
 #### Actual device command control methods
-| Name                   | Parameters                             | Description                                                         |
-| ---------------------- | -------------------------------------- | ------------------------------------------------------------------- |
-| `hardReset`            | *none*                                 | hard reset method                                                   |
-| `reset`                | *none*                                 | soft reset method                                                   |
-| `read`                 | *none*                                 | ISO card read method                                                |
-| `write`                | `iso1`, `iso2`, `iso3`                 | ISO card write method (single or even all tracks)                   |
-| `communicationTest`    | *none*                                 | device communication test method                                    |
-| `allLedOff`            | *none*                                 | all LEDs off method                                                 |
-| `allLedOn`             | *none*                                 | all LEDs on method                                                  |
-| `greenLedOn`           | *none*                                 | green LED on method                                                 |
-| `yellowLedOn`          | *none*                                 | yellow LED on method (which in fact turns on GREEN and yellow LEDs) |
-| `redLedOn`             | *none*                                 | red LED on method (which in fact turns OFF green and yellow LEDs)   |
-| `sensorTest`           | *none*                                 | sensor test method (**PROBABLY UNSUPPORTED COMMAND IN MSR605X**)    |
-| `ramTest`              | *none*                                 | RAM test method (**PROBABLY UNSUPPORTED COMMAND IN MSR605X**)       |
-| `setLeadingZero`       | `leadZeroTrack1and3`, `leadZeroTrack2` | leading zeroes for track 1 & 3 and track 2 setter method            |
-| `checkLeadingZero`     | *none*                                 | leading zeroes gathering method                                     |
-| `eraseCard`            | `track1`, `track2`, `track3`           | card erase method (single or even all tracks)                       |
-| `selectBPI`            | `settingByte`                          | bytes per inch setter method (single or even all tracks)            |
-| `readRawData`          | *none*                                 | RAW card read method                                                |
-| `writeRawData`         | `track1`, `track2`, `track3`           | RAW card write method (**buggy - see below**)                       |
-| `getDeviceModel`       | *none*                                 | device model gathering method                                       |
-| `getFirmwareVersion`   | *none*                                 | firmware version gathering method                                   |
-| `setBPC`               | `track1`, `track2`, `track3`           | bits per character setter method                                    |
-| `setHiCo`              | *none*                                 | high coercivity card setter method                                  |
-| `setLoCo`              | *none*                                 | low coercivity card setter method                                   |
-| `getCoercivitySetting` | *none*                                 | coercivity setting gathering method                                 |
+| Name                   | Parameters                             | Description                                                               |
+| ---------------------- | -------------------------------------- | ------------------------------------------------------------------------- |
+| `hardReset`            | *none*                                 | hard reset method                                                         |
+| `reset`                | *none*                                 | soft reset method                                                         |
+| `read`                 | *none*                                 | ISO card read method                                                      |
+| `write`                | `iso1`, `iso2`, `iso3`                 | ISO card write method (single or even all tracks; `string`s)              |
+| `communicationTest`    | *none*                                 | device communication test method                                          |
+| `allLedOff`            | *none*                                 | all LEDs off method                                                       |
+| `allLedOn`             | *none*                                 | all LEDs on method                                                        |
+| `greenLedOn`           | *none*                                 | green LED on method                                                       |
+| `yellowLedOn`          | *none*                                 | yellow LED on method (which in fact turns on GREEN and yellow LEDs)       |
+| `redLedOn`             | *none*                                 | red LED on method (which in fact turns OFF green and yellow LEDs)         |
+| `sensorTest`           | *none*                                 | sensor test method (**PROBABLY UNSUPPORTED COMMAND IN MSR605X**)          |
+| `ramTest`              | *none*                                 | RAM test method (**PROBABLY UNSUPPORTED COMMAND IN MSR605X**)             |
+| `setLeadingZero`       | `leadZeroTrack1and3`, `leadZeroTrack2` | leading zeroes for track 1 & 3 and track 2 setter method (2x `0` - `255`) |
+| `checkLeadingZero`     | *none*                                 | leading zeroes gathering method                                           |
+| `eraseCard`            | `track1`, `track2`, `track3`           | card erase method (single or even all tracks; 3x `True`/`False`)          |
+| `selectBPI`            | `settingByte`                          | bytes per inch setter method (`byte-like object`)                         |
+| `readRawData`          | *none*                                 | RAW card read method                                                      |
+| `writeRawData`         | `track1`, `track2`, `track3`           | RAW card write method (`byte-like object`s; **buggy - see below**)        |
+| `getDeviceModel`       | *none*                                 | device model gathering method                                             |
+| `getFirmwareVersion`   | *none*                                 | firmware version gathering method                                         |
+| `setBPC`               | `track1`, `track2`, `track3`           | bits per character setter method (3x `5` - `8`)                           |
+| `setHiCo`              | *none*                                 | high coercivity card setter method                                        |
+| `setLoCo`              | *none*                                 | low coercivity card setter method                                         |
+| `getCoercivitySetting` | *none*                                 | coercivity setting gathering method                                       |
 
 ## Break procedure
 
@@ -214,36 +214,36 @@ def breakProcedure:
 ### Methods
 
 #### Technical methods
-| Name       | Parameters                          | Description                                                                                                     |
-| ---------- | ----------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `__init__` | `vendorID`, `productID`, `reportID` | simple constructor to initialize Interactive object (`0x0000` - `0xFFFF`, `0x0000` - `0xFFFF`, `0x00` - `0xFF`) |
-| `__del__`  | *none*                              | simple destructor to close device (if forgotten)                                                                |
+| Name       | Parameters                          | Description                                                                                   |
+| ---------- | ----------------------------------- | --------------------------------------------------------------------------------------------- |
+| `__init__` | `vendorID`, `productID`, `reportID` | simple constructor to initialize Interactive object (2x `0x0000` - `0xFFFF`, `0x00` - `0xFF`) |
+| `__del__`  | *none*                              | simple destructor to close device (if forgotten)                                              |
 
 #### Device control methods
 | Name               | Parameters  | Description                                                                                    |
 | ------------------ | ----------- | ---------------------------------------------------------------------------------------------- |
-| `setVendorID`      | `vendorID`  | vendor ID setter method (`0x0000` - `0xFFFF`; executes newDeviceSetting method automatically)  |
-| `setProductID`     | `productID` | product ID setter method (`0x0000` - `0xFFFF`; executes newDeviceSetting method automatically) |
+| `setVendorID`      | `vendorID`  | vendor ID setter method (executes newDeviceSetting method automatically; `0x0000` - `0xFFFF`)  |
+| `setProductID`     | `productID` | product ID setter method (executes newDeviceSetting method automatically; `0x0000` - `0xFFFF`) |
 | `setReportID`      | `reportID`  | report ID setter method (`0x00` - `0xFF`)                                                      |
 | `open`             | *none*      | device opening method                                                                          |
 | `close`            | *none*      | device closing method                                                                          |
 
 #### Internal helper methods
-| Name                 | Parameters           | Description                                                                                            |
-| -------------------- | -------------------- | ------------------------------------------------------------------------------------------------------ |
-| `newDeviceSetting`   | `state`              | device address changing state manipulation method (`True`/`False`)                                     |
-| `isValid`            | `alphabet`, `string` | string validator method (alphabet and user strings)                                                    |
-| `toHex`              | `byte`               | byte to 2-digit hex value converter method (`0` - `255`)                                               |
-| `bytesToHex`         | `byteString`         | byte string to 2-digit hex value converter method (byte-like object)                                   |
-| `hexStringToBytes`   | `inputString`        | 2-digit hex values string to byte object converter method (string formatted like `46 75 72 72 79 ...`) |
-| `isDataOnlySelected` | `taskList`           | is silent mode selection present on the task list checker method                                       |
+| Name                 | Parameters           | Description                                                                                                        |
+| -------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `newDeviceSetting`   | `state`              | device address changing state manipulation method (`True`/`False`)                                                 |
+| `isValid`            | `alphabet`, `string` | string validator method (alphabet `string` and user `string`)                                                      |
+| `toHex`              | `byte`               | byte to 2-digit hex value converter method (`0` - `255`)                                                           |
+| `bytesToHex`         | `byteString`         | byte string to 2-digit hex value converter method (`byte-like object`)                                             |
+| `hexStringToBytes`   | `inputString`        | 2-digit hex values string to byte object converter method (string formatted like `46 55 52 52 59 ...`)             |
+| `isDataOnlySelected` | `taskList`           | is silent mode selection present on the task list checker method (e.g. output from the `argumentExtractor` method) |
 
 #### Interpreter methods
-| Name                 | Parameters | Description                                                  |
-| -------------------- | ---------- | ------------------------------------------------------------ |
-| `getIntFromString`   | `string`   | string of most popular types to integer converter method     |
-| `checkTaskList`      | `taskList` | task list validator method                                   |
-| `argumentExtractor`  | `data`     | string array (e.g. `sys.argv`) to task list converter method |
+| Name                 | Parameters | Description                                                                                 |
+| -------------------- | ---------- | ------------------------------------------------------------------------------------------- |
+| `getIntFromString`   | `string`   | string of most popular types to integer converter method (e.g. `0xFF`, `0b1010` or `0o777`) |
+| `checkTaskList`      | `taskList` | task list validator method (e.g. output from the `argumentExtractor` method)                |
+| `argumentExtractor`  | `data`     | string array to task list converter method (e.g. `sys.argv`)                                |
 
 #### Text User Interface methods
 | Name            | Parameters | Description                   |
@@ -256,17 +256,17 @@ def breakProcedure:
 | Name                | Parameters                             | Description                                                                |
 | ------------------- | -------------------------------------- | -------------------------------------------------------------------------- |
 | `readISO`           | *none*                                 | ISO card read wrapper method                                               |
-| `writeISO`          | `track1`, `track2`, `track3`           | ISO card write wrapper method                                              |
+| `writeISO`          | `track1`, `track2`, `track3`           | ISO card write wrapper method (`string`s)                                  |
 | `copyISO`           | *none*                                 | ISO card copy wrapper method                                               |
 | `readRAW`           | *none*                                 | RAW card read wrapper method                                               |
-| `writeRAW`          | `track1`, `track2`, `track3`           | RAW card write wrapper method (**buggy - see below**)                      |
+| `writeRAW`          | `track1`, `track2`, `track3`           | RAW card write wrapper method (`hexString`s; **buggy - see below**)        |
 | `copyRAW`           | *none*                                 | RAW card copy wrapper method (**buggy - see below**)                       |
-| `setBPC`            | `track1`, `track2`, `track3`           | bits per character setter wrapper method (`5` - `7`)                       |
-| `setBPI`            | `track1`, `track2`, `track3`           | bits per inch setter wrapper method (`None`, `75`, `210`)                  |
+| `setBPC`            | `track1`, `track2`, `track3`           | bits per character setter wrapper method (`5` - `8`)                       |
+| `setBPI`            | `track1`, `track2`, `track3`           | bits per inch setter wrapper method (3x `None`, `75` or `210`)             |
 | `setHiCo`           | *none*                                 | Hi-Co mode setter wrapper method                                           |
 | `setLoCo`           | *none*                                 | Lo-Co mode setter wrapper method                                           |
-| `setLeadingZeroes`  | `leadZeroTrack1and3`, `leadZeroTrack2` | leading zeroes setter wrapper method (`0` - `255`)                         |
-| `eraseCard`         | `track1`, `track2`, `track3`           | card erase wrapper method (`True`/`False` sets which track to erase)       |
+| `setLeadingZeroes`  | `leadZeroTrack1and3`, `leadZeroTrack2` | leading zeroes setter wrapper method (2x `0` - `255`)                      |
+| `eraseCard`         | `track1`, `track2`, `track3`           | card erase wrapper method (3x `True`/`False`)                              |
 | `deviceModel`       | *none*                                 | device model gathering wrapper method                                      |
 | `firmwareVersion`   | *none*                                 | device firmware version gathering wrapper method                           |
 | `allLEDOff`         | *none*                                 | all LEDs off wrapper method                                                |
@@ -281,6 +281,12 @@ def breakProcedure:
 | `RAMTest`           | *none*                                 | RAM test wrapper method (**OPERATION PROBABLY UNSUPPORTED IN MSR605X**)    |
 | `softReset`         | *none*                                 | soft reset wrapper method                                                  |
 | `hardReset`         | *none*                                 | hard reset wrapper method                                                  |
+
+## Interpreter
+
+### How to use it?
+
+
 
 ## Bugs
 
