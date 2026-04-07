@@ -74,26 +74,26 @@ Now, if everything finished properly, MSR605X should be available to use without
 | `LOCO_SET`       | `ESC l` | Lo-Co set response                       |
 
 #### Data sequence, track and ISO constants
-| Name                 | Value      | Description                                   |
-| -------------------- | ---------- | --------------------------------------------- |
-| `START_SEQUENCE`     | `ESC s`    | data sequence start                           |
-| `END_SEQUENCE_W`     | `? FS`     | data sequence end - for writing               |
-| `END_SEQUENCE`       | `? FS ESC` | data sequence end - helper for reading        |
-| `ISO1_DATA_START`    | `ESC 0x01` | ISO Track 1 - start sequence                  |
-| `ISO2_DATA_START`    | `ESC 0x02` | ISO Track 2 - start sequence                  |
-| `ISO3_DATA_START`    | `ESC 0x03` | ISO Track 3 - start sequence                  |
-| `START_SENTINEL_1`   | `%`        | ISO 7811, track 1 - start sentinel            |
-| `START_SENTINEL_2_3` | `;`        | ISO 7811, track 2 and 3 - start sentinel      |
-| `END_SENTINEL`       | `?`        | ISO 7811, all tracks - end sentinel           |
-| `ISO_TRACK1`         | `1`        | set track 1 constant - for OR-like operations |
-| `ISO_TRACK2`         | `2`        | set track 2 constant - for OR-like operations |
-| `ISO_TRACK3`         | `4`        | set track 3 constant - for OR-like operations |
-| `ISO_TRACK1_210BPI`  | `0xA1`     | track 1 - 210bpi setting byte                 |
-| `ISO_TRACK1_75BPI`   | `0xA0`     | track 1 - 75bpi setting byte                  |
-| `ISO_TRACK2_210BPI`  | `0xD2`     | track 2 - 210bpi setting byte                 |
-| `ISO_TRACK2_75BPI`   | `0x4B`     | track 2 - 75bpi setting byte                  |
-| `ISO_TRACK3_210BPI`  | `0xC1`     | track 3 - 210bpi setting byte                 |
-| `ISO_TRACK3_75BPI`   | `0xC0`     | track 3 - 75bpi setting byte                  |
+| Name                 | Value      | Description                                                |
+| -------------------- | ---------- | ---------------------------------------------------------- |
+| `START_SEQUENCE`     | `ESC s`    | data sequence start                                        |
+| `END_SEQUENCE_W`     | `? FS`     | data sequence end - for writing                            |
+| `END_SEQUENCE`       | `? FS ESC` | data sequence end - helper for reading                     |
+| `ISO1_DATA_START`    | `ESC 0x01` | ISO Track 1 - start sequence                               |
+| `ISO2_DATA_START`    | `ESC 0x02` | ISO Track 2 - start sequence                               |
+| `ISO3_DATA_START`    | `ESC 0x03` | ISO Track 3 - start sequence                               |
+| `START_SENTINEL_1`   | `%`        | ISO 7811, track 1 - start sentinel                         |
+| `START_SENTINEL_2_3` | `;`        | ISO 7811, track 2 and 3 - start sentinel                   |
+| `END_SENTINEL`       | `?`        | ISO 7811, all tracks - end sentinel                        |
+| `ISO_TRACK1`         | `1`        | set track 1 constant - for OR-like operations (0b00000001) |
+| `ISO_TRACK2`         | `2`        | set track 2 constant - for OR-like operations (0b00000010) |
+| `ISO_TRACK3`         | `4`        | set track 3 constant - for OR-like operations (0b00000100) |
+| `ISO_TRACK1_210BPI`  | `0xA1`     | track 1 - 210bpi setting byte                              |
+| `ISO_TRACK1_75BPI`   | `0xA0`     | track 1 - 75bpi setting byte                               |
+| `ISO_TRACK2_210BPI`  | `0xD2`     | track 2 - 210bpi setting byte                              |
+| `ISO_TRACK2_75BPI`   | `0x4B`     | track 2 - 75bpi setting byte                               |
+| `ISO_TRACK3_210BPI`  | `0xC1`     | track 3 - 210bpi setting byte                              |
+| `ISO_TRACK3_75BPI`   | `0xC0`     | track 3 - 75bpi setting byte                               |
 
 #### Command constants
 | Name                  | Value       | Description                               |
