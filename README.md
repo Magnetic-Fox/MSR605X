@@ -387,7 +387,7 @@ However I can't guarantee anything. The software is provided here "AS IS" and **
 
 ## License
 
-Free. Use with respect to the author (me).
+Free. Please use this code with respect to the author (me).
 
 Bartłomiej "Magnetic-Fox" Węgrzyn,
 April 7, 2026
