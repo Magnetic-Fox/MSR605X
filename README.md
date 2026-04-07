@@ -217,6 +217,9 @@ def breakProcedure:
 | `ISO1_ALPHABET` | `{SPACE}#$()-./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^` | ISO 7811, track 1 alphabet; `%` and `?` excluded as they can't be used for data (start and end sentinel) |
 | `ISO2_ALPHABET` | `0123456789=`                                            | ISO 7811, track 2 alphabet; `;` and `?` excluded as they can't be used for data (start and end sentinel) |
 | `ISO3_ALPHABET` | `0123456789=`                                            | ISO 7811, track 3 alphabet; `;` and `?` excluded as they can't be used for data (start and end sentinel) |
+| `ISO1_MAXSIZE`  | `76`                                                     | ISO 7811, maximum data length that can be stored on the track 1                                          |
+| `ISO2_MAXSIZE`  | `37`                                                     | ISO 7811, maximum data length that can be stored on the track 2                                          |
+| `ISO3_MAXSIZE`  | `104`                                                    | ISO 7811, maximum data length that can be stored on the track 3                                          |
 
 ### Methods
 
@@ -236,14 +239,14 @@ def breakProcedure:
 | `close`            | *none*      | device closing method                                                                          |
 
 #### Internal helper methods
-| Name                 | Parameters           | Description                                                                                                        |
-| -------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `newDeviceSetting`   | `state`              | device address changing state manipulation method (`True`/`False`)                                                 |
-| `isValid`            | `alphabet`, `string` | string validator method (alphabet `string` and user `string`)                                                      |
-| `toHex`              | `byte`               | byte to 2-digit hex value converter method (`0` - `255`)                                                           |
-| `bytesToHex`         | `byteString`         | byte string to 2-digit hex value converter method (`byte-like object`)                                             |
-| `hexStringToBytes`   | `inputString`        | 2-digit hex values string to byte object converter method (string formatted like `46 55 52 52 59 ...`)             |
-| `isDataOnlySelected` | `taskList`           | is silent mode selection present on the task list checker method (e.g. output from the `argumentExtractor` method) |
+| Name                 | Parameters                  | Description                                                                                                        |
+| -------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `newDeviceSetting`   | `state`                     | device address changing state manipulation method (`True`/`False`)                                                 |
+| `isValid`            | `alphabet`, `int`, `string` | string validator method (alphabet `string`, maximum data length as `int`, user `string`)                           |
+| `toHex`              | `byte`                      | byte to 2-digit hex value converter method (`0` - `255`)                                                           |
+| `bytesToHex`         | `byteString`                | byte string to 2-digit hex value converter method (`byte-like object`)                                             |
+| `hexStringToBytes`   | `inputString`               | 2-digit hex values string to byte object converter method (string formatted like `46 55 52 52 59 ...`)             |
+| `isDataOnlySelected` | `taskList`                  | is silent mode selection present on the task list checker method (e.g. output from the `argumentExtractor` method) |
 
 #### Interpreter methods
 | Name                 | Parameters | Description                                                                                 |
@@ -341,6 +344,13 @@ Example of bits per character setting:
 
 These commands are probably unsupported by MSR605X.
 I programmed them as they are mentioned in "MSR605 Programmer's Manual", because maybe there are MSR605X-like magstripe devices that support those commands (let me know if they work if You have device other than mine).
+
+#### I want to stress-test Your code!
+
+Please type such command:
+`./msr605x.py -l -h -m -f -i0 -i1 -i2 -i3 -i4 -i1 -tc -zs -gc -ts -tr -bc 7 5 5 -bi 210 75 210 -z 61 22 -sr -hr`
+
+But please note that sensor and RAM tests would probably return errors (they are probably unsupported by MSR605X).
 
 ## Known issues
 
