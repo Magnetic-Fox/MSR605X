@@ -45,7 +45,7 @@ sudo udevadm trigger
 
 Now, if everything finished properly, MSR605X should be available to use without root permissions.
 
-## Quick reference for MSR605X class
+## Quick reference for `MSR605X` class
 
 ### Constants
 
@@ -57,6 +57,16 @@ Now, if everything finished properly, MSR605X should be available to use without
 | `DEFAULT_RID`                | `0xFF`   | byte-like; default, working Report ID for MSR605X                                  |
 | `DEFAULT_TIMEOUT`            | `100`    | default, short timeout for readData method in milliseconds                         |
 | `DEFAULT_CONTINUOUS_TIMEOUT` | `1000`   | default, continuous timeout for continuous read in readData method in milliseconds |
+
+#### ISO 7811 constants
+| Name            | Value                                                    | Description                                                                                              |
+| --------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `ISO1_ALPHABET` | `{SPACE}#$()-./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^` | ISO 7811, track 1 alphabet; `%` and `?` excluded as they can't be used for data (start and end sentinel) |
+| `ISO2_ALPHABET` | `0123456789=`                                            | ISO 7811, track 2 alphabet; `;` and `?` excluded as they can't be used for data (start and end sentinel) |
+| `ISO3_ALPHABET` | `0123456789=`                                            | ISO 7811, track 3 alphabet; `;` and `?` excluded as they can't be used for data (start and end sentinel) |
+| `ISO1_MAXSIZE`  | `76`                                                     | ISO 7811, maximum data length for track 1                                                                |
+| `ISO2_MAXSIZE`  | `37`                                                     | ISO 7811, maximum data length for track 2                                                                |
+| `ISO3_MAXSIZE`  | `104`                                                    | ISO 7811, maximum data length for track 3                                                                |
 
 #### Typical constants
 | Name  | Value  | Description                              |
@@ -157,6 +167,7 @@ Now, if everything finished properly, MSR605X should be available to use without
 | `exportRAWData`     | *none*                                                                    | export all tracks RAW data from response from device                                                                                                                             |
 | `prepareISOData`    | `track1`, `track2`, `track3`                                              | ISO tracks data to data block converter (`string`s)                                                                                                                              |
 | `prepareRAWData`    | `track1`, `track2`, `track3`                                              | RAW tracks data to raw data block converter (with automated byte data to LSB byte data; `byte-like object`s)                                                                     |
+| `isValid`           | `alphabet`, `int`, `string`                                               | string validator method (alphabet `string`, maximum data length as `int`, user `string`)                                                                                         |
 
 #### Initialization methods
 | Name                   | Parameters              | Description                                                                                           |
@@ -209,18 +220,7 @@ def breakProcedure:
 	return someInformation == 10
 ```
 
-## Quick reference for Interactive class
-
-### Constants
-
-| Name            | Value                                                    | Description                                                                                              |
-| --------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `ISO1_ALPHABET` | `{SPACE}#$()-./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^` | ISO 7811, track 1 alphabet; `%` and `?` excluded as they can't be used for data (start and end sentinel) |
-| `ISO2_ALPHABET` | `0123456789=`                                            | ISO 7811, track 2 alphabet; `;` and `?` excluded as they can't be used for data (start and end sentinel) |
-| `ISO3_ALPHABET` | `0123456789=`                                            | ISO 7811, track 3 alphabet; `;` and `?` excluded as they can't be used for data (start and end sentinel) |
-| `ISO1_MAXSIZE`  | `76`                                                     | ISO 7811, maximum data length for track 1                                                                |
-| `ISO2_MAXSIZE`  | `37`                                                     | ISO 7811, maximum data length for track 2                                                                |
-| `ISO3_MAXSIZE`  | `104`                                                    | ISO 7811, maximum data length for track 3                                                                |
+## Quick reference for `Interactive` class
 
 ### Methods
 
@@ -243,7 +243,6 @@ def breakProcedure:
 | Name                         | Parameters                  | Description                                                                                                        |
 | ---------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | `newDeviceSetting`           | `state`                     | device address changing state manipulation method (`True`/`False`)                                                 |
-| `isValid`                    | `alphabet`, `int`, `string` | string validator method (alphabet `string`, maximum data length as `int`, user `string`)                           |
 | `toHex`                      | `byte`                      | byte to 2-digit hex value converter method (`0` - `255`)                                                           |
 | `bytesToHex`                 | `byteString`                | byte string to 2-digit hex value converter method (`byte-like object`)                                             |
 | `hexStringToBytes`           | `inputString`               | 2-digit hex values string to byte object converter method (string formatted like `46 55 52 52 59 ...`)             |
