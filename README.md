@@ -286,7 +286,89 @@ def breakProcedure:
 
 ### How to use it?
 
+That's pretty simple - You can use it just like any other console tool. Just pass any commands and arguments You need.
+The only difference is that this tool interprets all passed arguments as a task list, which means that You can, for example, ask for five reads executed one after another or even change used device at the runtime.
+If Your arguments are wrong, program just won't run and will display help screen.
 
+There may still be some questions to answer, for example:
+
+#### How to write only third track of a card?
+
+Just pass empty strings as first and second track arguments for the write command:
+`./msr605x.py -w "" "" "2026=04=07"`
+
+#### How to set bits per inch for second track only?
+
+Like in the example above, pass empty string to the first track (note, that You must not provide empty string as a last argument!)
+`./msr605x.py -bi "" 210`
+
+BAD EXAMPLE:
+`THIS IS WRONG: ./msr605x.py -bi "" 210 ""`
+
+#### How to erase only one or two tracks?
+
+This command is interpreted a bit another. You can just pass numbers of tracks You want to erase:
+`./msr605x.py -e 3`
+OR
+`./msr605x.py -e 3 2`
+OR
+`./msr605x.py -e 2 1 3`
+
+Order of the numbers is not important, just do not duplicate them as this is interpreted as error.
+
+BAD EXAMPLE:
+`THIS IS WRONG: ./msr605x.py -e 2 1 2`
+
+#### How to set leading zeroes or bits per character for one track only
+
+This is not supported, because MSR605X provides no command for such usage.
+The only way it can be used is to provide all two parameters for leading zeroes and all three parameters for bits per character setting.
+
+Example of leading zeroes setting:
+`./msr605x.py -z 61 22`
+
+Example of bits per character setting:
+`./msr605x.py -bc 7 5 5`
+
+#### RAM and sensor tests gives ERROR as a result - what's wrong?
+
+These commands are probably unsupported by MSR605X.
+I programmed them as they are mentioned in "MSR605 Programmer's Manual", because maybe there are MSR605X-like magstripe devices that support those commands (let me know if they work if You have device other than mine).
+
+## Known issues
+
+Not with my code, but with the device itself.
+
+### Card write or erase ends with error
+
+You're probably using Hi-Co card and just connected the MSR605X to the USB port.
+
+Please note, that MSR605X loves to start in Lo-Co mode. You can check it by just getting coercivity setting.
+Any write operation (card erase and copy included) will obviously fail in such setup (Hi-Co card writing in the Lo-Co mode), so You have to switch to Hi-Co before writing to such card.
+
+It is even possible to do it this way:
+`./msr605x.py -h -w "TEST" "123" "456"`
+
+### RAW writing of long data or copying big cards ends with error
+
+Please refer to the "Bugs" section.
+
+### Why turning on the yellow LED turns on green too?
+
+That's the way manufacturer created this device. Yellow LED on command in fact turns on green and yellow and turns off the red one.
+
+### So, the same situation with red LED?
+
+Yup, unfortunately. This command actually turns off green and yellow LED and turns on the red one.
+
+### RAW write sets 8 bits per character for all tracks - why?
+
+Please refer to the "Bugs" section.
+
+## Devices used for testing
+
+I only have one MSR605X device, which announces itself to the system as `DEFTUN MSR Reader in FS Mode` / `MagTek Magstripe Insert Reader` (`0801:0003`).
+It is possible that there are devices compatible with MSR605X that will not work with this solution. If You can test it - please, tell me if something don't work.
 
 ## Bugs
 
@@ -300,6 +382,10 @@ I hope to find out why it behaves like that and to resolve that issue as soon as
 Can't say it is really a bug, but RAW card writing (so, copying too) needs to be done after setting 8 bits per character data interpretation for all tracks.
 Without doing so, MSR605X behaves a bit buggy (e.g. sometimes want data in LSB format, sometimes not). As I have seen so far, MSRX program allows RAW card writing in 8 bits per character format only.
 I'll do some research yet, but I think it's just normal behavior for this device.
+
+### Hope for some help
+
+If You know anything technical about MSR605X (and not a MSR605) which may help to address those issues, please contact me.
 
 ## Disclaimer
 
