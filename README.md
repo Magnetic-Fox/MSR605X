@@ -348,6 +348,12 @@ Example of bits per character setting:
 These commands are probably unsupported by MSR605X.
 I programmed them as they are mentioned in "MSR605 Programmer's Manual", because maybe there are MSR605X-like magstripe devices that support those commands (let me know if they work if You have device other than mine).
 
+#### I'm setting VID, PID and RID properly, but program doesn't run - what's wrong?
+
+You've probably set the device address and report ID to be used for communication but haven't used any device commands to do actual communication.
+As this has no sense it is treated as a parameter error.
+If You want to make a communication test of a chosen device, add `-tc` at the end of Your command.
+
 #### I want to stress-test your code!
 
 Please type such command:
@@ -377,10 +383,16 @@ That's the way manufacturer created this device. Yellow LED on command in fact t
 
 Yup, unfortunately. This command actually turns off green and yellow LED and turns on the red one.
 
+### Sensor and RAM tests return errors
+
+Those tests are mentioned in the `MSR605 Programmer's Manual`, but seems unsupported in the MSR605X (always return FAIL).
+It is unlikely that my device has problems with memory or sensors as everything works properly.
+However I decided to leave those tests in case they would work for somebody.
+
 ## Devices used for testing
 
 I only have one MSR605X device, which announces itself to the system as `DEFTUN MSR Reader in FS Mode` / `MagTek Magstripe Insert Reader` (`0801:0003`).
-It is possible that there are devices compatible with MSR605X that will not work with this solution. If You can test it - please, tell me if something don't work.
+It is possible that there are other devices marked as compatible with MSR605X that won't work with this solution. If You can test it - please, tell me if anything works or not.
 
 ## Disclaimer
 
