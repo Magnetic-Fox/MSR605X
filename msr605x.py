@@ -649,6 +649,10 @@ class MSR605X:
 
 # Command Line Utility class
 class Interactive:
+	# CONSTANTS
+	# Typical constants
+	NAK = "\x15"
+	
 	# METHODS
 	# Constructor
 	def __init__(self, vendorID = 0x0801, productID = 0x0003, reportID = b"\xff"):
@@ -801,7 +805,7 @@ class Interactive:
 			if not self.dataOnlyMode:
 				data1 = "<read error>"
 			else:
-				data1 = "\x15"
+				data1 = self.NAK
 			
 		if (data2 == ""):
 			if not self.dataOnlyMode:
@@ -812,7 +816,7 @@ class Interactive:
 			if not self.dataOnlyMode:
 				data2 = "<read error>"
 			else:
-				data2 = "\x15"
+				data2 = self.NAK
 			
 		if (data3 == ""):
 			if not self.dataOnlyMode:
@@ -823,7 +827,7 @@ class Interactive:
 			if not self.dataOnlyMode:
 				data3 = "<read error>"
 			else:
-				data3 = "\x15"
+				data3 = self.NAK
 		
 		if not self.dataOnlyMode:
 			if status == MSR605X.SB_RW_OK:
@@ -957,7 +961,7 @@ class Interactive:
 			if not self.dataOnlyMode:
 				data1 = "<read error>"
 			else:
-				data1 = "\x15"
+				data1 = self.NAK
 		else:
 			data1 = self.bytesToHex(data1)
 			
@@ -970,7 +974,7 @@ class Interactive:
 			if not self.dataOnlyMode:
 				data2 = "<read error>"
 			else:
-				data2 = "\x15"
+				data2 = self.NAK
 		else:
 			data2 = self.bytesToHex(data2)
 			
@@ -983,7 +987,7 @@ class Interactive:
 			if not self.dataOnlyMode:
 				data3 = "<read error>"
 			else:
-				data3 = "\x15"
+				data3 = self.NAK
 		else:
 			data3 = self.bytesToHex(data3)
 		
