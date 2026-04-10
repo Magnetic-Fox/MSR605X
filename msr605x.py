@@ -798,7 +798,10 @@ class Interactive:
 			else:
 				data1 = ""
 		elif (data1 == None):
-			data1 = "<read error>"
+			if not self.dataOnlyMode:
+				data1 = "<read error>"
+			else:
+				data1 = "\x15"
 			
 		if (data2 == ""):
 			if not self.dataOnlyMode:
@@ -806,7 +809,10 @@ class Interactive:
 			else:
 				data2 = ""
 		elif (data2 == None):
-			data2 = "<read error>"
+			if not self.dataOnlyMode:
+				data2 = "<read error>"
+			else:
+				data2 = "\x15"
 			
 		if (data3 == ""):
 			if not self.dataOnlyMode:
@@ -814,7 +820,10 @@ class Interactive:
 			else:
 				data3 = ""
 		elif (data3 == None):
-			data3 = "<read error>"
+			if not self.dataOnlyMode:
+				data3 = "<read error>"
+			else:
+				data3 = "\x15"
 		
 		if not self.dataOnlyMode:
 			if status == MSR605X.SB_RW_OK:
@@ -945,7 +954,10 @@ class Interactive:
 			else:
 				data1 = ""
 		elif (data1 == None):
-			data1 = "<read error>"
+			if not self.dataOnlyMode:
+				data1 = "<read error>"
+			else:
+				data1 = "\x15"
 		else:
 			data1 = self.bytesToHex(data1)
 			
@@ -955,7 +967,10 @@ class Interactive:
 			else:
 				data2 = ""
 		elif (data2 == None):
-			data2 = "<read error>"
+			if not self.dataOnlyMode:
+				data2 = "<read error>"
+			else:
+				data2 = "\x15"
 		else:
 			data2 = self.bytesToHex(data2)
 			
@@ -965,7 +980,10 @@ class Interactive:
 			else:
 				data3 = ""
 		elif (data3 == None):
-			data3 = "<read error>"
+			if not self.dataOnlyMode:
+				data3 = "<read error>"
+			else:
+				data3 = "\x15"
 		else:
 			data3 = self.bytesToHex(data3)
 		
