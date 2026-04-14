@@ -470,5 +470,5 @@ anything. You're using it on Your own risk!**
 
 Free. Please use this code with respect to the author (me).
 
-Bartłomiej "Magnetic-Fox" Węgrzyn,
+Bartłomiej "Magnetic-Fox" Węgrzyn,  
 April 14, 2026
