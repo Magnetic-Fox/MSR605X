@@ -101,19 +101,75 @@ another or even change used device at the runtime.
 
 ### Quick reference for interpreter commands
 
-#### Read/write/copy commands
+#### Interpreter configuration commands
+
+| Command | Arguments                                    | Description                  |
+| ------- | -------------------------------------------- | ---------------------------- |
+| `-p`    | *none*                                       | data only output (pipe mode) |
+
+> [!NOTE]
+> Using pipe mode removes any unnecessary output from the commands
+> leaving only data to be returned, usually terminated by the next line
+> character `\n`.
+
+#### Read/write operations
 
 | Command | Arguments                                    | Description              |
 | ------- | -------------------------------------------- | ------------------------ |
 | `-r`    | *none*                                       | Read card in ISO mode    |
 | `-rb`   | *none*                                       | Read card in RAW mode    |
-| `-w`    | `track1string [track2string [track3string]]` | Write card in ISO mode   |
-| `-wb`   | `track1hexstr [track2hexstr [track3hexstr]]` | Write card in RAW mode * |
+| `-w`    | `track1String [track2String [track3String]]` | Write card in ISO mode   |
+| `-wb`   | `track1HexStr [track2HexStr [track3HexStr]]` | Write card in RAW mode * |
 | `-c`    | *none*                                       | Copy card in ISO mode    |
 | `-cb`   | *none*                                       | Copy card in RAW mode  * |
+| `-e`    | `trackNumber [trackNumber [trackNumber]]`    | Erase card tracks        |
 
-Legend:
+Legend:  
 `*` - command sets 8 bits per character mode
+
+> [!IMPORTANT]
+> Reading card in the pipe mode might return one or even three empty
+> strings if read card contains empty tracks.  
+> On read error `\x15` character (NAK) is returned.  
+> Every track string is terminated by the next line character (`\n`).
+
+> [!WARNING]
+> RAW mode write accepts data only in `XX XX XX ...` format, where
+> single `XX` represents hexadecimal value for a byte to be written.
+
+#### Data setting commands
+
+| Command | Arguments                                    | Description                                                             |
+| ------- | -------------------------------------------- | ----------------------------------------------------------------------- |
+| `-bc`   | `track1BPC` `track2BPC` `track3BPC`          | Set bits per character interpretation for tracks (possible values: 5-8) |
+| `-bi`   | `track1BPI [track2BPI [track3BPI]]`          | Set bits per inch for tracks (possible values: *nothing*, 75, 210)      |
+| `-z`    | `track1and3LZ` `track2LZ`                    | Sets leading zeroes for track 1 & 3 and 2 (possible values: 0-255)      |
+
+#### Coercivity setting commands
+
+| Command | Arguments                                    | Description               |
+| ------- | -------------------------------------------- | ------------------------- |
+| `-h`    | *none*                                       | Sets high coercivity mode |
+| `-l`    | *none*                                       | Sets low coercivity mode  |
+
+#### LED control
+
+| Command | Arguments                                    | Description                                          |
+| ------- | -------------------------------------------- | ---------------------------------------------------- |
+| `-i0`   | *none*                                       | Turns off all LEDs                                   |
+| `-i1`   | *none*                                       | Turns on green LED and turns off yellow and red LEDs |
+| `-i2`   | *none*                                       | Turns on green and yellow LEDs and turns off red LED |
+| `-i3`   | *none*                                       | Turns on red LED and turns off green and yellow LEDs |
+| `-i4`   | *none*                                       | Turns on all LEDs                                    |
+
+#### Settings and device information gathering commands
+
+| Command | Arguments                                    | Description                 |
+| ------- | -------------------------------------------- | --------------------------- |
+| `-gc`   | *none*                                       | Gets coercivity setting     |
+| `-zs`   | *none*                                       | Gets leading zeroes setting |
+| `-m`    | *none*                                       | Gets device model           |
+| `-f`    | *none*                                       | Gets firmware version       |
 
 ### Questions to answer
 
