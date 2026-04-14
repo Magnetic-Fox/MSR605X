@@ -101,7 +101,19 @@ another or even change used device at the runtime.
 
 ### Quick reference for interpreter commands
 
-TODO...
+#### Read/write/copy commands
+
+| Command | Arguments                                    | Description              |
+| ------- | -------------------------------------------- | ------------------------ |
+| `-r`    | *none*                                       | Read card in ISO mode    |
+| `-rb`   | *none*                                       | Read card in RAW mode    |
+| `-w`    | `track1string [track2string [track3string]]` | Write card in ISO mode   |
+| `-wb`   | `track1hexstr [track2hexstr [track3hexstr]]` | Write card in RAW mode * |
+| `-c`    | *none*                                       | Copy card in ISO mode    |
+| `-cb`   | *none*                                       | Copy card in RAW mode  * |
+
+Legend:
+* - command sets 8 bits per character mode
 
 ### Questions to answer
 
