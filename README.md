@@ -109,7 +109,7 @@ another or even change used device at the runtime.
 
 > [!NOTE]
 > Using pipe mode removes any unnecessary output from the commands
-> leaving only data to be returned, usually terminated by the next line
+> leaving only data to be returned, terminated by the next line
 > character `\n`.
 
 #### Read/write operations
@@ -129,7 +129,7 @@ Legend:
 
 > [!IMPORTANT]
 > Reading card in the pipe mode might return one or even three empty
-> strings if read card contains empty tracks.  
+> strings if card contains empty tracks.  
 > On read error `\x15` character (NAK) is returned.  
 > Every track string is terminated by the next line character (`\n`).
 
