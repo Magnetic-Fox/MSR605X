@@ -146,8 +146,8 @@ communication. As this has no sense it is treated as a parameter error.
 
 > [!TIP]
 > If You want to make a communication test of a chosen device, add `-tc`
-> at the end of Your command, for example:
-> `./msr605x.py -vid 0x0801 -pid 0x0003 -tc`
+> at the end of Your command.  
+> For example: `./msr605x.py -vid 0x0801 -pid 0x0003 -tc`
 
 #### I want to stress-test your code!
 
