@@ -113,7 +113,7 @@ another or even change used device at the runtime.
 | `-cb`   | *none*                                       | Copy card in RAW mode  * |
 
 Legend:
-* - command sets 8 bits per character mode
+`*` - command sets 8 bits per character mode
 
 ### Questions to answer
 
