@@ -89,12 +89,12 @@ There may still be some questions to answer, for example:
 #### How to write only third track of a card?
 
 Just pass two empty strings at the beginning and then string for the
-third track:
+third track:  
 `./msr605x.py -w "" "" "2026=04=07"`
 
 #### How to set bits per inch for second track only?
 
-Like in the example above, pass empty string to the first track:
+Like in the example above, pass empty string to the first track:  
 `./msr605x.py -bi "" 210`
 
 > [!CAUTION]
@@ -117,27 +117,37 @@ OR
 > this is interpreted as error.  
 > **BAD EXAMPLE:** `./msr605x.py -e 2 1 2`
 
-#### How to set leading zeroes or bits per character for one track only
+#### How to set leading zeroes or bits per character for one track only?
 
-This is not supported, because MSR605X provides no command for such usage.
-The only way it can be used is to provide all two parameters for leading zeroes and all three parameters for bits per character setting.
+This is not supported, because MSR605X provides no command for such
+usage (or at least MSR605 as I do not have documentation for MSR605X).  
+The only way it can be used is to provide all two parameters for leading
+zeroes and all three parameters for bits per character setting.
 
-Example of leading zeroes setting:
+Example of leading zeroes setting:  
 `./msr605x.py -z 61 22`
 
-Example of bits per character setting:
+Example of bits per character setting:  
 `./msr605x.py -bc 7 5 5`
 
 #### RAM and sensor tests gives ERROR as a result - what's wrong?
 
 These commands are probably unsupported by MSR605X.
-I programmed them as they are mentioned in "MSR605 Programmer's Manual", because maybe there are MSR605X-like magstripe devices that support those commands (let me know if they work if You have device other than mine).
+I programmed them as they are mentioned in "MSR605 Programmer's Manual",
+because maybe there are MSR605X-like magstripe devices that support
+those commands (let me know if they work if You have device other than
+mine).
 
 #### I'm setting VID, PID and RID properly, but program doesn't run - what's wrong?
 
-You've probably set the device address and report ID to be used for communication but haven't used any device commands to do actual communication.
-As this has no sense it is treated as a parameter error.
-If You want to make a communication test of a chosen device, add `-tc` at the end of Your command.
+You've probably set the device address and report ID to be used for
+communication but haven't used any device commands to do actual
+communication. As this has no sense it is treated as a parameter error.
+
+> [!TIP]
+> If You want to make a communication test of a chosen device, add `-tc`
+> at the end of Your command, for example:  
+> `./msr605x.py -vid 0x0801 -pid 0x0003 -tc`
 
 #### I want to stress-test your code!
 
