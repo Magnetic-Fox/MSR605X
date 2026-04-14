@@ -67,7 +67,7 @@ Like in the example above, pass empty string to the first track
 `./msr605x.py -bi "" 210`
 
 > [!CAUTION]
-> You must not provide empty string as a last argument as this is interpreted as error!
+> You must not provide empty string as a last argument as this is interpreted as error!  
 > **BAD EXAMPLE:** `./msr605x.py -bi "" 210 ""`
 
 #### How to erase only one or two tracks?
@@ -80,7 +80,7 @@ OR
 `./msr605x.py -e 2 1 3`
 
 > [!IMPORTANT]
-> Order of the numbers is not important, just do not duplicate them as this is interpreted as error.
+> Order of the numbers is not important, just do not duplicate them as this is interpreted as error.  
 > **BAD EXAMPLE:** `./msr605x.py -e 2 1 2`
 
 #### How to set leading zeroes or bits per character for one track only
