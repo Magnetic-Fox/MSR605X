@@ -5,17 +5,17 @@ a standalone solution.
 
 ## Table of Contents
 
-[Introduction](#introduction)
-[How it was started?](#how-it-was-started)
-[Dependencies (what is needed to run this code?)](#dependencies-what-is-needed-to-run-this-code)
-[Device permissions](#device-permissions)
-[Interpreter](#interpreter)
-[Quick reference for `MSR605X` class](#quick-reference-for-msr605x-class)
-[Break procedure](#break-procedure)
-[Quick reference for `Interactive` class](#quick-reference-for-interactive-class)
-[Known issues](#known-issues)
-[Devices used for testing](#devices-used-for-testing)
-[Disclaimer](#disclaimer)
+[Introduction](#introduction)  
+[How it was started?](#how-it-was-started)  
+[Dependencies (what is needed to run this code?)](#dependencies-what-is-needed-to-run-this-code)  
+[Device permissions](#device-permissions)  
+[Interpreter](#interpreter)  
+[Quick reference for `MSR605X` class](#quick-reference-for-msr605x-class)  
+[Break procedure](#break-procedure)  
+[Quick reference for `Interactive` class](#quick-reference-for-interactive-class)  
+[Known issues](#known-issues)  
+[Devices used for testing](#devices-used-for-testing)  
+[Disclaimer](#disclaimer)  
 [License](#license)
 
 ## Introduction
