@@ -325,9 +325,8 @@ Please type such command:
 
 A `break procedure` is a simple piece of code which can decide if
 readData method has to continue its operation or if it has to stop right
-now.  
-It might be useful in situations, where external procedure might want to
-stop waiting for user to swipe the card.
+now. It might be useful in situations, where external procedure might
+want to stop waiting for user to swipe the card.
 
 It can be as easy as (let's say 10 stored in `someInformation` variable
 means that we have to stop):
@@ -428,8 +427,8 @@ switch to Hi-Co before writing to such card.
 
 > [!TIP]
 > You don't have to manually set Hi-Co or Lo-Co mode and then run this
-> script again to write or erase card. It is possible to set it before
-> writing as a single task.
+> script again to write or erase card.  
+> It is possible to do both in a single run.
 >
 > See this example: `./msr605x.py -h -w "TEST" "123" "456"`
 
