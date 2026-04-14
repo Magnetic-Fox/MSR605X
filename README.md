@@ -434,27 +434,37 @@ switch to Hi-Co before writing to such card.
 
 ### Why turning on the yellow LED turns on green too?
 
-That's the way manufacturer created this device. Yellow LED on command in fact turns on green and yellow and turns off the red one.
+That's the way manufacturer created this device. Yellow LED on command
+in fact turns on green and yellow and turns off the red one.
 
 ### So, the same situation with red LED?
 
-Yup, unfortunately. This command actually turns off green and yellow LED and turns on the red one.
+Yup, unfortunately. This command actually turns off green and yellow LED
+and turns on the red one.
 
 ### Sensor and RAM tests return errors
 
-Those tests are mentioned in the `MSR605 Programmer's Manual`, but seems unsupported in the MSR605X (always return FAIL).
-It is unlikely that my device has problems with memory or sensors as everything works properly.
-However I decided to leave those tests in case they would work for somebody.
+Those tests are mentioned in the `MSR605 Programmer's Manual`, but seems
+unsupported in the MSR605X (always return FAIL). It is unlikely that my
+device has problems with memory or sensors as everything works properly.
+However I decided to leave those tests in case they would work for
+somebody.
 
 ## Devices used for testing
 
-I only have one MSR605X device, which announces itself to the system as `DEFTUN MSR Reader in FS Mode` / `MagTek Magstripe Insert Reader` (`0801:0003`).
-It is possible that there are other devices marked as compatible with MSR605X that won't work with this solution. If You can test it - please, tell me if anything works or not.
+I only have one MSR605X device, which announces itself to the system as
+`DEFTUN MSR Reader in FS Mode` / `MagTek Magstripe Insert Reader`
+(`0801:0003`). It is possible that there are other devices marked as
+compatible with MSR605X that won't work with this solution. If You can
+test it - please, tell me if anything works or not.
 
 ## Disclaimer
 
-I've made much effort to provide here working codes with hope they'll be useful and free from any bugs.
-However I can't guarantee anything. The software is provided here "AS IS" and **I take no responsibility for anything. You're using it on Your own risk!**
+I've made much effort to provide here working codes with hope they'll be
+useful and free from any bugs. However I can't guarantee anything.
+
+The software is provided here "AS IS" and **I take no responsibility for
+anything. You're using it on Your own risk!**
 
 ## License
 
