@@ -35,7 +35,8 @@ KERNEL=="hidraw*", ATTRS{idVendor}=="0801", ATTRS{idProduct}=="0003", MODE="0666
 I know, it is not the safest option to use 0666 mode, but others simply didn't work for me (even with `OWNER` and `GROUP` set).
 Fortunately, I'm the only user of my computer. ;)
 
-Please note, that You can use any valid name for the file. I've used `99-hid.rules`, but probably `99-msr.rules` would be good too.
+> [!NOTE]
+> Please note, that You can use any valid name for the file. I've used `99-hid.rules`, but probably `99-msr.rules` would be good too.
 
 After creating such file, if You don't want to restart Your system, to make this rules work, type in the terminal those two commands:
 ```console
@@ -77,7 +78,8 @@ OR
 OR
 `./msr605x.py -e 2 1 3`
 
-Order of the numbers is not important, just do not duplicate them as this is interpreted as error.
+> [!IMPORTANT]
+> Order of the numbers is not important, just do not duplicate them as this is interpreted as error.
 
 BAD EXAMPLE:
 `THIS IS WRONG: ./msr605x.py -e 2 1 2`
