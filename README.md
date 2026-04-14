@@ -146,16 +146,17 @@ communication. As this has no sense it is treated as a parameter error.
 
 > [!TIP]
 > If You want to make a communication test of a chosen device, add `-tc`
-> at the end of Your command, for example:  
+> at the end of Your command, for example:
 > `./msr605x.py -vid 0x0801 -pid 0x0003 -tc`
 
 #### I want to stress-test your code!
 
-Please type such command:
+Please type such command:  
 `./msr605x.py -l -h -m -f -i0 -i1 -i2 -i3 -i4 -i1 -tc -zs -gc -ts -tr -bc 7 5 5 -bi 210 75 210 -z 61 22 -sr -hr`
 
 > [!NOTE]
-> Sensor and RAM tests would probably return errors (they are probably unsupported by MSR605X).
+> Sensor and RAM tests would probably return errors (they are probably
+> unsupported by MSR605X).
 
 ## Quick reference for `MSR605X` class
 
@@ -322,10 +323,14 @@ Please type such command:
 
 ## Break procedure
 
-A `break procedure` is a simple piece of code which can decide if readData method has to continue its operation or if it has to stop right now.
-It might be useful for situations, where external procedure might want to stop waiting for user to swipe the card.
+A `break procedure` is a simple piece of code which can decide if
+readData method has to continue its operation or if it has to stop right
+now.  
+It might be useful in situations, where external procedure might want to
+stop waiting for user to swipe the card.
 
-It can be as easy as (let's say 10 stored in `someInformation` means that we have to break):
+It can be as easy as (let's say 10 stored in `someInformation` variable
+means that we have to stop):
 ```python
 def breakProcedure:
 	global someInformation
@@ -409,17 +414,24 @@ def breakProcedure:
 
 ## Known issues
 
-Actually not with my code, but with the device itself.
-
 ### Card write or erase ends with error
 
-You're probably using Hi-Co card and just connected the MSR605X to the USB port.
+You're probably using Hi-Co card and just connected the MSR605X to the
+USB port.
 
-Please note, that MSR605X loves to start in Lo-Co mode. You can check it by just getting coercivity setting.
-Any write operation (card erase and copy included) will obviously fail in such setup (Hi-Co card writing in the Lo-Co mode), so You have to switch to Hi-Co before writing to such card.
+Please note, that MSR605X loves to start in Lo-Co mode. You can check it
+by getting coercivity setting straight after connecting the device to
+the computer.  
+Any write operation (card erase and copy included) will obviously fail
+in such setup (Hi-Co card writing in the Lo-Co mode), so You have to
+switch to Hi-Co before writing to such card.
 
-It is even possible to do it this way:
-`./msr605x.py -h -w "TEST" "123" "456"`
+> [!TIP]
+> You don't have to manually set Hi-Co or Lo-Co mode and then run this
+> script again to write or erase card. It is possible to set it before
+> writing as a single task.
+>
+> See this example: `./msr605x.py -h -w "TEST" "123" "456"`
 
 ### Why turning on the yellow LED turns on green too?
 
