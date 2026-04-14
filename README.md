@@ -36,7 +36,7 @@ I know, it is not the safest option to use 0666 mode, but others simply didn't w
 Fortunately, I'm the only user of my computer. ;)
 
 > [!NOTE]
-> Please note, that You can use any valid name for the file. I've used `99-hid.rules`, but probably `99-msr.rules` would be good too.
+> You can use any valid name for the file. I've used `99-hid.rules`, but probably `99-msr.rules` would be good too.
 
 After creating such file, if You don't want to restart Your system, to make this rules work, type in the terminal those two commands:
 ```console
@@ -63,11 +63,12 @@ Just pass empty strings as first and second track arguments for the write comman
 
 #### How to set bits per inch for second track only?
 
-Like in the example above, pass empty string to the first track (note, that You must not provide empty string as a last argument!)
+Like in the example above, pass empty string to the first track
 `./msr605x.py -bi "" 210`
 
-BAD EXAMPLE:
-`THIS IS WRONG: ./msr605x.py -bi "" 210 ""`
+> [!CAUTION]
+> You must not provide empty string as a last argument as this is interpreted as error!
+> **BAD EXAMPLE:** `./msr605x.py -bi "" 210 ""`
 
 #### How to erase only one or two tracks?
 
@@ -80,9 +81,7 @@ OR
 
 > [!IMPORTANT]
 > Order of the numbers is not important, just do not duplicate them as this is interpreted as error.
-
-BAD EXAMPLE:
-`THIS IS WRONG: ./msr605x.py -e 2 1 2`
+> **BAD EXAMPLE:** `./msr605x.py -e 2 1 2`
 
 #### How to set leading zeroes or bits per character for one track only
 
@@ -111,7 +110,8 @@ If You want to make a communication test of a chosen device, add `-tc` at the en
 Please type such command:
 `./msr605x.py -l -h -m -f -i0 -i1 -i2 -i3 -i4 -i1 -tc -zs -gc -ts -tr -bc 7 5 5 -bi 210 75 210 -z 61 22 -sr -hr`
 
-But please note that sensor and RAM tests would probably return errors (they are probably unsupported by MSR605X).
+> [!NOTE]
+> Sensor and RAM tests would probably return errors (they are probably unsupported by MSR605X).
 
 ## Quick reference for `MSR605X` class
 
