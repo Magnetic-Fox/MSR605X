@@ -30,8 +30,11 @@ class was written. And when it was ready to use I started writing
 
 ## Dependencies (what is needed to run this code?)
 
-The only additional library that is needed to run this code is `hid` library, which on Linux Mint can be found in APT under the name `python3-hid` (where it is described as "cython3 interface to hidapi").
-The `sys` library (which You can find in imports at the top of this code) is here only for user input/output support (interpreter).
+The only additional library that is needed to run this code is `hid`
+library, which on Linux Mint can be found in APT under the name
+`python3-hid` (where it is described as "cython3 interface to hidapi").  
+The `sys` library (which You can find in imports at the top of this
+code) is here only for user input/output support (interpreter).
 
 ## Device permissions
 
