@@ -45,6 +45,72 @@ sudo udevadm trigger
 
 Now, if everything finished properly, MSR605X should be available to use without root permissions.
 
+## Interpreter
+
+### How to use it?
+
+That's pretty simple - You can use it just like any other console tool. Just pass any commands and arguments You need.
+The only difference is that this tool interprets all passed arguments as a task list, which means that You can, for example, ask for five reads executed one after another or even change used device at the runtime.
+If Your arguments are wrong, program just won't run and will display help screen.
+
+There may still be some questions to answer, for example:
+
+#### How to write only third track of a card?
+
+Just pass empty strings as first and second track arguments for the write command:
+`./msr605x.py -w "" "" "2026=04=07"`
+
+#### How to set bits per inch for second track only?
+
+Like in the example above, pass empty string to the first track (note, that You must not provide empty string as a last argument!)
+`./msr605x.py -bi "" 210`
+
+BAD EXAMPLE:
+`THIS IS WRONG: ./msr605x.py -bi "" 210 ""`
+
+#### How to erase only one or two tracks?
+
+This command is interpreted a bit another. You can just pass numbers of tracks You want to erase:
+`./msr605x.py -e 3`
+OR
+`./msr605x.py -e 3 2`
+OR
+`./msr605x.py -e 2 1 3`
+
+Order of the numbers is not important, just do not duplicate them as this is interpreted as error.
+
+BAD EXAMPLE:
+`THIS IS WRONG: ./msr605x.py -e 2 1 2`
+
+#### How to set leading zeroes or bits per character for one track only
+
+This is not supported, because MSR605X provides no command for such usage.
+The only way it can be used is to provide all two parameters for leading zeroes and all three parameters for bits per character setting.
+
+Example of leading zeroes setting:
+`./msr605x.py -z 61 22`
+
+Example of bits per character setting:
+`./msr605x.py -bc 7 5 5`
+
+#### RAM and sensor tests gives ERROR as a result - what's wrong?
+
+These commands are probably unsupported by MSR605X.
+I programmed them as they are mentioned in "MSR605 Programmer's Manual", because maybe there are MSR605X-like magstripe devices that support those commands (let me know if they work if You have device other than mine).
+
+#### I'm setting VID, PID and RID properly, but program doesn't run - what's wrong?
+
+You've probably set the device address and report ID to be used for communication but haven't used any device commands to do actual communication.
+As this has no sense it is treated as a parameter error.
+If You want to make a communication test of a chosen device, add `-tc` at the end of Your command.
+
+#### I want to stress-test your code!
+
+Please type such command:
+`./msr605x.py -l -h -m -f -i0 -i1 -i2 -i3 -i4 -i1 -tc -zs -gc -ts -tr -bc 7 5 5 -bi 210 75 210 -z 61 22 -sr -hr`
+
+But please note that sensor and RAM tests would probably return errors (they are probably unsupported by MSR605X).
+
 ## Quick reference for `MSR605X` class
 
 ### Constants
@@ -295,72 +361,6 @@ def breakProcedure:
 | `softReset`         | *none*                                 | soft reset wrapper method                                                  |
 | `hardReset`         | *none*                                 | hard reset wrapper method                                                  |
 
-## Interpreter
-
-### How to use it?
-
-That's pretty simple - You can use it just like any other console tool. Just pass any commands and arguments You need.
-The only difference is that this tool interprets all passed arguments as a task list, which means that You can, for example, ask for five reads executed one after another or even change used device at the runtime.
-If Your arguments are wrong, program just won't run and will display help screen.
-
-There may still be some questions to answer, for example:
-
-#### How to write only third track of a card?
-
-Just pass empty strings as first and second track arguments for the write command:
-`./msr605x.py -w "" "" "2026=04=07"`
-
-#### How to set bits per inch for second track only?
-
-Like in the example above, pass empty string to the first track (note, that You must not provide empty string as a last argument!)
-`./msr605x.py -bi "" 210`
-
-BAD EXAMPLE:
-`THIS IS WRONG: ./msr605x.py -bi "" 210 ""`
-
-#### How to erase only one or two tracks?
-
-This command is interpreted a bit another. You can just pass numbers of tracks You want to erase:
-`./msr605x.py -e 3`
-OR
-`./msr605x.py -e 3 2`
-OR
-`./msr605x.py -e 2 1 3`
-
-Order of the numbers is not important, just do not duplicate them as this is interpreted as error.
-
-BAD EXAMPLE:
-`THIS IS WRONG: ./msr605x.py -e 2 1 2`
-
-#### How to set leading zeroes or bits per character for one track only
-
-This is not supported, because MSR605X provides no command for such usage.
-The only way it can be used is to provide all two parameters for leading zeroes and all three parameters for bits per character setting.
-
-Example of leading zeroes setting:
-`./msr605x.py -z 61 22`
-
-Example of bits per character setting:
-`./msr605x.py -bc 7 5 5`
-
-#### RAM and sensor tests gives ERROR as a result - what's wrong?
-
-These commands are probably unsupported by MSR605X.
-I programmed them as they are mentioned in "MSR605 Programmer's Manual", because maybe there are MSR605X-like magstripe devices that support those commands (let me know if they work if You have device other than mine).
-
-#### I'm setting VID, PID and RID properly, but program doesn't run - what's wrong?
-
-You've probably set the device address and report ID to be used for communication but haven't used any device commands to do actual communication.
-As this has no sense it is treated as a parameter error.
-If You want to make a communication test of a chosen device, add `-tc` at the end of Your command.
-
-#### I want to stress-test your code!
-
-Please type such command:
-`./msr605x.py -l -h -m -f -i0 -i1 -i2 -i3 -i4 -i1 -tc -zs -gc -ts -tr -bc 7 5 5 -bi 210 75 210 -z 61 22 -sr -hr`
-
-But please note that sensor and RAM tests would probably return errors (they are probably unsupported by MSR605X).
-
 ## Known issues
 
 Actually not with my code, but with the device itself.
@@ -404,4 +404,4 @@ However I can't guarantee anything. The software is provided here "AS IS" and **
 Free. Please use this code with respect to the author (me).
 
 Bartłomiej "Magnetic-Fox" Węgrzyn,
-April 9, 2026
+April 14, 2026
