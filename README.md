@@ -152,7 +152,7 @@ Legend:
 | `-h`    | *none*                                       | Sets high coercivity mode |
 | `-l`    | *none*                                       | Sets low coercivity mode  |
 
-#### LED control
+#### LED control commands
 
 | Command | Arguments                                    | Description                                          |
 | ------- | -------------------------------------------- | ---------------------------------------------------- |
@@ -162,6 +162,16 @@ Legend:
 | `-i3`   | *none*                                       | Turns on red LED and turns off green and yellow LEDs |
 | `-i4`   | *none*                                       | Turns on all LEDs                                    |
 
+#### Device control commands
+
+| Command | Arguments                                    | Description                                                                         |
+| ------- | -------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `-vid`  | `vendorID`                                   | Sets Vendor ID part of the device address (possible values: 0x0000 - 0xFFFF)        |
+| `-pid`  | `productID`                                  | Sets Product ID part of the device address (possible values: 0x0000 - 0xFFFF)       |
+| `-rid`  | `reportID`                                   | Sets Report ID to use to communicate with the device (possible values: 0x00 - 0xFF) |
+| `-sr`   | *none*                                       | Resets the device (soft)                                                            |
+| `-hr`   | *none*                                       | Resets the device (hard)                                                            |
+
 #### Settings and device information gathering commands
 
 | Command | Arguments                                    | Description                 |
@@ -170,6 +180,20 @@ Legend:
 | `-zs`   | *none*                                       | Gets leading zeroes setting |
 | `-m`    | *none*                                       | Gets device model           |
 | `-f`    | *none*                                       | Gets firmware version       |
+
+> [!IMPORTANT]
+> When pipe mode is used, commands outputs are much shorter.  
+> `-gc` command returns just `H` or `L`.  
+> `-zs` command returns numbers only - each value in the separate line.  
+> `-m` and `-f` commands return values only without any decoration.
+
+#### Device test commands
+
+| Command | Arguments                                    | Description                                    |
+| ------- | -------------------------------------------- | ---------------------------------------------- |
+| `-tc`   | *none*                                       | Makes a communication test                     |
+| `-ts`   | *none*                                       | Makes a sensor test (**probably unsupported**) |
+| `-tr`   | *none*                                       | Makes a RAM test (**probably unsupported**)    |
 
 ### Questions to answer
 
