@@ -463,8 +463,9 @@ test it - please, tell me if anything works or not.
 I've made much effort to provide here working codes with hope they'll be
 useful and free from any bugs. However I can't guarantee anything.
 
-The software is provided here "AS IS" and **I take no responsibility for
-anything. You're using it on Your own risk!**
+The software is provided here "AS IS" and
+**I take no responsibility for anything.**  
+**You're using it on Your own risk!**
 
 ## License
 
