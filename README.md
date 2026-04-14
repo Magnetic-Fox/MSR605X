@@ -1,19 +1,32 @@
 # MSR605X Utility
 
-Python library with additional text user interface to be used as a standalone solution.
+Python library with additional text user interface to be used as
+a standalone solution.
 
 ## Introduction
 
-This project aims to be the easiest possible, but fail-safe Python solution for HID-type MSR605X magstripe reader/writer device, which might be used as a library or as a standalone program with typical text user interface.
-Maybe the code isn't the cleanest, but I wanted to make it a one-file solution for ease of use. That's why I decided to write such a detailed readme file, which might be considered a documentation.
+This project aims to be the easiest possible, but fail-safe Python
+solution for HID-type MSR605X magstripe reader/writer device,which might
+be used as a library or as a standalone program with typical text user
+interface.
+
+Maybe the code isn't the cleanest, but I wanted to make it a one-file
+solution for ease of use. That's why I decided to write such a detailed
+readme file, which might be considered a documentation.
 
 ## How it was started?
 
-Last time I (finally!) moved to the Linux Mint system (which I really love).
-However, I couldn't make official MSRX program run properly under Wine (which was a bit shocking as Wine is a very good solution and MSRX seems to be one of the easiest piece of software to run) and the other MSR-related projects found on the internet just weren't working for me for strange reasons (assertion errors, etc.).
-I then decided to start something really simple to be able to read and write ISO cards (at least).
-I thought it would probably never work, but when the first operations succeeded, I wanted to go further - that's how `MSR605X` class was written.
-And when it was ready to use I started writing `Interactive` class to provide basic text user interface support.
+Last time I (finally!) moved to the Linux Mint system (which I really
+love). However, I couldn't make official MSRX program run properly under
+Wine (which was a bit shocking as Wine is a very good solution and MSRX
+seems to be one of the easiest piece of software to run) and the other
+MSR-related projects found on the internet just weren't working for me
+for strange reasons (assertion errors, etc.). I then decided to start
+something really simple to be able to read and write ISO cards (at
+least). I thought it would probably never work, but when the first
+operations succeeded, I wanted to go further - that's how `MSR605X`
+class was written. And when it was ready to use I started writing
+`Interactive` class to provide basic text user interface support.
 
 ## Dependencies (what is needed to run this code?)
 
