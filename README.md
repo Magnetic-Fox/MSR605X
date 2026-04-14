@@ -99,7 +99,11 @@ another or even change used device at the runtime.
 > If Your arguments are wrong, program just won't run and will display
 > help screen.
 
-There may still be some questions to answer, for example:
+### Quick reference for interpreter commands
+
+TODO...
+
+### Questions to answer
 
 #### How to write only third track of a card?
 
