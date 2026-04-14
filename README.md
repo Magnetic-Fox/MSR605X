@@ -38,65 +38,83 @@ code) is here only for user input/output support (interpreter).
 
 ## Device permissions
 
-In order to use this solution, You have to have rights to read and write to the USB device.
-This is a bit tricky under Linux as You have to carefully find Your device and then create a udev rule file.
-Otherwise You'll have to run this code as a root (e.g. use `sudo`), which I do not recommend as it is not a good idea, especially for a long time (and not safe at all).
+In order to use this solution, You have to have rights to read and write
+to the USB device. This is a bit tricky under Linux as You have to
+carefully find Your device and then create a udev rule file. Otherwise
+You'll have to run this code as a root (e.g. use `sudo`), which I do not
+recommend as it is not a good idea, especially for a long time (and not
+safe at all).
 
-Here is an example of my `99-hid.rules` file placed in the `/etc/udev/rules.d/` directory:
+Here is an example of my `99-hid.rules` file placed in the
+`/etc/udev/rules.d/` directory:
 ```console
 SUBSYSTEM=="usb", ATTRS{idVendor}=="0801", ATTRS{idProduct}=="0003", MODE="0666"
 KERNEL=="hidraw*", ATTRS{idVendor}=="0801", ATTRS{idProduct}=="0003", MODE="0666"
 ```
 
-I know, it is not the safest option to use 0666 mode, but others simply didn't work for me (even with `OWNER` and `GROUP` set).
-Fortunately, I'm the only user of my computer. ;)
+I know, it is not the safest option to use 0666 mode, but others simply
+didn't work for me (even with `OWNER` and `GROUP` set). Fortunately, I'm
+the only user of my computer. ;)
 
 > [!NOTE]
-> You can use any valid name for the file. I've used `99-hid.rules`, but probably `99-msr.rules` would be good too.
+> You can use any valid name for the file. I've used `99-hid.rules`, but
+> probably `99-msr.rules` would be good too.
 
-After creating such file, if You don't want to restart Your system, to make this rules work, type in the terminal those two commands:
+After creating such file, if You don't want to restart Your system, to
+make this rules work, type in the terminal those two commands:
 ```console
 sudo udevadm control --reload-rules
 sudo udevadm trigger
 ```
 
-Now, if everything finished properly, MSR605X should be available to use without root permissions.
+Now, if everything finished properly, MSR605X should be available to use
+without root permissions.
 
 ## Interpreter
 
 ### How to use it?
 
-That's pretty simple - You can use it just like any other console tool. Just pass any commands and arguments You need.
-The only difference is that this tool interprets all passed arguments as a task list, which means that You can, for example, ask for five reads executed one after another or even change used device at the runtime.
-If Your arguments are wrong, program just won't run and will display help screen.
+That's pretty simple - You can use it just like any other console tool.
+Just pass any commands and arguments You need. The only difference is
+that this tool interprets all passed arguments as a task list, which
+means that You can, for example, ask for five reads executed one after
+another or even change used device at the runtime.
+
+> [!WARNING]
+> If Your arguments are wrong, program just won't run and will display
+> help screen.
 
 There may still be some questions to answer, for example:
 
 #### How to write only third track of a card?
 
-Just pass empty strings as first and second track arguments for the write command:
+Just pass two empty strings at the beginning and then string for the
+third track:
 `./msr605x.py -w "" "" "2026=04=07"`
 
 #### How to set bits per inch for second track only?
 
-Like in the example above, pass empty string to the first track
+Like in the example above, pass empty string to the first track:
 `./msr605x.py -bi "" 210`
 
 > [!CAUTION]
-> You must not provide empty string as a last argument as this is interpreted as error!  
+> You must not provide empty string as a last argument as this is
+> interpreted as error!  
 > **BAD EXAMPLE:** `./msr605x.py -bi "" 210 ""`
 
 #### How to erase only one or two tracks?
 
-This command is interpreted a bit another. You can just pass numbers of tracks You want to erase:
-`./msr605x.py -e 3`
-OR
-`./msr605x.py -e 3 2`
-OR
+This command is interpreted a bit another - You have to pass numbers
+indicating which tracks have to be erased, for example:  
+`./msr605x.py -e 3`  
+OR  
+`./msr605x.py -e 3 2`  
+OR  
 `./msr605x.py -e 2 1 3`
 
 > [!IMPORTANT]
-> Order of the numbers is not important, just do not duplicate them as this is interpreted as error.  
+> Order of the numbers is not important, just do not duplicate them as
+> this is interpreted as error.  
 > **BAD EXAMPLE:** `./msr605x.py -e 2 1 2`
 
 #### How to set leading zeroes or bits per character for one track only
